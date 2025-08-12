@@ -414,12 +414,13 @@
     <div id="bashWatermark">Bash</div>
 
     <header>
-        <div id="visitCounterContainer" aria-label="Site visit counter" title="Number of unique visits" role="status" style="position: absolute; top: 20px; left: 20px; display: flex; align-items: center; gap: 6px; cursor: default; z-index: 10; color: white; font-weight: bold;">
-  <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" viewBox="0 0 24 24">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
+<div id="visitCounterContainer" style="position:absolute; top:20px; left:20px; display:flex; align-items:center; gap:6px; cursor:default; z-index:10; color:white; user-select:none;">
+  <!-- Icône œil noir et blanc simpliste -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
+    <circle cx="12" cy="12" r="3"></circle>
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
   </svg>
-  <span id="visitCount" aria-live="polite" style="user-select:none;">...</span>
+  <span id="visitorCountText">Loading...</span>
 </div>
 
         <span class="username">BASH</span>
@@ -654,43 +655,22 @@ bgMusic.addEventListener('ended', () => {
             }
         });
     });
-    (function() {
-  const countKey = "yupbash.visited";
-  const visitCountSpan = document.getElementById('visitCount');
+      function loadVisitorCounter() {
+    const script1 = document.createElement('script');
+    script1.src = 'https://www.freevisitorcounters.com/auth.php?id=7ba902803ac51a97273bddfa778307242a786cfc';
+    document.body.appendChild(script1);
 
-  function updateCountDisplay(count) {
-    visitCountSpan.textContent = count;
+    const script2 = document.createElement('script');
+    script2.src = 'https://www.freevisitorcounters.com/en/home/counter/1376112/t/3';
+    document.body.appendChild(script2);
   }
 
-  function fetchCount(increment = false) {
-    const url = increment
-      ? 'https://api.countapi.xyz/hit/yupbash.vip/visits'
-      : 'https://api.countapi.xyz/get/yupbash.vip/visits';
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if(data && typeof data.value === "number") {
-          updateCountDisplay(data.value);
-          if (increment) {
-            localStorage.setItem(countKey, "true");
-          }
-        } else {
-          updateCountDisplay("N/A");
-        }
-      })
-      .catch(() => {
-        updateCountDisplay("N/A");
-      });
-  }
-
-  if (!localStorage.getItem(countKey)) {
-    fetchCount(true); // Incrémente si jamais pas compté
+  if (!localStorage.getItem('visitorCounted')) {
+    loadVisitorCounter();
+    localStorage.setItem('visitorCounted', 'true');
   } else {
-    fetchCount(false); // Récupère juste la valeur sans incrément
+    document.getElementById('visitorCountText').textContent = 'Welcome back!';
   }
-})();
-
 </script>
 </body>
 </html>
