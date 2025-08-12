@@ -394,16 +394,6 @@
             margin: 0 10px !important;
         }
     }
-    #visitCounterContainer {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: default;
-    z-index: 10;
-}
 </style>
 </head>
 <body>
@@ -411,13 +401,6 @@
     <div id="bashWatermark">Bash</div>
 
     <header>
-        <div id="visitCounterContainer" style="display: flex; align-items: center; gap: 6px; cursor: default;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-  <span id="visitCounter" style="color: #00f0ff; font-size: 1em; user-select: none;">Loading...</span>
-</div>
         <span class="username">BASH</span>
 <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
   <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
@@ -650,15 +633,6 @@ bgMusic.addEventListener('ended', () => {
             }
         });
     });
-    fetch('https://api.countapi.xyz/hit/yupbash/bashsite')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('visitCounter').textContent = data.value;
-  })
-  .catch(() => {
-    document.getElementById('visitCounter').textContent = "N/A";
-  });
-
 </script>
 </body>
 </html>
