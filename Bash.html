@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BASH</title>
+
+<!-- Website coded by Bash -->
+<style>
+    /* Design by Bash */
+    :root {
+        --site-author: "Bash";
+    }
+
+    body {
+        background-color: #0a0a0a;
+        color: white;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    #bashWatermark {
+        position: fixed;
+        font-size: 24px;
+        color: rgba(255,255,255,0.05);
+        pointer-events: none;
+        user-select: none;
+        z-index: 9999;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        white-space: nowrap;
+        text-shadow: 0 0 2px rgba(0,0,0,0.3);
+    }
+    header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: #111;
+        gap: 15px;
+        position: relative;
+    }
+    .username {
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+    header img {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        filter: invert(100%);
+    }
+    #musicControlContainer {
+        position: absolute;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    #musicControlBtn {
+        font-size: 18px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    #musicControlBtn:hover {
+        background-color: #003366;
+    }
+    #musicInfo {
+        color: #00f0ff;
+        font-size: 0.9em;
+        display: none;
+        user-select: none;
+        white-space: nowrap;
+    }
+    .container {
+        display: flex;
+        padding: 20px 3cm;
+        gap: 20px;
+    }
+    .video-box, .sensibility-box {
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        padding: 15px;
+        flex: 1;
+        text-align: center;
+    }
+    .sensibility-box {
+        font-size: 1.3rem;
+        line-height: 1.5;
+        height: 290px;
+    }
+    .video-box:hover, .sensibility-box:hover {
+        box-shadow: 0 0 10px #00f0ff;
+    }
+    .video-thumbnail {
+        position: relative;
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        cursor: pointer;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    .video-thumbnail img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 50px;
+        color: white;
+        pointer-events: none;
+        user-select: none;
+    }
+    #videoPlayerContainer {
+        display: none;
+        position: relative;
+        width: 100%;
+        max-width: 960px;
+        margin: 10px auto 0 auto;
+        padding-bottom: 56.25%;
+        height: 0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    #videoPlayer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        border: none;
+    }
+
+    h2, h3 {
+        color: #003366;
+        cursor: pointer;/
+        user-select: none;
+    }
+    .favorite-buttons button {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px;
+        margin: 5px;
+        width: 60px;
+        height: 60px;
+        font-size: 0.8em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+    }
+    .favorite-buttons button:hover {
+        box-shadow: 0 0 10px #00f0ff;
+    }
+    .section {
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        margin: 20px 3cm;
+        padding: 10px;
+        transition: box-shadow 0.3s ease;
+        text-align: center;
+    }
+    .section:hover {
+        box-shadow: 0 0 10px #00f0ff;
+    }
+    .section-content {
+        overflow: hidden;
+        max-height: 2000px;
+        transition: max-height 0.4s ease;
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+    .section-content.collapsed {
+        max-height: 0;
+        margin-top: 0;
+        transition: max-height 0.4s ease, margin-top 0.3s ease;
+    }
+    .item-box {
+        background-color: #2a2a2a;
+        border-radius: 10px;
+        width: 200px;
+        text-align: center;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 300px;
+    }
+    .item-box img {
+        max-width: 180px;
+        max-height: 140px;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+        object-fit: contain;
+    }
+    .buy-button {
+        background-color: #003366;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+        margin-top: 8px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .buy-button:hover {
+        box-shadow: 0 0 10px #00f0ff;
+    }
+    footer {
+        text-align: center;
+        background-color: #111;
+        padding: 10px;
+        color: white;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #scrollTopBtn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #00f0ff;
+        border: none;
+        color: white;
+        padding: 15px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        display: none;
+    }
+    #crosshairModal {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+    #modalContent {
+        background: rgba(10, 10, 10, 0.85);
+        border-radius: 15px;
+        padding: 20px 30px;
+        width: 320px;
+        color: white;
+        position: relative;
+        text-align: center;
+        user-select: none;
+    }
+    #modalCloseBtn {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+    }
+    #crosshairDisplay {
+        margin: 25px 0;
+        font-size: 60px;
+        font-weight: bold;
+        user-select: text;
+        cursor: text;
+        outline: none;
+    }
+    #copyCrosshairBtn {
+        background-color: #003366;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+    }
+    #copyCrosshairBtn:hover {
+        box-shadow: 0 0 10px #00f0ff;
+    }
+    /* Responsive tablette */
+    @media (min-width: 600px) and (max-width: 959px) {
+        body {
+            font-size: 0.9rem;
+        }
+        .container {
+            padding: 15px 2cm !important;
+            gap: 15px !important;
+        }
+        .section {
+            margin: 15px 2cm !important;
+            padding: 10px !important;
+        }
+        footer {
+            margin: 0 2cm !important;
+        }
+        .item-box {
+            width: 180px !important;
+            height: 280px !important;
+            padding: 8px !important;
+        }
+        .buy-button {
+            padding: 8px !important;
+            font-size: 0.9em !important;
+        }
+    }
+    /* Responsive mobile */
+    @media (max-width: 599px) {
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-size: 1rem;
+        }
+        .container {
+            flex-direction: column !important;
+            padding: 10px !important;
+            gap: 15px !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .video-box, .sensibility-box {
+            width: 100% !important;
+            padding: 10px !important;
+            box-sizing: border-box;
+            height: auto !important;
+            margin-bottom: 15px;
+        }
+        .video-box, .sensibility-box {
+            display: block !important;
+        }
+        .section {
+            margin: 10px !important;
+            padding: 10px !important;
+            width: 100% !important;
+            box-sizing: border-box;
+            overflow: hidden;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .section-content {
+            flex-direction: column !important;
+            gap: 10px !important;
+            margin-top: 10px;
+            justify-content: flex-start !important;
+        }
+        .item-box {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 8px !important;
+            box-sizing: border-box;
+            height: auto !important;
+        }
+        .buy-button {
+            width: 100% !important;
+            font-size: 1em !important;
+            padding: 8px !important;
+            box-sizing: border-box;
+        }
+        header {
+            padding: 15px 10px !important;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #musicControlContainer {
+            position: static !important;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        footer {
+            margin: 0 10px !important;
+        }
+    }
+</style>
+</head>
+<body>
+    <div style="display:none;">Created by Bash</div>
+    <div id="bashWatermark">Bash</div>
+
+    <header>
+        <span class="username">BASH</span>
+<a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
+  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
+</a>
+<a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener noreferrer">
+  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" />
+</a>
+<a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener noreferrer">
+  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" />
+</a>
+        <div id="musicControlContainer">
+            <button id="musicControlBtn">⏸️</button>
+            <span id="musicInfo">Click ▶️ to play the music</span>
+        </div>
+    </header>
+
+    <audio id="backgroundMusic" src="C:\Users\admin\Desktop\site bash\04. Guiding Light.mp3" loop></audio>
+
+    <div class="container">
+        <div class="video-box">
+            <div class="video-thumbnail" id="videoThumbnail" style="cursor: pointer;">
+                <img src="https://i.ytimg.com/vi/jDXxFlHSWq4/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDa1WuXCh4_jmqppAd8XSTsf6Uv4A" alt="Video Thumbnail" />
+                <div class="play-button" id="playButton">▶</div>
+            </div>
+            <div id="videoPlayerContainer">
+                <iframe
+                    id="videoPlayer"
+                    src=""
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+
+        <div class="sensibility-box">
+            <h2>Valorant Sensibility</h2>
+            <p>0.29 800 dpi Raw accel</p>
+            <h3>Favorite Crosshair</h3>
+            <div class="favorite-buttons">
+                <button onclick="openModal(1)">1</button>
+                <button onclick="openModal(2)">2</button>
+                <button onclick="openModal(3)">3</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Hardware</h2>
+        <div class="section-content">
+            <div class="item-box">
+                <p>Razer Viper V3 Pro Wireless</p>
+                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png"  alt="Mouse" />
+                <a href="https://www.amazon.com/s?k=Razer+Viper+V3+Pro+Wireless&crid=2XCRO61VIECTO&sprefix=razer+viper+v3+pro+wireless%2Caps%2C274&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+            <div class="item-box">
+                <p>Apex Pro Mini Hypermagnetic</p>
+                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" alt="Keyboard" />
+                <a href="https://www.amazon.com.be/s?k=apex+pro+mini+hypermagnetic&i=electronics&crid=2Z2XZE8SSD34K&sprefix=apex+pro+mini+hypermagnetic%2Celectronics%2C85&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+            <div class="item-box">
+                <p>Optix G27C4-009</p>
+                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" alt="Monitor" />
+                <a href="https://www.amazon.com.be/s?k=Optix+G27C4-009&crid=W713JLC7NNM5&sprefix=optix+g27c4-009%2Caps%2C80&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>PC Config</h2>
+        <div class="section-content">
+            <div class="item-box">
+                <p>NZXT H5 Flow</p>
+                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" alt="Case" />
+                <a href="https://www.amazon.fr/s?k=NZXT+H5+Flow&i=computers&__mk_fr_FR=ÅMÅŽÕÑ&crid=1NOJWWAUE9BB7&sprefix=nzxt+h5+flow%2Ccomputers%2C292&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+            <div class="item-box">
+                <p>Radeon RX 6900XT</p>
+                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" alt="GPU" />
+                <a href="https://www.amazon.fr/s?k=XFX+Speedster+MERC319+Radeon+RX+6900XT&__mk_fr_FR=ÅMÅŽÕÑ&crid=2A20JU55OJU11&sprefix=xfx+speedster+merc319+radeon+rx+6900xt%2Caps%2C219&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+            <div class="item-box">
+                <p>AMD Ryzen 7 5800X</p>
+                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" alt="CPU" />
+                <a href="https://www.amazon.fr/s?k=AMD+Ryzen+7+5800X&__mk_fr_FR=ÅMÅŽÕÑ&crid=1BYM8PR0O9LEL&sprefix=amd+ryzen+7+5800x%2Caps%2C226&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+            <div class="item-box">
+                <p>MSI MPG B550 Gaming Plus</p>
+                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" alt="Motherboard" />
+                <a href="https://www.amazon.fr/s?k=MSI+MPG+B550+Gaming+Plus&__mk_fr_FR=ÅMÅŽÕÑ&crid=3DT3TTKJ18YQN&sprefix=msi+mpg+b550+gaming+plus%2Caps%2C128&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        @Bash 2025
+    </footer>
+
+    <button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+
+    <div id="crosshairModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div id="modalContent">
+            <div id="modalCloseBtn" role="button" aria-label="Close modal" tabindex="0">×</div>
+            <h2 id="modalTitle">Favorite Crosshair</h2>
+            <div id="crosshairDisplay" tabindex="0" contenteditable="true" spellcheck="false">|</div>
+            <button id="copyCrosshairBtn" aria-label="Copy crosshair">Copy</button>
+        </div>
+    </div>
+
+<script>
+    const watermark = document.getElementById('bashWatermark');
+    let posX = 50, posY = 50, dirX = 1, dirY = 1;
+    const speed = 2;
+    function moveWatermark() {
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        const sizeW = watermark.offsetWidth;
+        const sizeH = watermark.offsetHeight;
+
+        posX += speed * dirX;
+        posY += speed * dirY;
+
+        if (posX + sizeW >= winW || posX <= 0) dirX = -dirX;
+        if (posY + sizeH >= winH || posY <= 0) dirY = -dirY;
+
+        watermark.style.left = posX + "px";
+        watermark.style.top = posY + "px";
+
+        requestAnimationFrame(moveWatermark);
+    }
+    moveWatermark();
+
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 200) {
+            scrollTopBtn.style.display = 'block';
+        } else {
+            scrollTopBtn.style.display = 'none';
+        }
+    });
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const videoThumbnail = document.getElementById('videoThumbnail');
+    const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const playButton = document.getElementById('playButton');
+
+    videoThumbnail.addEventListener('click', () => {
+        videoPlayerContainer.style.display = 'block';
+        videoPlayer.src = "https://www.youtube.com/embed/jDXxFlHSWq4?autoplay=1&rel=0&modestbranding=1&controls=1";
+        videoThumbnail.style.display = 'none';
+    });
+
+const bgMusic = document.getElementById('backgroundMusic');
+const musicControlBtn = document.getElementById('musicControlBtn');
+const musicInfo = document.getElementById('musicInfo');
+
+let isPlaying = false;
+
+window.addEventListener('load', () => {
+  bgMusic.play().then(() => {
+    isPlaying = true;
+    musicControlBtn.textContent = "⏸️";
+    musicInfo.style.display = 'none';
+  }).catch(() => {
+    isPlaying = false;
+    musicControlBtn.textContent = "▶️";
+    musicInfo.style.display = 'inline';
+  });
+});
+
+musicControlBtn.addEventListener('click', () => {
+  if (!isPlaying) {
+    bgMusic.play().then(() => {
+      isPlaying = true;
+      musicControlBtn.textContent = "⏸️";
+      musicInfo.style.display = 'none';
+    }).catch(() => {
+      alert("Autoplay blocked again, please interact with the page.");
+    });
+  } else {
+    bgMusic.pause();
+    isPlaying = false;
+    musicControlBtn.textContent = "▶️";
+    musicInfo.style.display = 'inline';
+  }
+});
+
+bgMusic.addEventListener('ended', () => {
+  isPlaying = false;
+  musicControlBtn.textContent = "▶️";
+  musicInfo.style.display = 'inline';
+});
+
+    const crosshairModal = document.getElementById('crosshairModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const crosshairDisplay = document.getElementById('crosshairDisplay');
+    const copyCrosshairBtn = document.getElementById('copyCrosshairBtn');
+
+    function openModal(num) {
+        const crosshairs = {
+            1: "0;P;d;1;f;0;0t;4;0l;1;0o;0;0a;1;0f;0;1b;0",
+            2: "0;P;h;0;f;0;0l;4;0o;0;0a;1;0f;0;1b;0",
+            3: "0;P;c;7;o;0.1;m;1;0t;5;0l;3;0o;1;0a;0.7;0f;0;1t;1;1l;5;1o;0;1a;0.7;1m;0;1f;0"
+        };
+        crosshairDisplay.textContent = crosshairs[num] || "|";
+        crosshairModal.style.display = 'flex';
+        crosshairDisplay.focus();
+    }
+    modalCloseBtn.addEventListener('click', () => {
+        crosshairModal.style.display = 'none';
+    });
+    crosshairModal.addEventListener('click', (e) => {
+        if (e.target === crosshairModal) {
+            crosshairModal.style.display = 'none';
+        }
+    });
+    copyCrosshairBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(crosshairDisplay.textContent).then(() => {
+            alert('Crosshair copied!');
+        }).catch(() => {
+            alert('Copy failed!');
+        });
+    });
+
+    document.querySelectorAll('.section > h2').forEach(h2 => {
+        const content = h2.nextElementSibling;
+        if (!content) return;
+
+        h2.addEventListener('click', () => {
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+            }
+        });
+    });
+</script>
+</body>
+</html>
