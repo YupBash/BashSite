@@ -395,16 +395,6 @@
             margin: 0 10px !important;
         }
     }
-    #visitCounterContainer {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: default;
-    z-index: 10;
-}
 
 </style>
 </head>
@@ -413,14 +403,6 @@
     <div id="bashWatermark">Bash</div>
 
     <header>
-<div id="visitCounterContainer" style="display:flex; align-items:center; gap:8px; font-family: Arial, sans-serif; color: white;">
-  <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
-    <circle cx="12" cy="12" r="10"></circle>
-    <circle cx="12" cy="12" r="3"></circle>
-  </svg>
-  <span id="count">0</span>
-</div>
-
         <span class="username">BASH</span>
 <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
   <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
@@ -653,29 +635,6 @@ bgMusic.addEventListener('ended', () => {
             }
         });
     });
-function updateVisitCounter() {
-  const counterKey = 'globalVisitCount';
-  const userVisitedKey = 'hasVisited';
-
-  let currentCount = localStorage.getItem(counterKey);
-  if (!currentCount) {
-    currentCount = 0;
-    localStorage.setItem(counterKey, currentCount);
-  }
-
-  if (!localStorage.getItem(userVisitedKey)) {
-    currentCount = parseInt(currentCount, 10) + 1;
-    localStorage.setItem(counterKey, currentCount);
-    localStorage.setItem(userVisitedKey, 'true');
-  }
-
-  const countElem = document.getElementById('count');
-  if (countElem) {
-    countElem.textContent = currentCount;
-  }
-}
-window.addEventListener('DOMContentLoaded', updateVisitCounter);
-
 </script>
 </body>
 </html>
