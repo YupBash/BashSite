@@ -414,13 +414,12 @@
     <div id="bashWatermark">Bash</div>
 
     <header>
-<div id="visitCounterContainer" style="position:absolute; top:20px; left:20px; display:flex; align-items:center; gap:6px; cursor:default; z-index:10; color:white; user-select:none;">
-  <!-- Icône œil noir et blanc simpliste -->
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
+<div id="visitorCounter" style="display:flex; align-items:center; gap:8px; font-family: Arial, sans-serif; color: white;">
+  <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
+    <circle cx="12" cy="12" r="10"></circle>
     <circle cx="12" cy="12" r="3"></circle>
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
   </svg>
-  <span id="visitorCountText">Loading...</span>
+  <span id="count">0</span>
 </div>
 
         <span class="username">BASH</span>
@@ -655,22 +654,29 @@ bgMusic.addEventListener('ended', () => {
             }
         });
     });
-      function loadVisitorCounter() {
-    const script1 = document.createElement('script');
-    script1.src = 'https://www.freevisitorcounters.com/auth.php?id=7ba902803ac51a97273bddfa778307242a786cfc';
-    document.body.appendChild(script1);
+function updateVisitCounter() {
+  const counterKey = 'globalVisitCount';
+  const userVisitedKey = 'hasVisited';
 
-    const script2 = document.createElement('script');
-    script2.src = 'https://www.freevisitorcounters.com/en/home/counter/1376112/t/3';
-    document.body.appendChild(script2);
+  let currentCount = localStorage.getItem(counterKey);
+  if (!currentCount) {
+    currentCount = 0;
+    localStorage.setItem(counterKey, currentCount);
   }
 
-  if (!localStorage.getItem('visitorCounted')) {
-    loadVisitorCounter();
-    localStorage.setItem('visitorCounted', 'true');
-  } else {
-    document.getElementById('visitorCountText').textContent = 'Welcome back!';
+  if (!localStorage.getItem(userVisitedKey)) {
+    currentCount = parseInt(currentCount, 10) + 1;
+    localStorage.setItem(counterKey, currentCount);
+    localStorage.setItem(userVisitedKey, 'true');
   }
+
+  const countElem = document.getElementById('count');
+  if (countElem) {
+    countElem.textContent = currentCount;
+  }
+}
+window.addEventListener('DOMContentLoaded', updateVisitCounter);
+
 </script>
 </body>
 </html>
