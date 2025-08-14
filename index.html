@@ -574,23 +574,16 @@ let isPlaying = false;
 
 musicControlBtn.addEventListener('click', () => {
     if (!isPlaying) {
-        bgMusic.play().then(() => {
-            isPlaying = true;
-            musicControlBtn.textContent = "⏸️"; // bouton devient pause
-            // Supprime juste le texte à l'intérieur du span, laisse le bouton
-            musicInfo.childNodes.forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    node.textContent = '';
-                }
-            });
-        }).catch(() => {
-            alert("Unable to play music, please interact with the page.");
-        });
+        bgMusic.play();
+        isPlaying = true;
+        musicControlBtn.textContent = "⏸️";
     } else {
         bgMusic.pause();
         isPlaying = false;
-        musicControlBtn.textContent = "▶️"; // bouton redevient play
-        // Remet le texte initial
+        musicControlBtn.textContent = "▶️";
+    }
+});
+
         musicInfo.childNodes.forEach(node => {
             if (node.nodeType === Node.TEXT_NODE) {
                 node.textContent = 'Click to play the music ';
