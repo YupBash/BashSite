@@ -302,99 +302,98 @@
     #copyCrosshairBtn:hover {
         box-shadow: 0 0 10px #00f0ff;
     }
-    /* Responsive tablette */
-    @media (min-width: 600px) and (max-width: 959px) {
-        body {
-            font-size: 0.9rem;
-        }
-        .container {
-            padding: 15px 2cm !important;
-            gap: 15px !important;
-        }
-        .section {
-            margin: 15px 2cm !important;
-            padding: 10px !important;
-        }
-        footer {
-            margin: 0 2cm !important;
-        }
-        .item-box {
-            width: 180px !important;
-            height: 280px !important;
-            padding: 8px !important;
-        }
-        .buy-button {
-            padding: 8px !important;
-            font-size: 0.9em !important;
-        }
+    
+  /* Responsive tablette */
+@media (min-width: 600px) and (max-width: 959px) {
+    body {
+        font-size: 0.95rem;
     }
-    /* Responsive mobile */
-    @media (max-width: 599px) {
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            font-size: 1rem;
-        }
-        .container {
-            flex-direction: column !important;
-            padding: 10px !important;
-            gap: 15px !important;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .video-box, .sensibility-box {
-            width: 100% !important;
-            padding: 10px !important;
-            box-sizing: border-box;
-            height: auto !important;
-            margin-bottom: 15px;
-        }
-        .video-box, .sensibility-box {
-            display: block !important;
-        }
-        .section {
-            margin: 10px !important;
-            padding: 10px !important;
-            width: 100% !important;
-            box-sizing: border-box;
-            overflow: hidden;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .section-content {
-            flex-direction: column !important;
-            gap: 10px !important;
-            margin-top: 10px;
-            justify-content: flex-start !important;
-        }
-        .item-box {
-            width: 100% !important;
-            max-width: 100% !important;
-            padding: 8px !important;
-            box-sizing: border-box;
-            height: auto !important;
-        }
-        .buy-button {
-            width: 100% !important;
-            font-size: 1em !important;
-            padding: 8px !important;
-            box-sizing: border-box;
-        }
-        header {
-            padding: 15px 10px !important;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #musicControlContainer {
-            position: static !important;
-            margin-top: 10px;
-            justify-content: center;
-        }
-        footer {
-            margin: 0 10px !important;
-        }
+    .container {
+        padding: 15px 5% !important; /* moins large que 2cm */
+        gap: 15px !important;
     }
+    .section {
+        margin: 15px 5% !important;
+        padding: 10px !important;
+    }
+    footer {
+        margin: 0 5% !important;
+    }
+    .item-box {
+        width: 45% !important; /* pour avoir 2 par ligne */
+        height: auto !important;
+        padding: 8px !important;
+    }
+    .buy-button {
+        padding: 8px !important;
+        font-size: 0.9em !important;
+    }
+}
+
+/* Responsive mobile */
+@media (max-width: 599px) {
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-size: 1rem;
+    }
+    .container {
+        flex-direction: column !important;
+        padding: 10px 5% !important;
+        gap: 15px !important;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .video-box, .sensibility-box {
+        width: 100% !important;
+        padding: 10px !important;
+        box-sizing: border-box;
+        height: auto !important;
+        margin-bottom: 15px;
+    }
+    .section {
+        margin: 10px 5% !important;
+        padding: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .section-content {
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 10px;
+        justify-content: flex-start !important;
+    }
+    .item-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px !important;
+        box-sizing: border-box;
+        height: auto !important;
+    }
+    .buy-button {
+        width: 100% !important;
+        font-size: 1em !important;
+        padding: 8px !important;
+        box-sizing: border-box;
+    }
+    header {
+        padding: 15px 5% !important;
+        flex-wrap: wrap;
+        gap: 10px;
+        text-align: center;
+    }
+    #musicControlContainer {
+        position: static !important;
+        margin-top: 10px;
+        justify-content: center;
+    }
+    footer {
+        margin: 0 5% !important;
+    }
+}
 
 </style>
 </head>
