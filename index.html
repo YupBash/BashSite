@@ -571,32 +571,33 @@ const musicInfo = document.getElementById('musicInfo');
 
 let isPlaying = false;
 
-// Au départ, musique arrêtée, bouton Play visible
-musicControlBtn.textContent = "▶️";
-musicInfo.style.display = "inline";
-
 musicControlBtn.addEventListener('click', () => {
     if (!isPlaying) {
         bgMusic.play().then(() => {
             isPlaying = true;
-            musicControlBtn.textContent = "⏸️";
-            musicInfo.style.display = "none";
+            musicControlBtn.textContent = "⏸️"; // bouton devient pause
+            // Supprime juste le texte à l'intérieur du span, laisse le bouton
+            musicInfo.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    node.textContent = '';
+                }
+            });
         }).catch(() => {
             alert("Unable to play music, please interact with the page.");
         });
     } else {
         bgMusic.pause();
         isPlaying = false;
-        musicControlBtn.textContent = "▶️";
-        musicInfo.style.display = "inline";
+        musicControlBtn.textContent = "▶️"; // bouton redevient play
+        // Remet le texte initial
+        musicInfo.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                node.textContent = 'Click to play the music ';
+            }
+        });
     }
 });
 
-bgMusic.addEventListener('ended', () => {
-    isPlaying = false;
-    musicControlBtn.textContent = "▶️";
-    musicInfo.style.display = "inline";
-});
 
 
     const crosshairModal = document.getElementById('crosshairModal');
