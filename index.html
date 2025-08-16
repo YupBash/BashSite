@@ -24,7 +24,7 @@
     #bashWatermark {
         position: fixed;
         font-size: 24px;
-        color: rgba(255,255,255,0.05);
+        color: rgba(31, 79, 110, 0.301);
         pointer-events: none;
         user-select: none;
         z-index: 9999;
@@ -92,9 +92,9 @@
         text-align: center;
     }
     .sensibility-box {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         line-height: 1.5;
-        height: 320px;
+        height: 400px;
     }
     .video-box:hover, .sensibility-box:hover {
         box-shadow: 0 0 10px #00f0ff;
@@ -316,6 +316,11 @@
         margin: 15px 5% !important;
         padding: 10px !important;
     }
+    .sensibility-box {
+        font-size: 1.2rem;
+        line-height: 1.5;
+        height: 320px;
+    }
     footer {
         margin: 0 5% !important;
     }
@@ -365,6 +370,11 @@
         gap: 10px !important;
         margin-top: 10px;
         justify-content: flex-start !important;
+    }
+        .sensibility-box {
+        font-size: 1rem;
+        line-height: 1.5;
+        height: 320px;
     }
     .item-box {
         width: 100%;
@@ -523,7 +533,7 @@
 <script>
     const watermark = document.getElementById('bashWatermark');
     let posX = 50, posY = 50, dirX = 1, dirY = 1;
-    const speed = 2;
+    const speed = 0.2;
     function moveWatermark() {
         const winW = window.innerWidth;
         const winH = window.innerHeight;
