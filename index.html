@@ -57,6 +57,7 @@
         background-color: #111;
         gap: 15px;
         position: relative;
+        overflow: hidden;
     }
     .username {
         font-weight: bold;
@@ -397,6 +398,29 @@
     #customCursor .left { left: -13px; }
     #customCursor .right { left: 6px; }
 
+    #customCursor.theme-red .cross {
+        background: #ff2d55;
+        box-shadow: 0 0 6px #ff2d55, 0 0 10px rgba(255,45,85,0.6);
+    }
+    #customCursor.theme-green .cross {
+        background: #39ff6a;
+        box-shadow: 0 0 6px #39ff6a, 0 0 10px rgba(57,255,106,0.6);
+    }
+    #customCursor.theme-dot .cross {
+        display: none;
+    }
+    #customCursor.theme-dot::after {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #00f0ff;
+        box-shadow: 0 0 6px #00f0ff, 0 0 10px rgba(0,240,255,0.6);
+    }
+
     @media (hover: hover) and (pointer: fine) {
         *, *::before, *::after {
             cursor: none !important;
@@ -422,13 +446,40 @@
         }
     }
 
-    /* ---- Username as game trigger ---- */
+    /* ---- Username as game trigger + glitch effect ---- */
     .username {
         cursor: pointer;
         transition: text-shadow 0.3s ease;
+        display: inline-block;
     }
     .username:hover {
         text-shadow: 0 0 10px #00f0ff;
+    }
+    @keyframes glitchAnim {
+        0% { transform: translate(0); text-shadow: none; }
+        20% { transform: translate(-2px, 1px); text-shadow: 2px 0 #ff2d55, -2px 0 #00f0ff; }
+        40% { transform: translate(2px, -1px); text-shadow: -2px 0 #ff2d55, 2px 0 #00f0ff; }
+        60% { transform: translate(-1px, 1px); text-shadow: 1px 0 #ff2d55, -1px 0 #00f0ff; }
+        80% { transform: translate(1px, -1px); text-shadow: -1px 0 #ff2d55, 1px 0 #00f0ff; }
+        100% { transform: translate(0); text-shadow: none; }
+    }
+    .username.glitching {
+        animation: glitchAnim 0.3s steps(2, end);
+    }
+
+    /* ---- Header background particles ---- */
+    #headerParticles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+    header > *:not(#headerParticles) {
+        position: relative;
+        z-index: 1;
     }
 
     /* ---- Game modal ---- */
@@ -448,6 +499,8 @@
         padding: 20px 25px;
         width: 90%;
         max-width: 620px;
+        max-height: 85vh;
+        overflow-y: auto;
         color: white;
         position: relative;
         text-align: center;
@@ -476,14 +529,14 @@
     .game-btn:hover {
         box-shadow: 0 0 10px #00f0ff;
     }
-    #leaderboardBox {
+    #leaderboardBox, #themeBox {
         margin-top: 20px;
         text-align: left;
         background: #1a1a1a;
         border-radius: 10px;
         padding: 10px 15px;
     }
-    #leaderboardBox h3 {
+    #leaderboardBox h3, #themeBox h3 {
         color: #00f0ff;
         cursor: default;
         font-size: 1em;
@@ -493,6 +546,37 @@
         padding-left: 0;
         font-size: 0.9em;
         color: #ccc;
+    }
+    #themeList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .theme-btn {
+        background-color: #2a2a2a;
+        color: white;
+        border: 1px solid #444;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85em;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .theme-btn.unlocked:hover {
+        box-shadow: 0 0 8px #00f0ff;
+    }
+    .theme-btn.active {
+        border-color: #00f0ff;
+        box-shadow: 0 0 8px #00f0ff;
+    }
+    .theme-btn.locked {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    #unlockMessage {
+        color: #00f0ff;
+        font-size: 0.85em;
+        margin-top: 8px;
     }
     #aimHUD {
         color: #00f0ff;
@@ -671,6 +755,7 @@
     <div id="bashWatermark">Bash</div>
 
     <header>
+        <canvas id="headerParticles"></canvas>
         <span class="username">BASH</span>
 <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
   <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
@@ -723,18 +808,18 @@
         <div class="section-content">
             <div class="item-box">
                 <p>Razer Viper V3 Pro Wireless</p>
-                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png"  alt="Souris gaming Razer Viper V3 Pro Wireless" />
-                <a href="https://www.amazon.com/s?k=Razer+Viper+V3+Pro+Wireless&crid=2XCRO61VIECTO&sprefix=razer+viper+v3+pro+wireless%2Caps%2C274&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png" loading="lazy" alt="Souris gaming Razer Viper V3 Pro Wireless" />
+                <a href="https://www.amazon.com/s?k=Razer+Viper+V3+Pro+Wireless&crid=2XCRO61VIECTO&sprefix=razer+viper+v3+pro+wireless%2Caps%2C274&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Apex Pro Mini Hypermagnetic</p>
-                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" alt="Clavier gaming Apex Pro Mini Hypermagnetic" />
-                <a href="https://www.amazon.com.be/s?k=apex+pro+mini+hypermagnetic&i=electronics&crid=2Z2XZE8SSD34K&sprefix=apex+pro+mini+hypermagnetic%2Celectronics%2C85&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" loading="lazy" alt="Clavier gaming Apex Pro Mini Hypermagnetic" />
+                <a href="https://www.amazon.com.be/s?k=apex+pro+mini+hypermagnetic&i=electronics&crid=2Z2XZE8SSD34K&sprefix=apex+pro+mini+hypermagnetic%2Celectronics%2C85&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Optix G27C4-009</p>
-                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" alt="Écran gaming MSI Optix G27C4-009" />
-                <a href="https://www.amazon.com.be/s?k=Optix+G27C4-009&crid=W713JLC7NNM5&sprefix=optix+g27c4-009%2Caps%2C80&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" loading="lazy" alt="Écran gaming MSI Optix G27C4-009" />
+                <a href="https://www.amazon.com.be/s?k=Optix+G27C4-009&crid=W713JLC7NNM5&sprefix=optix+g27c4-009%2Caps%2C80&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
         </div>
     </div>
@@ -744,30 +829,29 @@
         <div class="section-content">
             <div class="item-box">
                 <p>NZXT H5 Flow</p>
-                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" alt="Boîtier PC NZXT H5 Flow" />
-                <a href="https://www.amazon.fr/s?k=NZXT+H5+Flow&i=computers&__mk_fr_FR=ÅMÅŽÕÑ&crid=1NOJWWAUE9BB7&sprefix=nzxt+h5+flow%2Ccomputers%2C292&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" loading="lazy" alt="Boîtier PC NZXT H5 Flow" />
+                <a href="https://www.amazon.fr/s?k=NZXT+H5+Flow&i=computers&__mk_fr_FR=ÅMÅŽÕÑ&crid=1NOJWWAUE9BB7&sprefix=nzxt+h5+flow%2Ccomputers%2C292&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Radeon RX 9070XT</p>
-                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" alt="Carte graphique Radeon RX 9070XT" />
-                <a href="https://www.amazon.fr/s?k=XFX+Speedster+MERC319+Radeon+RX+6900XT&__mk_fr_FR=ÅMÅŽÕÑ&crid=2A20JU55OJU11&sprefix=xfx+speedster+merc319+radeon+rx+6900xt%2Caps%2C219&ref=nb_sb_noss" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" loading="lazy" alt="Carte graphique Radeon RX 9070XT" />
+                <a href="https://www.amazon.fr/s?k=XFX+Speedster+MERC319+Radeon+RX+6900XT&__mk_fr_FR=ÅMÅŽÕÑ&crid=2A20JU55OJU11&sprefix=xfx+speedster+merc319+radeon+rx+6900xt%2Caps%2C219&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>AMD Ryzen 7 5800X</p>
-                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" alt="Processeur AMD Ryzen 7 5800X" />
-                <a href="https://www.amazon.fr/s?k=AMD+Ryzen+7+5800X&__mk_fr_FR=ÅMÅŽÕÑ&crid=1BYM8PR0O9LEL&sprefix=amd+ryzen+7+5800x%2Caps%2C226&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" loading="lazy" alt="Processeur AMD Ryzen 7 5800X" />
+                <a href="https://www.amazon.fr/s?k=AMD+Ryzen+7+5800X&__mk_fr_FR=ÅMÅŽÕÑ&crid=1BYM8PR0O9LEL&sprefix=amd+ryzen+7+5800x%2Caps%2C226&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>MSI MPG B550 Gaming Plus</p>
-                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" alt="Carte mère MSI MPG B550 Gaming Plus" />
-                <a href="https://www.amazon.fr/s?k=MSI+MPG+B550+Gaming+Plus&__mk_fr_FR=ÅMÅŽÕÑ&crid=3DT3TTKJ18YQN&sprefix=msi+mpg+b550+gaming+plus%2Caps%2C128&ref=nb_sb_noss_1" target="_blank" class="buy-button">Buy It Now</a>
+                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" loading="lazy" alt="Carte mère MSI MPG B550 Gaming Plus" />
+                <a href="https://www.amazon.fr/s?k=MSI+MPG+B550+Gaming+Plus&__mk_fr_FR=ÅMÅŽÕÑ&crid=3DT3TTKJ18YQN&sprefix=msi+mpg+b550+gaming+plus%2Caps%2C128&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
         </div>
     </div>
 
     <footer>
-        @Bash 2026<br>
-        <img src="https://hits.sh/yupbash.vip.svg?style=flat-square&label=visiteurs&color=00f0ff" alt="Compteur de visiteurs" style="margin-top:6px; height:20px;" />
+        @Bash 2026
     </footer>
 
     <button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
@@ -789,8 +873,14 @@
                 <h2 id="gameModalTitle">Mini Games</h2>
                 <button id="startAimBtn" class="game-btn">Aim Trainer</button>
                 <button id="startReflexBtn" class="game-btn">Reflex Test</button>
+
+                <div id="themeBox">
+                    <h3>Curseurs</h3>
+                    <div id="themeList"></div>
+                </div>
+
                 <div id="leaderboardBox">
-                    <h3>🏆 Meilleurs scores (sur ce navigateur)</h3>
+                    <h3>Meilleurs scores (sur ce navigateur)</h3>
                     <ol id="leaderboardList"></ol>
                 </div>
             </div>
@@ -977,7 +1067,7 @@ bgMusic.addEventListener('timeupdate', () => {
         '╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝',
         'color:#00f0ff; font-family:monospace; text-shadow:0 0 6px #00f0ff;'
     );
-    console.log('%cYo, tu regardes quoi la mon gars ? 👀', 'color:#00f0ff; font-size:14px; font-weight:bold;');
+    console.log('%cYo, tu regardes quoi la mon gars ?', 'color:#00f0ff; font-size:14px; font-weight:bold;');
 
     /* Custom crosshair cursor */
     const customCursor = document.getElementById('customCursor');
@@ -990,7 +1080,7 @@ bgMusic.addEventListener('timeupdate', () => {
     }
 
     /* Hover sparks */
-    const sparkSelector = '.buy-button, header img, #musicControlBtn, #scrollTopBtn, .favorite-buttons button, #copyCrosshairBtn, .game-btn, .target, #reflexCircle';
+    const sparkSelector = '.buy-button, header img, #musicControlBtn, #scrollTopBtn, .favorite-buttons button, #copyCrosshairBtn, .game-btn, .target, #reflexCircle, .theme-btn';
     let lastSparkTime = 0;
     document.addEventListener('mousemove', (e) => {
         if (e.target.closest(sparkSelector)) {
@@ -1014,7 +1104,121 @@ bgMusic.addEventListener('timeupdate', () => {
         setTimeout(() => s.remove(), 500);
     }
 
-    /* Game modal (Aim Trainer + Reflex Test) */
+    /* Header background particles */
+    (function initHeaderParticles() {
+        const canvas = document.getElementById('headerParticles');
+        const header = document.querySelector('header');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = header.offsetWidth;
+            canvas.height = header.offsetHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const particles = Array.from({ length: 35 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.4 + 0.4,
+            speed: Math.random() * 0.25 + 0.08,
+            alpha: Math.random() * 0.4 + 0.15
+        }));
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y -= p.speed;
+                if (p.y < 0) {
+                    p.y = canvas.height;
+                    p.x = Math.random() * canvas.width;
+                }
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0,240,255,${p.alpha})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    /* Glitch effect on the title, every couple of minutes */
+    (function scheduleGlitch() {
+        const usernameEl = document.querySelector('.username');
+        const delay = 120000 + Math.random() * 180000; // 2 to 5 minutes
+        setTimeout(() => {
+            usernameEl.classList.add('glitching');
+            setTimeout(() => usernameEl.classList.remove('glitching'), 300);
+            scheduleGlitch();
+        }, delay);
+    })();
+
+    /* ================= Cursor themes (unlockable) ================= */
+    const CURSOR_THEMES = [
+        { id: 'default', label: 'Cyan (défaut)', condition: 'Débloqué de base' },
+        { id: 'red', label: 'Rouge', condition: 'Score Aim Trainer ≥ 15' },
+        { id: 'dot', label: 'Point', condition: 'Score Aim Trainer ≥ 25' },
+        { id: 'green', label: 'Vert', condition: 'Reflex Test moyen ≤ 250 ms' }
+    ];
+
+    function getUnlockedThemes() {
+        const stored = JSON.parse(localStorage.getItem('bash_unlocked_themes') || '["default"]');
+        if (!stored.includes('default')) stored.push('default');
+        return stored;
+    }
+    function getActiveTheme() {
+        return localStorage.getItem('bash_cursor_theme') || 'default';
+    }
+    function setActiveTheme(id) {
+        localStorage.setItem('bash_cursor_theme', id);
+        applyCursorTheme(id);
+        renderThemes();
+    }
+    function applyCursorTheme(id) {
+        customCursor.className = '';
+        if (id !== 'default') customCursor.classList.add('theme-' + id);
+    }
+    function unlockTheme(id) {
+        const unlocked = getUnlockedThemes();
+        if (!unlocked.includes(id)) {
+            unlocked.push(id);
+            localStorage.setItem('bash_unlocked_themes', JSON.stringify(unlocked));
+            return true;
+        }
+        return false;
+    }
+    function checkThemeUnlocks(type, value) {
+        const justUnlocked = [];
+        if (type === 'aim') {
+            if (value >= 15 && unlockTheme('red')) justUnlocked.push('Rouge');
+            if (value >= 25 && unlockTheme('dot')) justUnlocked.push('Point');
+        }
+        if (type === 'reflex') {
+            if (value <= 250 && unlockTheme('green')) justUnlocked.push('Vert');
+        }
+        return justUnlocked;
+    }
+    function renderThemes() {
+        const themeList = document.getElementById('themeList');
+        const unlocked = getUnlockedThemes();
+        const active = getActiveTheme();
+        themeList.innerHTML = '';
+        CURSOR_THEMES.forEach(theme => {
+            const isUnlocked = unlocked.includes(theme.id);
+            const btn = document.createElement('button');
+            btn.className = 'theme-btn ' + (isUnlocked ? 'unlocked' : 'locked') + (theme.id === active ? ' active' : '');
+            btn.textContent = isUnlocked ? theme.label : theme.label + ' (verrouillé)';
+            btn.title = theme.condition;
+            if (isUnlocked) {
+                btn.addEventListener('click', () => setActiveTheme(theme.id));
+            }
+            themeList.appendChild(btn);
+        });
+    }
+    applyCursorTheme(getActiveTheme());
+
+    /* ================= Game modal (Aim Trainer + Reflex Test) ================= */
     const gameModal = document.getElementById('gameModal');
     const gameCloseBtn = document.getElementById('gameCloseBtn');
     const gameMenu = document.getElementById('gameMenu');
@@ -1049,6 +1253,7 @@ bgMusic.addEventListener('timeupdate', () => {
         reflexGameArea.style.display = 'none';
         gameResult.style.display = 'none';
         renderLeaderboard();
+        renderThemes();
     }
 
     /* Aim Trainer */
@@ -1096,10 +1301,12 @@ bgMusic.addEventListener('timeupdate', () => {
         aimPlayZone.innerHTML = '';
         aimGameArea.style.display = 'none';
         gameResult.style.display = 'block';
-        gameResult.innerHTML = `<h3>Score final : ${aimScore} 🎯</h3>
+        saveScore('aim', aimScore);
+        const unlocks = checkThemeUnlocks('aim', aimScore);
+        gameResult.innerHTML = `<h3>Score final : ${aimScore}</h3>
+            ${unlocks.length ? `<p id="unlockMessage">Nouveau curseur débloqué : ${unlocks.join(', ')}</p>` : ''}
             <button class="game-btn" id="aimRetryBtn">Rejouer</button>
             <button class="game-btn" id="backToMenuBtn1">Menu</button>`;
-        saveScore('aim', aimScore);
         document.getElementById('aimRetryBtn').addEventListener('click', () => {
             gameResult.style.display = 'none';
             aimGameArea.style.display = 'block';
@@ -1169,10 +1376,12 @@ bgMusic.addEventListener('timeupdate', () => {
         const avg = Math.round(reflexTimes.reduce((a, b) => a + b, 0) / reflexTimes.length);
         reflexGameArea.style.display = 'none';
         gameResult.style.display = 'block';
-        gameResult.innerHTML = `<h3>Temps de réaction moyen : ${avg} ms ⚡</h3>
+        saveScore('reflex', avg);
+        const unlocks = checkThemeUnlocks('reflex', avg);
+        gameResult.innerHTML = `<h3>Temps de réaction moyen : ${avg} ms</h3>
+            ${unlocks.length ? `<p id="unlockMessage">Nouveau curseur débloqué : ${unlocks.join(', ')}</p>` : ''}
             <button class="game-btn" id="reflexRetryBtn">Rejouer</button>
             <button class="game-btn" id="backToMenuBtn2">Menu</button>`;
-        saveScore('reflex', avg);
         document.getElementById('reflexRetryBtn').addEventListener('click', () => {
             gameResult.style.display = 'none';
             reflexGameArea.style.display = 'block';
@@ -1202,13 +1411,13 @@ bgMusic.addEventListener('timeupdate', () => {
         const reflexScores = JSON.parse(localStorage.getItem('bash_reflex_scores') || '[]');
         leaderboardList.innerHTML = '';
         if (aimScores.length) {
-            leaderboardList.innerHTML += '<li><strong>🎯 Aim Trainer</strong></li>';
+            leaderboardList.innerHTML += '<li><strong>Aim Trainer</strong></li>';
             aimScores.forEach(s => {
                 leaderboardList.innerHTML += `<li>${s.value} cibles — ${s.date}</li>`;
             });
         }
         if (reflexScores.length) {
-            leaderboardList.innerHTML += '<li style="margin-top:6px;"><strong>⚡ Reflex Test</strong></li>';
+            leaderboardList.innerHTML += '<li style="margin-top:6px;"><strong>Reflex Test</strong></li>';
             reflexScores.forEach(s => {
                 leaderboardList.innerHTML += `<li>${s.value} ms — ${s.date}</li>`;
             });
