@@ -890,7 +890,7 @@
 
         <div class="sensibility-box">
             <h2>Valorant Sensibility</h2>
-            <p>0.35 800 DPI</p>
+            <p>0.32 800 dpi Raw accel</p>
             <h3>Favorite Crosshair</h3>
             <div class="favorite-buttons">
                 <button onclick="openModal(1)">1</button>
@@ -1181,21 +1181,48 @@
     });
 
     // Auto-load every mp3 found in the repo's /music folder (no code changes needed to add/remove songs)
+    async function fetchPlaylistFromBranch(branch) {
+        const res = await fetch(`https://data.jsdelivr.com/v1/package/gh/YupBash/BashSite@${branch}/flat`);
+        if (!res.ok) throw new Error(`jsDelivr returned ${res.status} for branch "${branch}"`);
+        const data = await res.json();
+        const files = (data.files || [])
+            .filter(f => /^\/music\//i.test(f.name) && /\.mp3$/i.test(f.name))
+            .map(f => ({
+                name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
+                url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@${branch}${f.name}`
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        return files;
+    }
+
     async function loadPlaylist() {
-        try {
-            const res = await fetch('https://data.jsdelivr.com/v1/package/gh/YupBash/BashSite@main/flat');
-            const data = await res.json();
-            const files = (data.files || [])
-                .filter(f => /^\/music\//i.test(f.name) && /\.mp3$/i.test(f.name))
-                .map(f => ({
-                    name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
-                    url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@main${f.name}`
-                }))
-                .sort((a, b) => a.name.localeCompare(b.name));
-            tracks = files.length ? files : [{ name: 'Guiding Light', url: '04. Guiding Light.mp3' }];
-        } catch (err) {
-            tracks = [{ name: 'Guiding Light', url: '04. Guiding Light.mp3' }];
+        let files = [];
+        for (const branch of ['main', 'master']) {
+            try {
+                files = await fetchPlaylistFromBranch(branch);
+                if (files.length) {
+                    console.log(`[music] Loaded ${files.length} track(s) from branch "${branch}".`);
+                    break;
+                } else {
+                    console.warn(`[music] Branch "${branch}" reached, but no .mp3 files found in /music.`);
+                }
+            } catch (err) {
+                console.warn(`[music] Could not load playlist from branch "${branch}":`, err.message);
+            }
         }
+
+        if (!files.length) {
+            console.error('[music] No playable tracks found. Check that /music/*.mp3 exists on GitHub and that jsDelivr\'s cache has been purged (https://purge.jsdelivr.net/gh/YupBash/BashSite@main/music).');
+            tracks = [];
+            musicTitleEl.textContent = 'No tracks found';
+            musicControlBtn.disabled = true;
+            musicControlBtn.style.opacity = '0.4';
+            prevTrackBtn.disabled = true;
+            nextTrackBtn.disabled = true;
+            return;
+        }
+
+        tracks = files;
         loadTrack(0, false);
     }
     loadPlaylist();
