@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BASH</title>
-    <meta name="description" content="BASH — créateur de contenu Valorant. Réseaux, sensibilité, setup gaming et musique, tout en un seul endroit." />
+    <meta name="description" content="BASH — Valorant content creator. Socials, sensitivity, gaming setup and music, all in one place." />
 
     <!-- Open Graph (Discord, Twitter/X, Facebook...) -->
     <meta property="og:title" content="BASH" />
-    <meta property="og:description" content="Créateur de contenu Valorant — réseaux, sensibilité, setup gaming et musique." />
+    <meta property="og:description" content="Valorant content creator — socials, sensitivity, gaming setup and music." />
     <meta property="og:image" content="https://yupbash.vip/preview.png" />
     <meta property="og:url" content="https://yupbash.vip" />
     <meta property="og:type" content="website" />
@@ -16,7 +16,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="BASH" />
-    <meta name="twitter:description" content="Créateur de contenu Valorant — réseaux, sensibilité, setup gaming et musique." />
+    <meta name="twitter:description" content="Valorant content creator — socials, sensitivity, gaming setup and music." />
     <meta name="twitter:image" content="https://yupbash.vip/preview.png" />
 
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
@@ -36,6 +36,19 @@
         margin: 0;
         padding: 0;
         overflow-x: hidden;
+    }
+    #bgParallax {
+        position: fixed;
+        top: -6%;
+        left: -6%;
+        width: 112%;
+        height: 112%;
+        z-index: -1;
+        background:
+            radial-gradient(circle at 30% 20%, rgba(0,64,102,0.18), transparent 60%),
+            radial-gradient(circle at 80% 80%, rgba(0,240,255,0.08), transparent 60%);
+        transition: transform 0.2s ease-out;
+        pointer-events: none;
     }
     #bashWatermark {
         position: fixed;
@@ -74,6 +87,23 @@
     .username {
         font-weight: bold;
         font-size: 1.5em;
+        cursor: pointer;
+        transition: text-shadow 0.3s ease;
+        display: inline-block;
+    }
+    .username:hover {
+        text-shadow: 0 0 10px #00f0ff;
+    }
+    @keyframes glitchAnim {
+        0% { transform: translate(0); text-shadow: none; }
+        20% { transform: translate(-2px, 1px); text-shadow: 2px 0 #ff2d55, -2px 0 #00f0ff; }
+        40% { transform: translate(2px, -1px); text-shadow: -2px 0 #ff2d55, 2px 0 #00f0ff; }
+        60% { transform: translate(-1px, 1px); text-shadow: 1px 0 #ff2d55, -1px 0 #00f0ff; }
+        80% { transform: translate(1px, -1px); text-shadow: -1px 0 #ff2d55, 1px 0 #00f0ff; }
+        100% { transform: translate(0); text-shadow: none; }
+    }
+    .username.glitching {
+        animation: glitchAnim 0.3s steps(2, end);
     }
     header img {
         width: 30px;
@@ -95,7 +125,7 @@
     #musicPlayer {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         background: rgba(0, 0, 0, 0.6);
         border: 1px solid #00f0ff;
         border-radius: 30px;
@@ -103,7 +133,42 @@
         box-shadow: 0 0 10px rgba(0,240,255,0.3), inset 0 0 8px rgba(0,240,255,0.05);
         pointer-events: all;
     }
+    .track-nav-btn {
+        background: none;
+        border: none;
+        color: #00f0ff;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 4px 4px;
+        filter: drop-shadow(0 0 3px #00f0ff);
+        transition: opacity 0.2s ease;
+    }
+    .track-nav-btn:disabled {
+        opacity: 0.25;
+        cursor: not-allowed;
+        filter: none;
+    }
+    #playButtonWrapper {
+        position: relative;
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    #waveformCanvas {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 46px;
+        height: 46px;
+        pointer-events: none;
+    }
     #musicControlBtn {
+        position: relative;
+        z-index: 1;
         font-size: 18px;
         cursor: pointer;
         background: none;
@@ -113,8 +178,6 @@
         line-height: 1;
         transition: filter 0.3s ease;
         filter: drop-shadow(0 0 4px #00f0ff);
-        position: relative;
-        z-index: 10001;
         pointer-events: all;
     }
     #musicControlBtn:hover {
@@ -125,17 +188,21 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 2px;
+        max-width: 120px;
     }
     #musicTitle {
         color: #00f0ff;
         font-size: 0.7em;
         font-weight: bold;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px;
         text-shadow: 0 0 6px #00f0ff;
         letter-spacing: 0.05em;
     }
     #musicProgressBar {
-        width: 110px;
+        width: 90px;
         height: 3px;
         background: rgba(0,240,255,0.15);
         border-radius: 2px;
@@ -148,6 +215,11 @@
         border-radius: 2px;
         box-shadow: 0 0 6px #00f0ff;
         transition: width 0.5s linear;
+    }
+    #volumeSlider {
+        width: 55px;
+        accent-color: #00f0ff;
+        cursor: pointer;
     }
     #musicInfo {
         color: #00f0ff;
@@ -258,8 +330,14 @@
         border-radius: 15px;
         margin: 20px 3cm;
         padding: 10px;
-        transition: box-shadow 0.3s ease;
+        transition: box-shadow 0.3s ease, opacity 0.6s ease, transform 0.6s ease;
         text-align: center;
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    .section.in-view {
+        opacity: 1;
+        transform: translateY(0);
     }
     .section:hover {
         box-shadow: 0 0 10px #00f0ff;
@@ -460,27 +538,6 @@
         }
     }
 
-    /* ---- Username as game trigger + glitch effect ---- */
-    .username {
-        cursor: pointer;
-        transition: text-shadow 0.3s ease;
-        display: inline-block;
-    }
-    .username:hover {
-        text-shadow: 0 0 10px #00f0ff;
-    }
-    @keyframes glitchAnim {
-        0% { transform: translate(0); text-shadow: none; }
-        20% { transform: translate(-2px, 1px); text-shadow: 2px 0 #ff2d55, -2px 0 #00f0ff; }
-        40% { transform: translate(2px, -1px); text-shadow: -2px 0 #ff2d55, 2px 0 #00f0ff; }
-        60% { transform: translate(-1px, 1px); text-shadow: 1px 0 #ff2d55, -1px 0 #00f0ff; }
-        80% { transform: translate(1px, -1px); text-shadow: -1px 0 #ff2d55, 1px 0 #00f0ff; }
-        100% { transform: translate(0); text-shadow: none; }
-    }
-    .username.glitching {
-        animation: glitchAnim 0.3s steps(2, end);
-    }
-
     /* ---- Header background particles ---- */
     #headerParticles {
         position: absolute;
@@ -542,6 +599,19 @@
     }
     .game-btn:hover {
         box-shadow: 0 0 10px #00f0ff;
+    }
+    #difficultyToggleWrap {
+        margin-top: 10px;
+        font-size: 0.85em;
+        color: #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    #difficultyToggleWrap input {
+        accent-color: #00f0ff;
+        cursor: pointer;
     }
     #leaderboardBox, #themeBox {
         margin-top: 20px;
@@ -608,8 +678,6 @@
     }
     .target {
         position: absolute;
-        width: 40px;
-        height: 40px;
         border-radius: 50%;
         background: radial-gradient(circle, #00f0ff 0%, #003366 80%);
         box-shadow: 0 0 12px #00f0ff;
@@ -644,7 +712,7 @@
         color: #ccc;
     }
     
-  /* Responsive tablette */
+  /* Tablet responsive */
 @media (min-width: 600px) and (max-width: 959px) {
     body {
         font-size: 0.95rem;
@@ -676,7 +744,7 @@
     }
 }
 
-/* Responsive mobile */
+/* Mobile responsive */
 @media (max-width: 599px) {
     body, html {
         margin: 0;
@@ -741,15 +809,19 @@
 
     header {
         padding: 15px 5% !important;
-        flex-wrap: wrap;
         gap: 10px;
         text-align: center;
     }
     #musicControlContainer {
         position: static !important;
+        transform: none !important;
         margin-top: 10px;
         justify-content: center;
         align-items: center;
+    }
+    #musicPlayer {
+        flex-wrap: wrap;
+        justify-content: center;
     }
     footer {
         margin: 0 5% !important;
@@ -759,6 +831,7 @@
 </style>
 </head>
 <body>
+    <div id="bgParallax"></div>
     <div id="customCursor">
         <span class="cross top"></span>
         <span class="cross bottom"></span>
@@ -786,22 +859,28 @@
         </div>
         <div id="musicControlContainer">
             <div id="musicPlayer">
-                <button id="musicControlBtn" aria-label="Play/Pause">▶</button>
+                <button id="prevTrackBtn" class="track-nav-btn" aria-label="Previous track">⏮</button>
+                <div id="playButtonWrapper">
+                    <canvas id="waveformCanvas"></canvas>
+                    <button id="musicControlBtn" aria-label="Play/Pause">▶</button>
+                </div>
+                <button id="nextTrackBtn" class="track-nav-btn" aria-label="Next track">⏭</button>
                 <div id="musicTrackInfo">
-                    <span id="musicTitle">Guiding Light</span>
+                    <span id="musicTitle">Loading...</span>
                     <div id="musicProgressBar"><div id="musicProgress"></div></div>
                 </div>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7" aria-label="Volume" />
             </div>
             <span id="musicInfo">▸ click to play</span>
         </div>
     </header>
 
-    <audio id="backgroundMusic" src="04. Guiding Light.mp3" preload="auto" loop></audio>
+    <audio id="backgroundMusic" preload="auto"></audio>
 
     <div class="container">
         <div class="video-box">
             <div class="video-thumbnail" id="videoThumbnail" style="cursor: pointer;">
-                <img src="https://i.ytimg.com/vi/ilHdFz6zbpc/maxresdefault.jpg" alt="Miniature de la vidéo Valorant de BASH" />
+                <img src="https://i.ytimg.com/vi/ilHdFz6zbpc/maxresdefault.jpg" alt="Thumbnail of BASH's Valorant video" />
                 <div class="play-button" id="playButton">▶</div>
             </div>
             <div id="videoPlayerContainer">
@@ -811,7 +890,7 @@
 
         <div class="sensibility-box">
             <h2>Valorant Sensibility</h2>
-            <p>0.35 800 dpi</p>
+            <p>0.35 800 DPI</p>
             <h3>Favorite Crosshair</h3>
             <div class="favorite-buttons">
                 <button onclick="openModal(1)">1</button>
@@ -826,17 +905,17 @@
         <div class="section-content">
             <div class="item-box">
                 <p>Razer Viper V3 Pro Wireless</p>
-                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png" loading="lazy" alt="Souris gaming Razer Viper V3 Pro Wireless" />
+                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png" loading="lazy" alt="Razer Viper V3 Pro Wireless gaming mouse" />
                 <a href="https://www.amazon.com/s?k=Razer+Viper+V3+Pro+Wireless&crid=2XCRO61VIECTO&sprefix=razer+viper+v3+pro+wireless%2Caps%2C274&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Apex Pro Mini Hypermagnetic</p>
-                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" loading="lazy" alt="Clavier gaming Apex Pro Mini Hypermagnetic" />
+                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" loading="lazy" alt="Apex Pro Mini Hypermagnetic gaming keyboard" />
                 <a href="https://www.amazon.com.be/s?k=apex+pro+mini+hypermagnetic&i=electronics&crid=2Z2XZE8SSD34K&sprefix=apex+pro+mini+hypermagnetic%2Celectronics%2C85&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Optix G27C4-009</p>
-                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" loading="lazy" alt="Écran gaming MSI Optix G27C4-009" />
+                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" loading="lazy" alt="MSI Optix G27C4-009 gaming monitor" />
                 <a href="https://www.amazon.com.be/s?k=Optix+G27C4-009&crid=W713JLC7NNM5&sprefix=optix+g27c4-009%2Caps%2C80&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
         </div>
@@ -847,22 +926,22 @@
         <div class="section-content">
             <div class="item-box">
                 <p>NZXT H5 Flow</p>
-                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" loading="lazy" alt="Boîtier PC NZXT H5 Flow" />
+                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" loading="lazy" alt="NZXT H5 Flow PC case" />
                 <a href="https://www.amazon.fr/s?k=NZXT+H5+Flow&i=computers&__mk_fr_FR=ÅMÅŽÕÑ&crid=1NOJWWAUE9BB7&sprefix=nzxt+h5+flow%2Ccomputers%2C292&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>Radeon RX 9070XT</p>
-                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" loading="lazy" alt="Carte graphique Radeon RX 9070XT" />
+                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" loading="lazy" alt="Radeon RX 9070XT graphics card" />
                 <a href="https://www.amazon.fr/s?k=XFX+Speedster+MERC319+Radeon+RX+6900XT&__mk_fr_FR=ÅMÅŽÕÑ&crid=2A20JU55OJU11&sprefix=xfx+speedster+merc319+radeon+rx+6900xt%2Caps%2C219&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>AMD Ryzen 7 5800X</p>
-                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" loading="lazy" alt="Processeur AMD Ryzen 7 5800X" />
+                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" loading="lazy" alt="AMD Ryzen 7 5800X processor" />
                 <a href="https://www.amazon.fr/s?k=AMD+Ryzen+7+5800X&__mk_fr_FR=ÅMÅŽÕÑ&crid=1BYM8PR0O9LEL&sprefix=amd+ryzen+7+5800x%2Caps%2C226&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
             <div class="item-box">
                 <p>MSI MPG B550 Gaming Plus</p>
-                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" loading="lazy" alt="Carte mère MSI MPG B550 Gaming Plus" />
+                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" loading="lazy" alt="MSI MPG B550 Gaming Plus motherboard" />
                 <a href="https://www.amazon.fr/s?k=MSI+MPG+B550+Gaming+Plus&__mk_fr_FR=ÅMÅŽÕÑ&crid=3DT3TTKJ18YQN&sprefix=msi+mpg+b550+gaming+plus%2Caps%2C128&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
             </div>
         </div>
@@ -891,27 +970,32 @@
                 <h2 id="gameModalTitle">Mini Games</h2>
                 <button id="startAimBtn" class="game-btn">Aim Trainer</button>
                 <button id="startReflexBtn" class="game-btn">Reflex Test</button>
+                <div id="difficultyToggleWrap">
+                    <label for="difficultyToggle">
+                        <input type="checkbox" id="difficultyToggle" /> Increasing difficulty (Aim Trainer)
+                    </label>
+                </div>
 
                 <div id="themeBox">
-                    <h3>Curseurs</h3>
+                    <h3>Cursors</h3>
                     <div id="themeList"></div>
                 </div>
 
                 <div id="leaderboardBox">
-                    <h3>Meilleurs scores (sur ce navigateur)</h3>
+                    <h3>Best Scores (this browser)</h3>
                     <ol id="leaderboardList"></ol>
                 </div>
             </div>
 
             <div id="aimGameArea" style="display:none;">
-                <div id="aimHUD"><span id="aimTimer">30</span>s | Score : <span id="aimScore">0</span></div>
+                <div id="aimHUD"><span id="aimTimer">30</span>s | Score: <span id="aimScore">0</span></div>
                 <div id="aimPlayZone"></div>
             </div>
 
             <div id="reflexGameArea" style="display:none;">
                 <div id="reflexZone">
                     <div id="reflexCircle"></div>
-                    <p id="reflexMessage">Clique quand ça devient cyan !</p>
+                    <p id="reflexMessage">Click when it turns cyan!</p>
                 </div>
             </div>
 
@@ -975,7 +1059,7 @@
         });
     };
 
-    // Charge l'API YouTube
+    // Load the YouTube API
     (function() {
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
@@ -991,45 +1075,180 @@
         }
     });
 
-const bgMusic = document.getElementById('backgroundMusic');
-const musicControlBtn = document.getElementById('musicControlBtn');
-const musicInfo = document.getElementById('musicInfo');
-const musicProgress = document.getElementById('musicProgress');
+    /* ================= Music player (auto-loaded playlist) ================= */
+    const bgMusic = document.getElementById('backgroundMusic');
+    const musicControlBtn = document.getElementById('musicControlBtn');
+    const musicInfo = document.getElementById('musicInfo');
+    const musicProgress = document.getElementById('musicProgress');
+    const musicTitleEl = document.getElementById('musicTitle');
+    const prevTrackBtn = document.getElementById('prevTrackBtn');
+    const nextTrackBtn = document.getElementById('nextTrackBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const waveformCanvas = document.getElementById('waveformCanvas');
 
-let isPlaying = false;
+    bgMusic.crossOrigin = "anonymous";
 
-function setPlaying(state) {
-    isPlaying = state;
-    musicControlBtn.textContent = state ? "⏸" : "▶";
-    musicControlBtn.style.filter = state
-        ? "drop-shadow(0 0 8px #00f0ff)"
-        : "drop-shadow(0 0 4px #00f0ff)";
-    musicInfo.style.display = state ? "none" : "inline";
-}
+    let isPlaying = false;
+    let tracks = [];
+    let currentTrackIndex = 0;
 
-musicControlBtn.addEventListener('click', () => {
-    if (!isPlaying) {
+    function setPlaying(state) {
+        isPlaying = state;
+        musicControlBtn.textContent = state ? "⏸" : "▶";
+        musicControlBtn.style.filter = state
+            ? "drop-shadow(0 0 8px #00f0ff)"
+            : "drop-shadow(0 0 4px #00f0ff)";
+        musicInfo.style.display = state ? "none" : "inline";
+    }
+
+    function prettifyTrackName(raw) {
+        return raw
+            .replace(/^[0-9]+[\s._-]*/, '')
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[_-]+/g, ' ')
+            .trim();
+    }
+
+    function updateNavButtons() {
+        prevTrackBtn.disabled = currentTrackIndex <= 0;
+        nextTrackBtn.disabled = currentTrackIndex >= tracks.length - 1;
+    }
+
+    function loadTrack(index, autoplay) {
+        if (!tracks.length || index < 0 || index >= tracks.length) return;
+        currentTrackIndex = index;
+        const track = tracks[index];
+        bgMusic.src = track.url;
         bgMusic.load();
-        bgMusic.play().then(() => {
-            setPlaying(true);
-        }).catch((err) => {
-            console.error('Audio play error:', err);
-        });
-    } else {
-        bgMusic.pause();
-        setPlaying(false);
+        musicTitleEl.textContent = track.name;
+        musicProgress.style.width = '0%';
+        updateNavButtons();
+        if (autoplay) {
+            setupAudioAnalyser();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            bgMusic.play().then(() => setPlaying(true)).catch((err) => {
+                console.error('Audio play error:', err);
+            });
+        } else {
+            setPlaying(false);
+        }
     }
-});
 
-bgMusic.addEventListener('ended', () => setPlaying(false));
+    musicControlBtn.addEventListener('click', () => {
+        if (!tracks.length) return;
+        setupAudioAnalyser();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        if (!isPlaying) {
+            bgMusic.play().then(() => setPlaying(true)).catch((err) => {
+                console.error('Audio play error:', err);
+            });
+        } else {
+            bgMusic.pause();
+            setPlaying(false);
+        }
+    });
 
-bgMusic.addEventListener('timeupdate', () => {
-    if (bgMusic.duration) {
-        const pct = (bgMusic.currentTime / bgMusic.duration) * 100;
-        musicProgress.style.width = pct + '%';
+    prevTrackBtn.addEventListener('click', () => {
+        if (currentTrackIndex > 0) loadTrack(currentTrackIndex - 1, true);
+    });
+    nextTrackBtn.addEventListener('click', () => {
+        if (currentTrackIndex < tracks.length - 1) loadTrack(currentTrackIndex + 1, true);
+    });
+
+    bgMusic.addEventListener('ended', () => {
+        if (currentTrackIndex < tracks.length - 1) {
+            loadTrack(currentTrackIndex + 1, true);
+        } else {
+            setPlaying(false);
+            bgMusic.currentTime = 0;
+        }
+    });
+
+    bgMusic.addEventListener('timeupdate', () => {
+        if (bgMusic.duration) {
+            const pct = (bgMusic.currentTime / bgMusic.duration) * 100;
+            musicProgress.style.width = pct + '%';
+        }
+    });
+
+    // Volume
+    const savedVolume = parseFloat(localStorage.getItem('bash_volume'));
+    bgMusic.volume = isNaN(savedVolume) ? 0.7 : savedVolume;
+    volumeSlider.value = bgMusic.volume;
+    volumeSlider.addEventListener('input', () => {
+        bgMusic.volume = parseFloat(volumeSlider.value);
+        localStorage.setItem('bash_volume', volumeSlider.value);
+    });
+
+    // Auto-load every mp3 found in the repo's /music folder (no code changes needed to add/remove songs)
+    async function loadPlaylist() {
+        try {
+            const res = await fetch('https://data.jsdelivr.com/v1/package/gh/YupBash/BashSite@main/flat');
+            const data = await res.json();
+            const files = (data.files || [])
+                .filter(f => /^\/music\//i.test(f.name) && /\.mp3$/i.test(f.name))
+                .map(f => ({
+                    name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
+                    url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@main${f.name}`
+                }))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            tracks = files.length ? files : [{ name: 'Guiding Light', url: '04. Guiding Light.mp3' }];
+        } catch (err) {
+            tracks = [{ name: 'Guiding Light', url: '04. Guiding Light.mp3' }];
+        }
+        loadTrack(0, false);
     }
-});
+    loadPlaylist();
 
+    // Circular waveform around the play button
+    let audioCtx, analyser, freqData, sourceNode;
+    function setupAudioAnalyser() {
+        if (audioCtx) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            sourceNode = audioCtx.createMediaElementSource(bgMusic);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            freqData = new Uint8Array(analyser.frequencyBinCount);
+            sourceNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
+        } catch (err) {
+            console.warn('Audio analyser unavailable:', err);
+        }
+    }
+    function drawWaveform() {
+        const ctx = waveformCanvas.getContext('2d');
+        const size = 46;
+        if (waveformCanvas.width !== size) {
+            waveformCanvas.width = size;
+            waveformCanvas.height = size;
+        }
+        ctx.clearRect(0, 0, size, size);
+        if (isPlaying && analyser) {
+            analyser.getByteFrequencyData(freqData);
+            const cx = size / 2, cy = size / 2;
+            const barCount = 20;
+            const baseRadius = 15;
+            for (let i = 0; i < barCount; i++) {
+                const idx = Math.floor((i / barCount) * freqData.length);
+                const amp = freqData[idx] / 255;
+                const barLength = 2 + amp * 7;
+                const angle = (i / barCount) * Math.PI * 2;
+                const x1 = cx + Math.cos(angle) * baseRadius;
+                const y1 = cy + Math.sin(angle) * baseRadius;
+                const x2 = cx + Math.cos(angle) * (baseRadius + barLength);
+                const y2 = cy + Math.sin(angle) * (baseRadius + barLength);
+                ctx.strokeStyle = `rgba(0,240,255,${0.35 + amp * 0.6})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+        }
+        requestAnimationFrame(drawWaveform);
+    }
+    drawWaveform();
 
     const crosshairModal = document.getElementById('crosshairModal');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
@@ -1075,6 +1294,25 @@ bgMusic.addEventListener('timeupdate', () => {
         });
     });
 
+    /* Fade-in sections as they scroll into view */
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                sectionObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.section').forEach(sec => sectionObserver.observe(sec));
+
+    /* Subtle background parallax on mouse move */
+    const bgParallax = document.getElementById('bgParallax');
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 2;
+        const y = (e.clientY / window.innerHeight - 0.5) * 2;
+        bgParallax.style.transform = `translate(${x * 8}px, ${y * 8}px)`;
+    });
+
     /* Console easter egg */
     console.log(
         '%c██████╗  █████╗ ███████╗██╗  ██╗\n' +
@@ -1085,7 +1323,7 @@ bgMusic.addEventListener('timeupdate', () => {
         '╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝',
         'color:#00f0ff; font-family:monospace; text-shadow:0 0 6px #00f0ff;'
     );
-    console.log('%cYo, tu regardes quoi la mon gars ?', 'color:#00f0ff; font-size:14px; font-weight:bold;');
+    console.log('%cYo, what are you looking at?', 'color:#00f0ff; font-size:14px; font-weight:bold;');
 
     /* Custom crosshair cursor */
     const customCursor = document.getElementById('customCursor');
@@ -1098,7 +1336,7 @@ bgMusic.addEventListener('timeupdate', () => {
     }
 
     /* Hover sparks */
-    const sparkSelector = '.buy-button, header img, #musicControlBtn, #scrollTopBtn, .favorite-buttons button, #copyCrosshairBtn, .game-btn, .target, #reflexCircle, .theme-btn';
+    const sparkSelector = '.buy-button, header img, #musicControlBtn, .track-nav-btn, #scrollTopBtn, .favorite-buttons button, #copyCrosshairBtn, .game-btn, .target, #reflexCircle, .theme-btn';
     let lastSparkTime = 0;
     document.addEventListener('mousemove', (e) => {
         if (e.target.closest(sparkSelector)) {
@@ -1163,21 +1401,21 @@ bgMusic.addEventListener('timeupdate', () => {
 
     /* Glitch effect on the title, every couple of minutes */
     (function scheduleGlitch() {
-        const usernameEl = document.querySelector('.username');
+        const el = document.querySelector('.username');
         const delay = 120000 + Math.random() * 180000; // 2 to 5 minutes
         setTimeout(() => {
-            usernameEl.classList.add('glitching');
-            setTimeout(() => usernameEl.classList.remove('glitching'), 300);
+            el.classList.add('glitching');
+            setTimeout(() => el.classList.remove('glitching'), 300);
             scheduleGlitch();
         }, delay);
     })();
 
     /* ================= Cursor themes (unlockable) ================= */
     const CURSOR_THEMES = [
-        { id: 'default', label: 'Cyan (défaut)', condition: 'Débloqué de base' },
-        { id: 'red', label: 'Rouge', condition: 'Score Aim Trainer ≥ 15' },
-        { id: 'dot', label: 'Point', condition: 'Score Aim Trainer ≥ 25' },
-        { id: 'green', label: 'Vert', condition: 'Reflex Test moyen ≤ 250 ms' }
+        { id: 'default', label: 'Cyan (default)', condition: 'Unlocked by default' },
+        { id: 'red', label: 'Red', condition: 'Aim Trainer score \u2265 15' },
+        { id: 'dot', label: 'Dot', condition: 'Aim Trainer score \u2265 25' },
+        { id: 'green', label: 'Green', condition: 'Reflex Test average \u2264 250 ms' }
     ];
 
     function getUnlockedThemes() {
@@ -1209,11 +1447,11 @@ bgMusic.addEventListener('timeupdate', () => {
     function checkThemeUnlocks(type, value) {
         const justUnlocked = [];
         if (type === 'aim') {
-            if (value >= 15 && unlockTheme('red')) justUnlocked.push('Rouge');
-            if (value >= 25 && unlockTheme('dot')) justUnlocked.push('Point');
+            if (value >= 15 && unlockTheme('red')) justUnlocked.push('Red');
+            if (value >= 25 && unlockTheme('dot')) justUnlocked.push('Dot');
         }
         if (type === 'reflex') {
-            if (value <= 250 && unlockTheme('green')) justUnlocked.push('Vert');
+            if (value <= 250 && unlockTheme('green')) justUnlocked.push('Green');
         }
         return justUnlocked;
     }
@@ -1226,7 +1464,7 @@ bgMusic.addEventListener('timeupdate', () => {
             const isUnlocked = unlocked.includes(theme.id);
             const btn = document.createElement('button');
             btn.className = 'theme-btn ' + (isUnlocked ? 'unlocked' : 'locked') + (theme.id === active ? ' active' : '');
-            btn.textContent = isUnlocked ? theme.label : theme.label + ' (verrouillé)';
+            btn.textContent = isUnlocked ? theme.label : theme.label + ' (locked)';
             btn.title = theme.condition;
             if (isUnlocked) {
                 btn.addEventListener('click', () => setActiveTheme(theme.id));
@@ -1235,6 +1473,13 @@ bgMusic.addEventListener('timeupdate', () => {
         });
     }
     applyCursorTheme(getActiveTheme());
+
+    /* ================= Increasing difficulty (Aim Trainer) ================= */
+    const difficultyToggle = document.getElementById('difficultyToggle');
+    difficultyToggle.checked = localStorage.getItem('bash_aim_difficulty') === 'true';
+    difficultyToggle.addEventListener('change', () => {
+        localStorage.setItem('bash_aim_difficulty', difficultyToggle.checked);
+    });
 
     /* ================= Game modal (Aim Trainer + Reflex Test) ================= */
     const gameModal = document.getElementById('gameModal');
@@ -1276,14 +1521,17 @@ bgMusic.addEventListener('timeupdate', () => {
 
     /* Aim Trainer */
     let aimTimeLeft = 0, aimScore = 0, aimInterval = null;
+    let aimDifficultyEnabled = false;
+    const AIM_DURATION = 30;
     startAimBtn.addEventListener('click', () => {
         gameMenu.style.display = 'none';
         gameResult.style.display = 'none';
         aimGameArea.style.display = 'block';
+        aimDifficultyEnabled = difficultyToggle.checked;
         startAimGame();
     });
     function startAimGame() {
-        aimTimeLeft = 30;
+        aimTimeLeft = AIM_DURATION;
         aimScore = 0;
         aimTimerEl.textContent = aimTimeLeft;
         aimScoreEl.textContent = aimScore;
@@ -1296,13 +1544,20 @@ bgMusic.addEventListener('timeupdate', () => {
             if (aimTimeLeft <= 0) endAimGame();
         }, 1000);
     }
+    function getTargetSize() {
+        if (!aimDifficultyEnabled) return 40;
+        const elapsedFraction = 1 - (aimTimeLeft / AIM_DURATION);
+        return Math.max(40 - elapsedFraction * 22, 18);
+    }
     function spawnTarget() {
         const zoneRect = aimPlayZone.getBoundingClientRect();
-        const size = 40;
+        const size = getTargetSize();
         const maxX = Math.max(zoneRect.width - size, 10);
         const maxY = Math.max(zoneRect.height - size, 10);
         const target = document.createElement('div');
         target.className = 'target';
+        target.style.width = size + 'px';
+        target.style.height = size + 'px';
         target.style.left = Math.random() * maxX + 'px';
         target.style.top = Math.random() * maxY + 'px';
         target.addEventListener('click', (e) => {
@@ -1321,9 +1576,9 @@ bgMusic.addEventListener('timeupdate', () => {
         gameResult.style.display = 'block';
         saveScore('aim', aimScore);
         const unlocks = checkThemeUnlocks('aim', aimScore);
-        gameResult.innerHTML = `<h3>Score final : ${aimScore}</h3>
-            ${unlocks.length ? `<p id="unlockMessage">Nouveau curseur débloqué : ${unlocks.join(', ')}</p>` : ''}
-            <button class="game-btn" id="aimRetryBtn">Rejouer</button>
+        gameResult.innerHTML = `<h3>Final score: ${aimScore}</h3>
+            ${unlocks.length ? `<p id="unlockMessage">New cursor unlocked: ${unlocks.join(', ')}</p>` : ''}
+            <button class="game-btn" id="aimRetryBtn">Play again</button>
             <button class="game-btn" id="backToMenuBtn1">Menu</button>`;
         document.getElementById('aimRetryBtn').addEventListener('click', () => {
             gameResult.style.display = 'none';
@@ -1363,7 +1618,7 @@ bgMusic.addEventListener('timeupdate', () => {
         reflexRound++;
         reflexState = 'waiting';
         reflexCircle.className = 'waiting';
-        reflexMessage.textContent = `Manche ${reflexRound}/${REFLEX_ROUNDS} — attends le cyan...`;
+        reflexMessage.textContent = `Round ${reflexRound}/${REFLEX_ROUNDS} — wait for cyan...`;
         const delay = 1000 + Math.random() * 2500;
         reflexTimeout = setTimeout(() => {
             reflexState = 'ready';
@@ -1374,7 +1629,7 @@ bgMusic.addEventListener('timeupdate', () => {
     reflexCircle.addEventListener('click', () => {
         if (reflexState === 'waiting') {
             clearTimeout(reflexTimeout);
-            reflexMessage.textContent = 'Trop tôt ! On refait cette manche...';
+            reflexMessage.textContent = 'Too soon! Retrying this round...';
             reflexCircle.className = '';
             reflexRound--;
             setTimeout(nextReflexRound, 900);
@@ -1384,7 +1639,7 @@ bgMusic.addEventListener('timeupdate', () => {
         if (reflexState === 'ready') {
             const reactionTime = Math.round(performance.now() - reflexStartTime);
             reflexTimes.push(reactionTime);
-            reflexMessage.textContent = `${reactionTime} ms !`;
+            reflexMessage.textContent = `${reactionTime} ms!`;
             reflexCircle.className = '';
             reflexState = 'idle';
             setTimeout(nextReflexRound, 700);
@@ -1396,9 +1651,9 @@ bgMusic.addEventListener('timeupdate', () => {
         gameResult.style.display = 'block';
         saveScore('reflex', avg);
         const unlocks = checkThemeUnlocks('reflex', avg);
-        gameResult.innerHTML = `<h3>Temps de réaction moyen : ${avg} ms</h3>
-            ${unlocks.length ? `<p id="unlockMessage">Nouveau curseur débloqué : ${unlocks.join(', ')}</p>` : ''}
-            <button class="game-btn" id="reflexRetryBtn">Rejouer</button>
+        gameResult.innerHTML = `<h3>Average reaction time: ${avg} ms</h3>
+            ${unlocks.length ? `<p id="unlockMessage">New cursor unlocked: ${unlocks.join(', ')}</p>` : ''}
+            <button class="game-btn" id="reflexRetryBtn">Play again</button>
             <button class="game-btn" id="backToMenuBtn2">Menu</button>`;
         document.getElementById('reflexRetryBtn').addEventListener('click', () => {
             gameResult.style.display = 'none';
@@ -1419,7 +1674,7 @@ bgMusic.addEventListener('timeupdate', () => {
     function saveScore(type, value) {
         const key = type === 'aim' ? 'bash_aim_scores' : 'bash_reflex_scores';
         let scores = JSON.parse(localStorage.getItem(key) || '[]');
-        scores.push({ value, date: new Date().toLocaleDateString('fr-FR') });
+        scores.push({ value, date: new Date().toLocaleDateString('en-GB') });
         scores.sort((a, b) => type === 'aim' ? b.value - a.value : a.value - b.value);
         scores = scores.slice(0, 5);
         localStorage.setItem(key, JSON.stringify(scores));
@@ -1431,7 +1686,7 @@ bgMusic.addEventListener('timeupdate', () => {
         if (aimScores.length) {
             leaderboardList.innerHTML += '<li><strong>Aim Trainer</strong></li>';
             aimScores.forEach(s => {
-                leaderboardList.innerHTML += `<li>${s.value} cibles — ${s.date}</li>`;
+                leaderboardList.innerHTML += `<li>${s.value} targets — ${s.date}</li>`;
             });
         }
         if (reflexScores.length) {
@@ -1441,7 +1696,7 @@ bgMusic.addEventListener('timeupdate', () => {
             });
         }
         if (!aimScores.length && !reflexScores.length) {
-            leaderboardList.innerHTML = '<li>Aucun score encore, joue pour en avoir un !</li>';
+            leaderboardList.innerHTML = '<li>No scores yet — play to set one!</li>';
         }
     }
 </script>
