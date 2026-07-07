@@ -51,13 +51,25 @@
     }
     header {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 20px;
         background-color: #111;
-        gap: 15px;
+        gap: 12px;
         position: relative;
         overflow: hidden;
+    }
+    #headerMain {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    #socialIcons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
     }
     .username {
         font-weight: bold;
@@ -71,7 +83,9 @@
     }
     #musicControlContainer {
         position: absolute;
+        top: 50%;
         right: 20px;
+        transform: translateY(-50%);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -477,7 +491,7 @@
         z-index: 0;
         pointer-events: none;
     }
-    header > *:not(#headerParticles) {
+    header > *:not(#headerParticles):not(#musicControlContainer) {
         position: relative;
         z-index: 1;
     }
@@ -756,16 +770,20 @@
 
     <header>
         <canvas id="headerParticles"></canvas>
-        <span class="username">BASH</span>
-<a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
-</a>
-<a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener noreferrer">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" />
-</a>
-<a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener noreferrer">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" />
-</a>
+        <div id="headerMain">
+            <span class="username">BASH</span>
+            <div id="socialIcons">
+                <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
+                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
+                </a>
+                <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener noreferrer">
+                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" />
+                </a>
+                <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener noreferrer">
+                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" />
+                </a>
+            </div>
+        </div>
         <div id="musicControlContainer">
             <div id="musicPlayer">
                 <button id="musicControlBtn" aria-label="Play/Pause">▶</button>
