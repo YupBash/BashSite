@@ -1118,6 +1118,7 @@
         if (!tracks.length || index < 0 || index >= tracks.length) return;
         currentTrackIndex = index;
         const track = tracks[index];
+        console.log('[music] Loading track URL:', track.url);
         bgMusic.src = track.url;
         bgMusic.load();
         musicTitleEl.textContent = track.name;
@@ -1187,10 +1188,13 @@
         const data = await res.json();
         const files = (data.files || [])
             .filter(f => /^\/music\//i.test(f.name) && /\.mp3$/i.test(f.name))
-            .map(f => ({
-                name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
-                url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@${branch}${f.name}`
-            }))
+            .map(f => {
+                const encodedPath = f.name.split('/').map(encodeURIComponent).join('/');
+                return {
+                    name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
+                    url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@${branch}${encodedPath}`
+                };
+            })
             .sort((a, b) => a.name.localeCompare(b.name));
         return files;
     }
