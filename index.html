@@ -1,1735 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BASH</title>
-    <meta name="description" content="BASH — Valorant content creator. Socials, sensitivity, gaming setup and music, all in one place." />
-
-    <!-- Open Graph (Discord, Twitter/X, Facebook...) -->
-    <meta property="og:title" content="BASH" />
-    <meta property="og:description" content="Valorant content creator — socials, sensitivity, gaming setup and music." />
-    <meta property="og:image" content="https://yupbash.vip/preview.png" />
-    <meta property="og:url" content="https://yupbash.vip" />
-    <meta property="og:type" content="website" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="BASH" />
-    <meta name="twitter:description" content="Valorant content creator — socials, sensitivity, gaming setup and music." />
-    <meta name="twitter:image" content="https://yupbash.vip/preview.png" />
-
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="favicon.png" type="image/png" sizes="32x32" />
-
-
-<!-- Website coded by Bash -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="BASH">
+<meta property="og:description" content="Welcome to BASH's home on the internet.">
+<meta property="og:image" content="assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BASH">
+<meta name="twitter:description" content="Welcome to BASH's home on the internet.">
+<meta name="twitter:image" content="assets/og-image.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Permanent+Marker&display=swap">
 <style>
-    :root {
-        --site-author: "Bash";
-    }
+  :root{
+    --bg:#08070a;
+    --ink:#f4f1ec;
+    --purple:#6b21a8;
+    --purple-deep:#3a0e5c;
+    --purple-glow:rgba(107,33,168,0.55);
+    --line:#2a2430;
+    --menu-bg:#22072f;
+    --menu-bg-2:#340c47;
+    --menu-text:#e9f7f9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    overflow:hidden;
+  }
+  .stage{
+    position:relative;
+    width:100%;height:100dvh;min-height:320px;
+    background:
+      radial-gradient(ellipse 70% 60% at 78% 30%, rgba(107,33,168,0.16), transparent 60%),
+      radial-gradient(ellipse 90% 70% at 10% 90%, rgba(58,14,92,0.22), transparent 65%),
+      var(--bg);
+  }
 
-    body {
-        background-color: #0a0a0a;
-        color: white;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-    }
-    #bgParallax {
-        position: fixed;
-        top: -6%;
-        left: -6%;
-        width: 112%;
-        height: 112%;
-        z-index: -1;
-        background:
-            radial-gradient(circle at 30% 20%, rgba(0,64,102,0.18), transparent 60%),
-            radial-gradient(circle at 80% 80%, rgba(0,240,255,0.08), transparent 60%);
-        transition: transform 0.2s ease-out;
-        pointer-events: none;
-    }
-    #bashWatermark {
-        position: fixed;
-        font-size: 24px;
-        color: rgba(31, 79, 110, 0.301);
-        pointer-events: none;
-        user-select: none;
-        z-index: 9999;
-        font-weight: bold;
-        font-family: Arial, sans-serif;
-        white-space: nowrap;
-        text-shadow: 0 0 2px rgba(0,0,0,0.3);
-    }
-    header {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        background-color: #111;
-        gap: 12px;
-        position: relative;
-        overflow: hidden;
-    }
-    #headerMain {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-    }
-    #socialIcons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-    }
-    .username {
-        font-weight: bold;
-        font-size: 1.5em;
-        cursor: pointer;
-        transition: text-shadow 0.3s ease;
-        display: inline-block;
-    }
-    .username:hover {
-        text-shadow: 0 0 10px #00f0ff;
-    }
-    @keyframes glitchAnim {
-        0% { transform: translate(0); text-shadow: none; }
-        20% { transform: translate(-2px, 1px); text-shadow: 2px 0 #ff2d55, -2px 0 #00f0ff; }
-        40% { transform: translate(2px, -1px); text-shadow: -2px 0 #ff2d55, 2px 0 #00f0ff; }
-        60% { transform: translate(-1px, 1px); text-shadow: 1px 0 #ff2d55, -1px 0 #00f0ff; }
-        80% { transform: translate(1px, -1px); text-shadow: -1px 0 #ff2d55, 1px 0 #00f0ff; }
-        100% { transform: translate(0); text-shadow: none; }
-    }
-    .username.glitching {
-        animation: glitchAnim 0.3s steps(2, end);
-    }
-    header img {
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-        filter: invert(100%);
-    }
-    #musicControlContainer {
-        position: absolute;
-        top: 50%;
-        right: 20px;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        z-index: 10001;
-    }
-    #musicPlayer {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(0, 0, 0, 0.6);
-        border: 1px solid #00f0ff;
-        border-radius: 30px;
-        padding: 6px 14px;
-        box-shadow: 0 0 10px rgba(0,240,255,0.3), inset 0 0 8px rgba(0,240,255,0.05);
-        pointer-events: all;
-    }
-    .track-nav-btn {
-        background: none;
-        border: none;
-        color: #00f0ff;
-        font-size: 14px;
-        cursor: pointer;
-        padding: 4px 4px;
-        filter: drop-shadow(0 0 3px #00f0ff);
-        transition: opacity 0.2s ease;
-    }
-    .track-nav-btn:disabled {
-        opacity: 0.25;
-        cursor: not-allowed;
-        filter: none;
-    }
-    #playButtonWrapper {
-        position: relative;
-        width: 46px;
-        height: 46px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    #waveformCanvas {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 46px;
-        height: 46px;
-        pointer-events: none;
-    }
-    #musicControlBtn {
-        position: relative;
-        z-index: 1;
-        font-size: 18px;
-        cursor: pointer;
-        background: none;
-        border: none;
-        color: #00f0ff;
-        padding: 6px 10px;
-        line-height: 1;
-        transition: filter 0.3s ease;
-        filter: drop-shadow(0 0 4px #00f0ff);
-        pointer-events: all;
-    }
-    #musicControlBtn:hover {
-        filter: drop-shadow(0 0 8px #00f0ff);
-    }
-    #musicTrackInfo {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
-        max-width: 120px;
-    }
-    #musicTitle {
-        color: #00f0ff;
-        font-size: 0.7em;
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 120px;
-        text-shadow: 0 0 6px #00f0ff;
-        letter-spacing: 0.05em;
-    }
-    #musicProgressBar {
-        width: 90px;
-        height: 3px;
-        background: rgba(0,240,255,0.15);
-        border-radius: 2px;
-        overflow: hidden;
-    }
-    #musicProgress {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #003366, #00f0ff);
-        border-radius: 2px;
-        box-shadow: 0 0 6px #00f0ff;
-        transition: width 0.5s linear;
-    }
-    #volumeSlider {
-        width: 55px;
-        accent-color: #00f0ff;
-        cursor: pointer;
-    }
-    #musicInfo {
-        color: #00f0ff;
-        font-size: 0.72em;
-        user-select: none;
-        white-space: nowrap;
-        text-shadow: 0 0 5px #00f0ff;
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-    }
-    .container {
-        display: flex;
-        padding: 20px 3cm;
-        gap: 20px;
-    }
-    .video-box, .sensibility-box {
-        background-color: #1a1a1a;
-        border-radius: 15px;
-        padding: 15px;
-        flex: 1;
-        text-align: center;
-    }
-    .sensibility-box {
-        font-size: 1.5rem;
-        line-height: 1.5;
-        height: 400px;
-    }
-    .video-box:hover, .sensibility-box:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
-    .video-thumbnail {
-        position: relative;
-        width: 100%;
-        max-width: 960px;
-        margin: 0 auto;
-        cursor: pointer;
-        padding-bottom: 56.25%;
-        height: 0;
-        overflow: hidden;
-        border-radius: 10px;
-    }
-    .video-thumbnail img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-    .play-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 50px;
-        color: white;
-        pointer-events: none;
-        user-select: none;
-    }
-    #videoPlayerContainer {
-        display: none;
-        position: relative;
-        width: 100%;
-        max-width: 960px;
-        margin: 10px auto 0 auto;
-        padding-bottom: 56.25%;
-        height: 0;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    #videoPlayer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        border: none;
-    }
+  .menu-btn{
+    position:absolute;top:clamp(18px,4vw,34px);left:clamp(18px,4vw,34px);
+    z-index:20;display:flex;flex-direction:column;justify-content:center;gap:6px;
+    width:30px;padding:12px 4px;background:none;border:none;cursor:pointer;
+  }
+  .menu-btn span{
+    display:block;height:3px;width:100%;border-radius:2px;
+    background:var(--ink);opacity:.85;
+    transition:transform .25s ease, opacity .2s ease, background .2s ease;
+  }
+  .menu-btn:hover span{opacity:1;background:var(--purple);}
+  .menu-btn:focus-visible{outline:2px solid var(--purple);outline-offset:4px;}
+  .menu-btn.is-open span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+  .menu-btn.is-open span:nth-child(2){ opacity:0; }
+  .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
 
-    h2, h3 {
-        color: #003366;
-        cursor: pointer;
-        user-select: none;
-    }
-    .favorite-buttons button {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 10px;
-        margin: 5px;
-        width: 60px;
-        height: 60px;
-        font-size: 0.8em;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: box-shadow 0.3s ease;
-    }
-    .favorite-buttons button:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
-    .section {
-        background-color: #1a1a1a;
-        border-radius: 15px;
-        margin: 20px 3cm;
-        padding: 10px;
-        transition: box-shadow 0.3s ease, opacity 0.6s ease, transform 0.6s ease;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    .section.in-view {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .section:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
-    .section-content {
-        overflow: hidden;
-        max-height: 2000px;
-        transition: max-height 0.4s ease;
-        margin-top: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
-    }
-    .section-content.collapsed {
-        max-height: 0;
-        margin-top: 0;
-        transition: max-height 0.4s ease, margin-top 0.3s ease;
-    }
-    .item-box {
-        background-color: #2a2a2a;
-        border-radius: 10px;
-        width: 200px;
-        text-align: center;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 300px;
-    }
-    .item-box img {
-        max-width: 180px;
-        max-height: 140px;
-        width: auto;
-        height: auto;
-        margin: 0 auto;
-        object-fit: contain;
-    }
-    .buy-button {
-        background-color: #003366;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: box-shadow 0.3s ease;
-        margin-top: 8px;
-        text-decoration: none;
-        display: inline-block;
-    }
-    .buy-button:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
-    footer {
-        text-align: center;
-        background-color: #111;
-        padding: 10px;
-        color: white;
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
+  .top-socials{
+    position:absolute;top:clamp(18px,4vw,34px);right:clamp(18px,4vw,34px);
+    z-index:20;display:flex;align-items:center;gap:clamp(14px,2vw,22px);
+    transition:opacity .25s ease;
+  }
+  .top-socials a{
+    color:var(--ink);opacity:.8;display:flex;
+    transition:opacity .18s ease, color .18s ease, transform .18s ease;
+  }
+  .top-socials a:hover, .top-socials a:focus-visible{
+    opacity:1;color:var(--purple);transform:translateY(-2px);
+  }
+  .top-socials svg{width:clamp(18px,2.2vw,24px);height:clamp(18px,2.2vw,24px);display:block;}
+  .stage.menu-open .top-socials{
+    opacity:0;pointer-events:none;
+  }
 
-    #scrollTopBtn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #00f0ff;
-        border: none;
-        color: white;
-        padding: 15px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 18px;
-        display: none;
-    }
-    #crosshairModal {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-    }
-    #modalContent {
-        background: rgba(10, 10, 10, 0.85);
-        border-radius: 15px;
-        padding: 20px 30px;
-        width: 320px;
-        color: white;
-        position: relative;
-        text-align: center;
-        user-select: none;
-    }
-    #modalCloseBtn {
-        position: absolute;
-        top: 12px;
-        right: 15px;
-        font-size: 24px;
-        color: white;
-        cursor: pointer;
-        user-select: none;
-    }
-    #crosshairDisplay {
-        margin: 25px 0;
-        font-size: 13px;
-        font-weight: bold;
-        user-select: text;
-        cursor: default;
-        outline: none;
-        word-break: break-all;
-        overflow-wrap: break-word;
-        white-space: normal;
-        padding: 0 5px;
-    }
-    #copyCrosshairBtn {
-        background-color: #003366;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: box-shadow 0.3s ease;
-    }
-    #copyCrosshairBtn:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
+  .wordmark-glow{
+    position:absolute;left:clamp(300px,34vw,460px);top:clamp(180px,30vh,360px);
+    width:clamp(700px,80vw,1300px);height:clamp(700px,80vw,1300px);
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at center,
+      rgba(139,63,209,0.65), rgba(139,63,209,0.38) 32%, rgba(107,33,168,0.16) 55%, transparent 72%);
+    z-index:2;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .stage.menu-open .wordmark-glow{
+    opacity:0;
+  }
 
-    /* ---- Custom crosshair cursor ---- */
-    #customCursor {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0;
-        height: 0;
-        pointer-events: none;
-        z-index: 10050;
-        display: none;
-    }
-    #customCursor .cross {
-        position: absolute;
-        background: #00f0ff;
-        box-shadow: 0 0 6px #00f0ff, 0 0 10px rgba(0,240,255,0.6);
-    }
-    #customCursor .top, #customCursor .bottom { width: 2px; height: 7px; left: -1px; }
-    #customCursor .left, #customCursor .right { width: 7px; height: 2px; top: -1px; }
-    #customCursor .top { top: -13px; }
-    #customCursor .bottom { top: 6px; }
-    #customCursor .left { left: -13px; }
-    #customCursor .right { left: 6px; }
+  .wordmark{
+    position:absolute;left:clamp(16px,2vw,40px);top:clamp(30px,6vh,64px);
+    width:clamp(460px,62vw,900px);
+    z-index:3;
+    user-select:none;
+    transition:opacity .25s ease;
+  }
+  .wordmark img{
+    width:100%;height:auto;display:block;
+  }
+  .stage.menu-open .wordmark{
+    opacity:0;
+    pointer-events:none;
+  }
 
-    #customCursor.theme-red .cross {
-        background: #ff2d55;
-        box-shadow: 0 0 6px #ff2d55, 0 0 10px rgba(255,45,85,0.6);
-    }
-    #customCursor.theme-green .cross {
-        background: #39ff6a;
-        box-shadow: 0 0 6px #39ff6a, 0 0 10px rgba(57,255,106,0.6);
-    }
-    #customCursor.theme-dot .cross {
-        display: none;
-    }
-    #customCursor.theme-dot::after {
-        content: '';
-        position: absolute;
-        top: -3px;
-        left: -3px;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #00f0ff;
-        box-shadow: 0 0 6px #00f0ff, 0 0 10px rgba(0,240,255,0.6);
-    }
+  .menu-backdrop{
+    position:fixed;inset:0;z-index:9;
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .stage.menu-open .menu-backdrop{
+    opacity:1;pointer-events:auto;
+  }
 
-    @media (hover: hover) and (pointer: fine) {
-        *, *::before, *::after {
-            cursor: none !important;
-        }
-    }
+  .side-menu{
+    position:fixed;top:0;left:0;bottom:0;
+    width:min(100vw,1600px);
+    z-index:10;
+    overflow:hidden;
+    transform:translateX(-100%);
+    transition:transform .35s cubic-bezier(.65,0,.35,1);
+  }
+  .stage.menu-open .side-menu{ transform:translateX(0); }
+  .side-menu-bg{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:fill;
+    pointer-events:none;
+    z-index:0;
+  }
+  .side-menu-content{
+    position:relative;z-index:1;
+    height:100%;
+    display:flex;flex-direction:column;
+    justify-content:center;
+    padding:clamp(30px,6vh,60px) clamp(24px,6vw,56px);
+    overflow-y:auto;
+  }
 
-    /* ---- Hover sparks ---- */
-    .spark {
-        position: fixed;
-        width: 4px;
-        height: 4px;
-        background: radial-gradient(circle, #00f0ff, rgba(0,240,255,0));
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 10002;
-        transform: translate(-50%, -50%);
-        animation: sparkMove 0.5s ease-out forwards;
-    }
-    @keyframes sparkMove {
-        to {
-            transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
-            opacity: 0;
-        }
-    }
+  .menu-wordmark{
+    display:block;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(5rem,13vw,10rem);
+    line-height:.85;
+    color:#ffffff;
+    text-decoration:none;
+    margin:0 0 clamp(60px,12vh,130px);
+    transform:rotate(-3deg) translateY(clamp(-60px,-6vh,-30px));
+    text-shadow:0 6px 0 rgba(0,0,0,.4);
+    filter:drop-shadow(0 0 22px rgba(255,255,255,.3));
+    transition:filter .18s ease, color .18s ease;
+  }
+  .menu-wordmark:hover, .menu-wordmark:focus-visible{
+    color:#e9d6ff;
+    filter:drop-shadow(0 0 30px rgba(255,255,255,.5));
+  }
 
-    /* ---- Header background particles ---- */
-    #headerParticles {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-    header > *:not(#headerParticles):not(#musicControlContainer) {
-        position: relative;
-        z-index: 1;
-    }
+  .menu-links{
+    list-style:none;margin:0;padding:0;
+    display:flex;flex-direction:column;gap:clamp(16px,3vh,30px);
+  }
+  .menu-links a{
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(3.4rem,9vw,7rem);
+    color:var(--menu-text);
+    text-decoration:none;
+    display:inline-block;
+    text-shadow:0 4px 0 rgba(0,0,0,.35);
+    transition:color .15s ease, transform .15s ease;
+  }
+  .menu-links li:nth-child(1) a{ transform:rotate(-2deg); }
+  .menu-links li:nth-child(2) a{ transform:rotate(1.5deg); }
+  .menu-links a:hover, .menu-links a:focus-visible{
+    color:#c98bff;
+    transform:scale(1.05) rotate(0deg);
+  }
 
-    /* ---- Game modal ---- */
-    #gameModal {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.75);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 10010;
-    }
-    #gameModalContent {
-        background: rgba(10,10,10,0.95);
-        border: 1px solid #00f0ff;
-        border-radius: 15px;
-        padding: 20px 25px;
-        width: 90%;
-        max-width: 620px;
-        max-height: 85vh;
-        overflow-y: auto;
-        color: white;
-        position: relative;
-        text-align: center;
-        box-shadow: 0 0 20px rgba(0,240,255,0.3);
-    }
-    #gameCloseBtn {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        font-size: 24px;
-        color: white;
-        cursor: pointer;
-        user-select: none;
-    }
-    .game-btn {
-        background-color: #003366;
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        margin: 8px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1em;
-        transition: box-shadow 0.3s ease;
-    }
-    .game-btn:hover {
-        box-shadow: 0 0 10px #00f0ff;
-    }
-    #difficultyToggleWrap {
-        margin-top: 10px;
-        font-size: 0.85em;
-        color: #ccc;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    #difficultyToggleWrap input {
-        accent-color: #00f0ff;
-        cursor: pointer;
-    }
-    #leaderboardBox, #themeBox {
-        margin-top: 20px;
-        text-align: left;
-        background: #1a1a1a;
-        border-radius: 10px;
-        padding: 10px 15px;
-    }
-    #leaderboardBox h3, #themeBox h3 {
-        color: #00f0ff;
-        cursor: default;
-        font-size: 1em;
-    }
-    #leaderboardList {
-        list-style: none;
-        padding-left: 0;
-        font-size: 0.9em;
-        color: #ccc;
-    }
-    #themeList {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .theme-btn {
-        background-color: #2a2a2a;
-        color: white;
-        border: 1px solid #444;
-        padding: 8px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.85em;
-        transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    .theme-btn.unlocked:hover {
-        box-shadow: 0 0 8px #00f0ff;
-    }
-    .theme-btn.active {
-        border-color: #00f0ff;
-        box-shadow: 0 0 8px #00f0ff;
-    }
-    .theme-btn.locked {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-    #unlockMessage {
-        color: #00f0ff;
-        font-size: 0.85em;
-        margin-top: 8px;
-    }
-    #aimHUD {
-        color: #00f0ff;
-        font-weight: bold;
-        margin-bottom: 10px;
-        text-shadow: 0 0 5px #00f0ff;
-    }
-    #aimPlayZone {
-        position: relative;
-        width: 100%;
-        height: 320px;
-        background: #111;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .target {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(circle, #00f0ff 0%, #003366 80%);
-        box-shadow: 0 0 12px #00f0ff;
-        cursor: pointer;
-        border: none;
-        animation: targetPop 0.15s ease-out;
-    }
-    @keyframes targetPop {
-        from { transform: scale(0); }
-        to { transform: scale(1); }
-    }
-    #reflexZone {
-        padding: 20px 0;
-    }
-    #reflexCircle {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        background: #333;
-        margin: 0 auto 20px auto;
-        cursor: pointer;
-        transition: background 0.15s ease, box-shadow 0.15s ease;
-    }
-    #reflexCircle.waiting {
-        background: #552222;
-    }
-    #reflexCircle.ready {
-        background: #00f0ff;
-        box-shadow: 0 0 25px #00f0ff;
-    }
-    #reflexMessage {
-        color: #ccc;
-    }
-    
-  /* Tablet responsive */
-@media (min-width: 600px) and (max-width: 959px) {
-    body {
-        font-size: 0.95rem;
-    }
-    .container {
-        padding: 15px 5% !important;
-        gap: 15px !important;
-    }
-    .section {
-        margin: 15px 5% !important;
-        padding: 10px !important;
-    }
-    .sensibility-box {
-        font-size: 1.2rem;
-        line-height: 1.5;
-        height: 320px;
-    }
-    footer {
-        margin: 0 5% !important;
-    }
-    .item-box {
-        width: 45% !important;
-        height: auto !important;
-        padding: 8px !important;
-    }
-    .buy-button {
-        padding: 8px !important;
-        font-size: 0.9em !important;
-    }
-}
+  .character{
+    position:absolute;right:clamp(2%,7vw,9%);bottom:0;
+    height:min(92dvh,760px);
+    filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 46px var(--purple-glow));
+    z-index:11;
+  }
+  .character img{height:100%;width:auto;display:block;}
 
-/* Mobile responsive */
-@media (max-width: 599px) {
-    body, html {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        font-size: 1rem;
-    }
-    .container {
-        flex-direction: column !important;
-        padding: 10px 5% !important;
-        gap: 15px !important;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .video-box, .sensibility-box {
-        width: 100% !important;
-        padding: 10px !important;
-        box-sizing: border-box;
-        height: auto !important;
-        margin-bottom: 15px;
-    }
-    .section {
-        margin: 10px auto !important;
-        padding: 10px;
-        width: calc(100% - 40px);
-        box-sizing: border-box;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .section-content {
-        flex-direction: column !important;
-        gap: 10px !important;
-        margin-top: 10px;
-        justify-content: flex-start !important;
-    }
-        .sensibility-box {
-        font-size: 1rem;
-        line-height: 1.5;
-        height: 320px;
-    }
-    .item-box {
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-        padding: 8px;
-        box-sizing: border-box;
-        text-align: center;
-    }
-    .item-box img {
-        max-width: 80%;
-        height: auto;
-    }
-    .buy-button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        font-size: 1em;
-        margin-top: 10px;
-        border-radius: 8px;
-        box-sizing: border-box;
-    }
+  .floor-glow{
+    position:absolute;left:0;right:0;bottom:0;height:22%;
+    background:linear-gradient(180deg, transparent, rgba(107,33,168,0.10));
+    z-index:1;pointer-events:none;
+  }
 
-    header {
-        padding: 15px 5% !important;
-        gap: 10px;
-        text-align: center;
-    }
-    #musicControlContainer {
-        position: static !important;
-        transform: none !important;
-        margin-top: 10px;
-        justify-content: center;
-        align-items: center;
-    }
-    #musicPlayer {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    footer {
-        margin: 0 5% !important;
-    }
-}
+  .signature{
+    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    transform:translateX(-50%);
+    z-index:5;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(.8rem,1.6vw,1rem);
+    color:rgba(244,241,236,.45);
+    letter-spacing:.04em;
+    white-space:nowrap;
+    pointer-events:none;
+    user-select:none;
+  }
 
+  @media (max-width: 720px){
+    .wordmark{
+      left:-16px;top:32px;width:min(78vw,340px);
+    }
+    .character{
+      right:4%;bottom:0;
+      height:min(50dvh,400px);
+    }
+    .side-menu{
+      width:min(82vw,420px);
+    }
+    .side-menu-content{
+      padding:100px 26px 40px;
+    }
+    .menu-wordmark{ font-size:clamp(3.4rem,16vw,5rem); margin-bottom:64px; }
+    .menu-links a{ font-size:clamp(2.4rem,13vw,3.8rem); }
+  }
+  @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
 </style>
 </head>
 <body>
-    <div id="bgParallax"></div>
-    <div id="customCursor">
-        <span class="cross top"></span>
-        <span class="cross bottom"></span>
-        <span class="cross left"></span>
-        <span class="cross right"></span>
+<div class="stage">
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="top-socials" aria-label="Socials">
+    <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" aria-label="Discord">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg>
+    </a>
+    <a href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener" aria-label="TikTok">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+    </a>
+  </nav>
+
+  <div class="floor-glow"></div>
+
+  <div class="wordmark-glow"></div>
+
+  <div class="wordmark">
+    <img src="assets/bash-wordmark.png" alt="BASH">
+  </div>
+
+  <div class="character" aria-hidden="true">
+    <img src="assets/character.png" alt="">
+  </div>
+
+  <div class="signature">BASH &middot; 2024&ndash;2026</div>
+
+  <div class="menu-backdrop" id="menuBackdrop"></div>
+
+  <nav class="side-menu" id="sideMenu" aria-hidden="true">
+    <img class="side-menu-bg" src="assets/menu-bg.png" alt="">
+    <div class="side-menu-content">
+      <a class="menu-wordmark" href="index.html">BASH</a>
+      <ul class="menu-links">
+        <li><a href="socials.html">Socials</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
     </div>
-    <div style="display:none;">Created by Bash</div>
-    <div id="bashWatermark">Bash</div>
-
-    <header>
-        <canvas id="headerParticles"></canvas>
-        <div id="headerMain">
-            <span class="username">BASH</span>
-            <div id="socialIcons">
-                <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener noreferrer">
-                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" />
-                </a>
-                <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener noreferrer">
-                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" />
-                </a>
-                <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener noreferrer">
-                  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" />
-                </a>
-            </div>
-        </div>
-        <div id="musicControlContainer">
-            <div id="musicPlayer">
-                <button id="prevTrackBtn" class="track-nav-btn" aria-label="Previous track">⏮</button>
-                <div id="playButtonWrapper">
-                    <canvas id="waveformCanvas"></canvas>
-                    <button id="musicControlBtn" aria-label="Play/Pause">▶</button>
-                </div>
-                <button id="nextTrackBtn" class="track-nav-btn" aria-label="Next track">⏭</button>
-                <div id="musicTrackInfo">
-                    <span id="musicTitle">Loading...</span>
-                    <div id="musicProgressBar"><div id="musicProgress"></div></div>
-                </div>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7" aria-label="Volume" />
-            </div>
-            <span id="musicInfo">▸ click to play</span>
-        </div>
-    </header>
-
-    <audio id="backgroundMusic" preload="auto"></audio>
-
-    <div class="container">
-        <div class="video-box">
-            <div class="video-thumbnail" id="videoThumbnail" style="cursor: pointer;">
-                <img src="https://i.ytimg.com/vi/ilHdFz6zbpc/maxresdefault.jpg" alt="Thumbnail of BASH's Valorant video" />
-                <div class="play-button" id="playButton">▶</div>
-            </div>
-            <div id="videoPlayerContainer">
-                <div id="videoPlayer"></div>
-            </div>
-        </div>
-
-        <div class="sensibility-box">
-            <h2>Valorant Sensibility</h2>
-            <p>0.32 800 dpi Raw accel</p>
-            <h3>Favorite Crosshair</h3>
-            <div class="favorite-buttons">
-                <button onclick="openModal(1)">1</button>
-                <button onclick="openModal(2)">2</button>
-                <button onclick="openModal(3)">3</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Hardware</h2>
-        <div class="section-content">
-            <div class="item-box">
-                <p>Razer Viper V3 Pro Wireless</p>
-                <img src="https://assets3.razerzone.com/2y2JG9RBGw3HijRRqX-7ZRsI4E4=/300x300/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fh08%2Fh61%2F9765618188318%2Fviper-v3-pro-black-500x500.png" loading="lazy" alt="Razer Viper V3 Pro Wireless gaming mouse" />
-                <a href="https://www.amazon.com/s?k=Razer+Viper+V3+Pro+Wireless&crid=2XCRO61VIECTO&sprefix=razer+viper+v3+pro+wireless%2Caps%2C274&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-            <div class="item-box">
-                <p>Apex Pro Mini Hypermagnetic</p>
-                <img src="https://i.ibb.co/CptxX2Jz/image-2025-08-10-221941341-removebg-preview.png" loading="lazy" alt="Apex Pro Mini Hypermagnetic gaming keyboard" />
-                <a href="https://www.amazon.com.be/s?k=apex+pro+mini+hypermagnetic&i=electronics&crid=2Z2XZE8SSD34K&sprefix=apex+pro+mini+hypermagnetic%2Celectronics%2C85&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-            <div class="item-box">
-                <p>Optix G27C4-009</p>
-                <img src="https://asset.msi.com/resize/image/global/product/product_4_20190820091455_5d5bba0fa82f3.png62405b38c58fe0f07fcef2367d8a9ba1/600.png" loading="lazy" alt="MSI Optix G27C4-009 gaming monitor" />
-                <a href="https://www.amazon.com.be/s?k=Optix+G27C4-009&crid=W713JLC7NNM5&sprefix=optix+g27c4-009%2Caps%2C80&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>PC Config</h2>
-        <div class="section-content">
-            <div class="item-box">
-                <p>NZXT H5 Flow</p>
-                <img src="https://i.ibb.co/h1c20q2z/image-2025-08-12-234215080-removebg-preview.png" loading="lazy" alt="NZXT H5 Flow PC case" />
-                <a href="https://www.amazon.fr/s?k=NZXT+H5+Flow&i=computers&__mk_fr_FR=ÅMÅŽÕÑ&crid=1NOJWWAUE9BB7&sprefix=nzxt+h5+flow%2Ccomputers%2C292&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-            <div class="item-box">
-                <p>Radeon RX 9070XT</p>
-                <img src="https://i.ibb.co/4RnfrY2b/image-2025-08-12-233913888-removebg-preview.png" loading="lazy" alt="Radeon RX 9070XT graphics card" />
-                <a href="https://www.amazon.fr/s?k=XFX+Speedster+MERC319+Radeon+RX+6900XT&__mk_fr_FR=ÅMÅŽÕÑ&crid=2A20JU55OJU11&sprefix=xfx+speedster+merc319+radeon+rx+6900xt%2Caps%2C219&ref=nb_sb_noss" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-            <div class="item-box">
-                <p>AMD Ryzen 7 5800X</p>
-                <img src="https://i.ibb.co/svb36zQz/image-2025-08-12-233634727-removebg-preview.png" loading="lazy" alt="AMD Ryzen 7 5800X processor" />
-                <a href="https://www.amazon.fr/s?k=AMD+Ryzen+7+5800X&__mk_fr_FR=ÅMÅŽÕÑ&crid=1BYM8PR0O9LEL&sprefix=amd+ryzen+7+5800x%2Caps%2C226&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-            <div class="item-box">
-                <p>MSI MPG B550 Gaming Plus</p>
-                <img src="https://i.ibb.co/HT4CdVrQ/image-2025-08-12-234736101-removebg-preview.png" loading="lazy" alt="MSI MPG B550 Gaming Plus motherboard" />
-                <a href="https://www.amazon.fr/s?k=MSI+MPG+B550+Gaming+Plus&__mk_fr_FR=ÅMÅŽÕÑ&crid=3DT3TTKJ18YQN&sprefix=msi+mpg+b550+gaming+plus%2Caps%2C128&ref=nb_sb_noss_1" target="_blank" rel="noopener noreferrer" class="buy-button">Buy It Now</a>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        @Bash 2026
-    </footer>
-
-    <button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
-
-    <div id="crosshairModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div id="modalContent">
-            <div id="modalCloseBtn" role="button" aria-label="Close modal" tabindex="0">×</div>
-            <h2 id="modalTitle">Favorite Crosshair</h2>
-            <div id="crosshairDisplay" tabindex="0" spellcheck="false">|</div>
-            <button id="copyCrosshairBtn" aria-label="Copy crosshair">Copy</button>
-        </div>
-    </div>
-
-    <div id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
-        <div id="gameModalContent">
-            <div id="gameCloseBtn" role="button" aria-label="Close" tabindex="0">×</div>
-
-            <div id="gameMenu">
-                <h2 id="gameModalTitle">Mini Games</h2>
-                <button id="startAimBtn" class="game-btn">Aim Trainer</button>
-                <button id="startReflexBtn" class="game-btn">Reflex Test</button>
-                <div id="difficultyToggleWrap">
-                    <label for="difficultyToggle">
-                        <input type="checkbox" id="difficultyToggle" /> Increasing difficulty (Aim Trainer)
-                    </label>
-                </div>
-
-                <div id="themeBox">
-                    <h3>Cursors</h3>
-                    <div id="themeList"></div>
-                </div>
-
-                <div id="leaderboardBox">
-                    <h3>Best Scores (this browser)</h3>
-                    <ol id="leaderboardList"></ol>
-                </div>
-            </div>
-
-            <div id="aimGameArea" style="display:none;">
-                <div id="aimHUD"><span id="aimTimer">30</span>s | Score: <span id="aimScore">0</span></div>
-                <div id="aimPlayZone"></div>
-            </div>
-
-            <div id="reflexGameArea" style="display:none;">
-                <div id="reflexZone">
-                    <div id="reflexCircle"></div>
-                    <p id="reflexMessage">Click when it turns cyan!</p>
-                </div>
-            </div>
-
-            <div id="gameResult" style="display:none;"></div>
-        </div>
-    </div>
+  </nav>
+</div>
 
 <script>
-    const watermark = document.getElementById('bashWatermark');
-    let posX = 50, posY = 50, dirX = 1, dirY = 1;
-    const speed = 0.6;
-    function moveWatermark() {
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-        const sizeW = watermark.offsetWidth;
-        const sizeH = watermark.offsetHeight;
+const stage = document.querySelector(".stage");
+const menuBtn = document.getElementById("menuBtn");
+const sideMenu = document.getElementById("sideMenu");
+const backdrop = document.getElementById("menuBackdrop");
 
-        posX += speed * dirX;
-        posY += speed * dirY;
+function setMenu(open){
+  stage.classList.toggle("menu-open", open);
+  menuBtn.classList.toggle("is-open", open);
+  menuBtn.setAttribute("aria-expanded", String(open));
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  sideMenu.setAttribute("aria-hidden", String(!open));
+}
 
-        if (posX + sizeW >= winW || posX <= 0) dirX = -dirX;
-        if (posY + sizeH >= winH || posY <= 0) dirY = -dirY;
-
-        watermark.style.left = posX + "px";
-        watermark.style.top = posY + "px";
-
-        requestAnimationFrame(moveWatermark);
-    }
-    moveWatermark();
-
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 200) {
-            scrollTopBtn.style.display = 'block';
-        } else {
-            scrollTopBtn.style.display = 'none';
-        }
-    });
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    const videoThumbnail = document.getElementById('videoThumbnail');
-    const videoPlayerContainer = document.getElementById('videoPlayerContainer');
-    const playButton = document.getElementById('playButton');
-
-    // YouTube IFrame API
-    var ytPlayer;
-    window.onYouTubeIframeAPIReady = function() {
-        ytPlayer = new YT.Player('videoPlayer', {
-            videoId: 'ilHdFz6zbpc',
-            playerVars: {
-                autoplay: 0,
-                rel: 0,
-                modestbranding: 1,
-                controls: 1
-            },
-            events: {
-                onReady: function(event) {}
-            }
-        });
-    };
-
-    // Load the YouTube API
-    (function() {
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    })();
-
-    videoThumbnail.addEventListener('click', () => {
-        videoPlayerContainer.style.display = 'block';
-        videoThumbnail.style.display = 'none';
-        if (ytPlayer && ytPlayer.playVideo) {
-            ytPlayer.playVideo();
-        }
-    });
-
-    /* ================= Music player (auto-loaded playlist) ================= */
-    const bgMusic = document.getElementById('backgroundMusic');
-    const musicControlBtn = document.getElementById('musicControlBtn');
-    const musicInfo = document.getElementById('musicInfo');
-    const musicProgress = document.getElementById('musicProgress');
-    const musicTitleEl = document.getElementById('musicTitle');
-    const prevTrackBtn = document.getElementById('prevTrackBtn');
-    const nextTrackBtn = document.getElementById('nextTrackBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const waveformCanvas = document.getElementById('waveformCanvas');
-
-    bgMusic.crossOrigin = "anonymous";
-
-    let isPlaying = false;
-    let tracks = [];
-    let currentTrackIndex = 0;
-
-    function setPlaying(state) {
-        isPlaying = state;
-        musicControlBtn.textContent = state ? "⏸" : "▶";
-        musicControlBtn.style.filter = state
-            ? "drop-shadow(0 0 8px #00f0ff)"
-            : "drop-shadow(0 0 4px #00f0ff)";
-        musicInfo.style.display = state ? "none" : "inline";
-    }
-
-    function prettifyTrackName(raw) {
-        return raw
-            .replace(/^[0-9]+[\s._-]*/, '')
-            .replace(/\.[^/.]+$/, '')
-            .replace(/[_-]+/g, ' ')
-            .trim();
-    }
-
-    function updateNavButtons() {
-        prevTrackBtn.disabled = currentTrackIndex <= 0;
-        nextTrackBtn.disabled = currentTrackIndex >= tracks.length - 1;
-    }
-
-    function loadTrack(index, autoplay) {
-        if (!tracks.length || index < 0 || index >= tracks.length) return;
-        currentTrackIndex = index;
-        const track = tracks[index];
-        console.log('[music] Loading track URL:', track.url);
-        bgMusic.src = track.url;
-        bgMusic.load();
-        musicTitleEl.textContent = track.name;
-        musicProgress.style.width = '0%';
-        updateNavButtons();
-        if (autoplay) {
-            setupAudioAnalyser();
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            bgMusic.play().then(() => setPlaying(true)).catch((err) => {
-                console.error('Audio play error:', err);
-            });
-        } else {
-            setPlaying(false);
-        }
-    }
-
-    musicControlBtn.addEventListener('click', () => {
-        if (!tracks.length) return;
-        setupAudioAnalyser();
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        if (!isPlaying) {
-            bgMusic.play().then(() => setPlaying(true)).catch((err) => {
-                console.error('Audio play error:', err);
-            });
-        } else {
-            bgMusic.pause();
-            setPlaying(false);
-        }
-    });
-
-    prevTrackBtn.addEventListener('click', () => {
-        if (currentTrackIndex > 0) loadTrack(currentTrackIndex - 1, true);
-    });
-    nextTrackBtn.addEventListener('click', () => {
-        if (currentTrackIndex < tracks.length - 1) loadTrack(currentTrackIndex + 1, true);
-    });
-
-    bgMusic.addEventListener('ended', () => {
-        if (currentTrackIndex < tracks.length - 1) {
-            loadTrack(currentTrackIndex + 1, true);
-        } else {
-            setPlaying(false);
-            bgMusic.currentTime = 0;
-        }
-    });
-
-    bgMusic.addEventListener('timeupdate', () => {
-        if (bgMusic.duration) {
-            const pct = (bgMusic.currentTime / bgMusic.duration) * 100;
-            musicProgress.style.width = pct + '%';
-        }
-    });
-
-    // Volume
-    const savedVolume = parseFloat(localStorage.getItem('bash_volume'));
-    bgMusic.volume = isNaN(savedVolume) ? 0.7 : savedVolume;
-    volumeSlider.value = bgMusic.volume;
-    volumeSlider.addEventListener('input', () => {
-        bgMusic.volume = parseFloat(volumeSlider.value);
-        localStorage.setItem('bash_volume', volumeSlider.value);
-    });
-
-    // Auto-load every mp3 found in the repo's /music folder (no code changes needed to add/remove songs)
-    async function fetchPlaylistFromBranch(branch) {
-        const res = await fetch(`https://data.jsdelivr.com/v1/package/gh/YupBash/BashSite@${branch}/flat`);
-        if (!res.ok) throw new Error(`jsDelivr returned ${res.status} for branch "${branch}"`);
-        const data = await res.json();
-        const files = (data.files || [])
-            .filter(f => /^\/music\//i.test(f.name) && /\.mp3$/i.test(f.name))
-            .map(f => {
-                const encodedPath = f.name.split('/').map(encodeURIComponent).join('/');
-                return {
-                    name: prettifyTrackName(f.name.replace(/^\/music\//i, '')),
-                    url: `https://cdn.jsdelivr.net/gh/YupBash/BashSite@${branch}${encodedPath}`
-                };
-            })
-            .sort((a, b) => a.name.localeCompare(b.name));
-        return files;
-    }
-
-    async function loadPlaylist() {
-        let files = [];
-        for (const branch of ['main', 'master']) {
-            try {
-                files = await fetchPlaylistFromBranch(branch);
-                if (files.length) {
-                    console.log(`[music] Loaded ${files.length} track(s) from branch "${branch}".`);
-                    break;
-                } else {
-                    console.warn(`[music] Branch "${branch}" reached, but no .mp3 files found in /music.`);
-                }
-            } catch (err) {
-                console.warn(`[music] Could not load playlist from branch "${branch}":`, err.message);
-            }
-        }
-
-        if (!files.length) {
-            console.error('[music] No playable tracks found. Check that /music/*.mp3 exists on GitHub and that jsDelivr\'s cache has been purged (https://purge.jsdelivr.net/gh/YupBash/BashSite@main/music).');
-            tracks = [];
-            musicTitleEl.textContent = 'No tracks found';
-            musicControlBtn.disabled = true;
-            musicControlBtn.style.opacity = '0.4';
-            prevTrackBtn.disabled = true;
-            nextTrackBtn.disabled = true;
-            return;
-        }
-
-        tracks = files;
-        loadTrack(0, false);
-    }
-    loadPlaylist();
-
-    // Circular waveform around the play button
-    let audioCtx, analyser, freqData, sourceNode;
-    function setupAudioAnalyser() {
-        if (audioCtx) return;
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            sourceNode = audioCtx.createMediaElementSource(bgMusic);
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 64;
-            freqData = new Uint8Array(analyser.frequencyBinCount);
-            sourceNode.connect(analyser);
-            analyser.connect(audioCtx.destination);
-        } catch (err) {
-            console.warn('Audio analyser unavailable:', err);
-        }
-    }
-    function drawWaveform() {
-        const ctx = waveformCanvas.getContext('2d');
-        const size = 46;
-        if (waveformCanvas.width !== size) {
-            waveformCanvas.width = size;
-            waveformCanvas.height = size;
-        }
-        ctx.clearRect(0, 0, size, size);
-        if (isPlaying && analyser) {
-            analyser.getByteFrequencyData(freqData);
-            const cx = size / 2, cy = size / 2;
-            const barCount = 20;
-            const baseRadius = 15;
-            for (let i = 0; i < barCount; i++) {
-                const idx = Math.floor((i / barCount) * freqData.length);
-                const amp = freqData[idx] / 255;
-                const barLength = 2 + amp * 7;
-                const angle = (i / barCount) * Math.PI * 2;
-                const x1 = cx + Math.cos(angle) * baseRadius;
-                const y1 = cy + Math.sin(angle) * baseRadius;
-                const x2 = cx + Math.cos(angle) * (baseRadius + barLength);
-                const y2 = cy + Math.sin(angle) * (baseRadius + barLength);
-                ctx.strokeStyle = `rgba(0,240,255,${0.35 + amp * 0.6})`;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-            }
-        }
-        requestAnimationFrame(drawWaveform);
-    }
-    drawWaveform();
-
-    const crosshairModal = document.getElementById('crosshairModal');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const crosshairDisplay = document.getElementById('crosshairDisplay');
-    const copyCrosshairBtn = document.getElementById('copyCrosshairBtn');
-
-    function openModal(num) {
-        const crosshairs = {
-            1: "0;P;d;1;f;0;0t;4;0l;1;0o;0;0a;1;0f;0;1b;0",
-            2: "0;P;h;0;f;0;0l;4;0o;0;0a;1;0f;0;1b;0",
-            3: "0;P;c;7;o;0.1;m;1;0t;5;0l;3;0o;1;0a;0.7;0f;0;1t;1;1l;5;1o;0;1a;0.7;1m;0;1f;0"
-        };
-        crosshairDisplay.textContent = crosshairs[num] || "|";
-        crosshairModal.style.display = 'flex';
-        crosshairDisplay.focus();
-    }
-    modalCloseBtn.addEventListener('click', () => {
-        crosshairModal.style.display = 'none';
-    });
-    crosshairModal.addEventListener('click', (e) => {
-        if (e.target === crosshairModal) {
-            crosshairModal.style.display = 'none';
-        }
-    });
-    copyCrosshairBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(crosshairDisplay.textContent).then(() => {
-            alert('Crosshair copied!');
-        }).catch(() => {
-            alert('Copy failed!');
-        });
-    });
-
-    document.querySelectorAll('.section > h2').forEach(h2 => {
-        const content = h2.nextElementSibling;
-        if (!content) return;
-
-        h2.addEventListener('click', () => {
-            if (content.classList.contains('collapsed')) {
-                content.classList.remove('collapsed');
-            } else {
-                content.classList.add('collapsed');
-            }
-        });
-    });
-
-    /* Fade-in sections as they scroll into view */
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-                sectionObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.section').forEach(sec => sectionObserver.observe(sec));
-
-    /* Subtle background parallax on mouse move */
-    const bgParallax = document.getElementById('bgParallax');
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        bgParallax.style.transform = `translate(${x * 8}px, ${y * 8}px)`;
-    });
-
-    /* Console easter egg */
-    console.log(
-        '%c██████╗  █████╗ ███████╗██╗  ██╗\n' +
-        '██╔══██╗██╔══██╗██╔════╝██║  ██║\n' +
-        '██████╔╝███████║███████╗███████║\n' +
-        '██╔══██╗██╔══██║╚════██║██╔══██║\n' +
-        '██████╔╝██║  ██║███████║██║  ██║\n' +
-        '╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝',
-        'color:#00f0ff; font-family:monospace; text-shadow:0 0 6px #00f0ff;'
-    );
-    console.log('%cYo, what are you looking at?', 'color:#00f0ff; font-size:14px; font-weight:bold;');
-
-    /* Custom crosshair cursor */
-    const customCursor = document.getElementById('customCursor');
-    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        customCursor.style.display = 'block';
-        document.addEventListener('mousemove', (e) => {
-            customCursor.style.left = e.clientX + 'px';
-            customCursor.style.top = e.clientY + 'px';
-        });
-    }
-
-    /* Hover sparks */
-    const sparkSelector = '.buy-button, header img, #musicControlBtn, .track-nav-btn, #scrollTopBtn, .favorite-buttons button, #copyCrosshairBtn, .game-btn, .target, #reflexCircle, .theme-btn';
-    let lastSparkTime = 0;
-    document.addEventListener('mousemove', (e) => {
-        if (e.target.closest(sparkSelector)) {
-            const now = Date.now();
-            if (now - lastSparkTime > 40) {
-                lastSparkTime = now;
-                spawnSpark(e.clientX, e.clientY);
-            }
-        }
-    });
-    function spawnSpark(x, y) {
-        const s = document.createElement('div');
-        s.className = 'spark';
-        const angle = Math.random() * Math.PI * 2;
-        const dist = 15 + Math.random() * 20;
-        s.style.left = x + 'px';
-        s.style.top = y + 'px';
-        s.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-        s.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-        document.body.appendChild(s);
-        setTimeout(() => s.remove(), 500);
-    }
-
-    /* Header background particles */
-    (function initHeaderParticles() {
-        const canvas = document.getElementById('headerParticles');
-        const header = document.querySelector('header');
-        const ctx = canvas.getContext('2d');
-
-        function resize() {
-            canvas.width = header.offsetWidth;
-            canvas.height = header.offsetHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        const particles = Array.from({ length: 35 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 1.4 + 0.4,
-            speed: Math.random() * 0.25 + 0.08,
-            alpha: Math.random() * 0.4 + 0.15
-        }));
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.y -= p.speed;
-                if (p.y < 0) {
-                    p.y = canvas.height;
-                    p.x = Math.random() * canvas.width;
-                }
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(0,240,255,${p.alpha})`;
-                ctx.fill();
-            });
-            requestAnimationFrame(draw);
-        }
-        draw();
-    })();
-
-    /* Glitch effect on the title, every couple of minutes */
-    (function scheduleGlitch() {
-        const el = document.querySelector('.username');
-        const delay = 120000 + Math.random() * 180000; // 2 to 5 minutes
-        setTimeout(() => {
-            el.classList.add('glitching');
-            setTimeout(() => el.classList.remove('glitching'), 300);
-            scheduleGlitch();
-        }, delay);
-    })();
-
-    /* ================= Cursor themes (unlockable) ================= */
-    const CURSOR_THEMES = [
-        { id: 'default', label: 'Cyan (default)', condition: 'Unlocked by default' },
-        { id: 'red', label: 'Red', condition: 'Aim Trainer score \u2265 15' },
-        { id: 'dot', label: 'Dot', condition: 'Aim Trainer score \u2265 25' },
-        { id: 'green', label: 'Green', condition: 'Reflex Test average \u2264 250 ms' }
-    ];
-
-    function getUnlockedThemes() {
-        const stored = JSON.parse(localStorage.getItem('bash_unlocked_themes') || '["default"]');
-        if (!stored.includes('default')) stored.push('default');
-        return stored;
-    }
-    function getActiveTheme() {
-        return localStorage.getItem('bash_cursor_theme') || 'default';
-    }
-    function setActiveTheme(id) {
-        localStorage.setItem('bash_cursor_theme', id);
-        applyCursorTheme(id);
-        renderThemes();
-    }
-    function applyCursorTheme(id) {
-        customCursor.className = '';
-        if (id !== 'default') customCursor.classList.add('theme-' + id);
-    }
-    function unlockTheme(id) {
-        const unlocked = getUnlockedThemes();
-        if (!unlocked.includes(id)) {
-            unlocked.push(id);
-            localStorage.setItem('bash_unlocked_themes', JSON.stringify(unlocked));
-            return true;
-        }
-        return false;
-    }
-    function checkThemeUnlocks(type, value) {
-        const justUnlocked = [];
-        if (type === 'aim') {
-            if (value >= 15 && unlockTheme('red')) justUnlocked.push('Red');
-            if (value >= 25 && unlockTheme('dot')) justUnlocked.push('Dot');
-        }
-        if (type === 'reflex') {
-            if (value <= 250 && unlockTheme('green')) justUnlocked.push('Green');
-        }
-        return justUnlocked;
-    }
-    function renderThemes() {
-        const themeList = document.getElementById('themeList');
-        const unlocked = getUnlockedThemes();
-        const active = getActiveTheme();
-        themeList.innerHTML = '';
-        CURSOR_THEMES.forEach(theme => {
-            const isUnlocked = unlocked.includes(theme.id);
-            const btn = document.createElement('button');
-            btn.className = 'theme-btn ' + (isUnlocked ? 'unlocked' : 'locked') + (theme.id === active ? ' active' : '');
-            btn.textContent = isUnlocked ? theme.label : theme.label + ' (locked)';
-            btn.title = theme.condition;
-            if (isUnlocked) {
-                btn.addEventListener('click', () => setActiveTheme(theme.id));
-            }
-            themeList.appendChild(btn);
-        });
-    }
-    applyCursorTheme(getActiveTheme());
-
-    /* ================= Increasing difficulty (Aim Trainer) ================= */
-    const difficultyToggle = document.getElementById('difficultyToggle');
-    difficultyToggle.checked = localStorage.getItem('bash_aim_difficulty') === 'true';
-    difficultyToggle.addEventListener('change', () => {
-        localStorage.setItem('bash_aim_difficulty', difficultyToggle.checked);
-    });
-
-    /* ================= Game modal (Aim Trainer + Reflex Test) ================= */
-    const gameModal = document.getElementById('gameModal');
-    const gameCloseBtn = document.getElementById('gameCloseBtn');
-    const gameMenu = document.getElementById('gameMenu');
-    const aimGameArea = document.getElementById('aimGameArea');
-    const reflexGameArea = document.getElementById('reflexGameArea');
-    const gameResult = document.getElementById('gameResult');
-    const startAimBtn = document.getElementById('startAimBtn');
-    const startReflexBtn = document.getElementById('startReflexBtn');
-    const aimPlayZone = document.getElementById('aimPlayZone');
-    const aimTimerEl = document.getElementById('aimTimer');
-    const aimScoreEl = document.getElementById('aimScore');
-    const leaderboardList = document.getElementById('leaderboardList');
-    const usernameEl = document.querySelector('.username');
-
-    usernameEl.addEventListener('click', () => {
-        gameModal.style.display = 'flex';
-        showGameMenu();
-    });
-    gameCloseBtn.addEventListener('click', closeGameModal);
-    gameModal.addEventListener('click', (e) => {
-        if (e.target === gameModal) closeGameModal();
-    });
-
-    function closeGameModal() {
-        gameModal.style.display = 'none';
-        stopAimGame();
-        stopReflexGame();
-    }
-    function showGameMenu() {
-        gameMenu.style.display = 'block';
-        aimGameArea.style.display = 'none';
-        reflexGameArea.style.display = 'none';
-        gameResult.style.display = 'none';
-        renderLeaderboard();
-        renderThemes();
-    }
-
-    /* Aim Trainer */
-    let aimTimeLeft = 0, aimScore = 0, aimInterval = null;
-    let aimDifficultyEnabled = false;
-    const AIM_DURATION = 30;
-    startAimBtn.addEventListener('click', () => {
-        gameMenu.style.display = 'none';
-        gameResult.style.display = 'none';
-        aimGameArea.style.display = 'block';
-        aimDifficultyEnabled = difficultyToggle.checked;
-        startAimGame();
-    });
-    function startAimGame() {
-        aimTimeLeft = AIM_DURATION;
-        aimScore = 0;
-        aimTimerEl.textContent = aimTimeLeft;
-        aimScoreEl.textContent = aimScore;
-        aimPlayZone.innerHTML = '';
-        spawnTarget();
-        clearInterval(aimInterval);
-        aimInterval = setInterval(() => {
-            aimTimeLeft--;
-            aimTimerEl.textContent = aimTimeLeft;
-            if (aimTimeLeft <= 0) endAimGame();
-        }, 1000);
-    }
-    function getTargetSize() {
-        if (!aimDifficultyEnabled) return 40;
-        const elapsedFraction = 1 - (aimTimeLeft / AIM_DURATION);
-        return Math.max(40 - elapsedFraction * 22, 18);
-    }
-    function spawnTarget() {
-        const zoneRect = aimPlayZone.getBoundingClientRect();
-        const size = getTargetSize();
-        const maxX = Math.max(zoneRect.width - size, 10);
-        const maxY = Math.max(zoneRect.height - size, 10);
-        const target = document.createElement('div');
-        target.className = 'target';
-        target.style.width = size + 'px';
-        target.style.height = size + 'px';
-        target.style.left = Math.random() * maxX + 'px';
-        target.style.top = Math.random() * maxY + 'px';
-        target.addEventListener('click', (e) => {
-            e.stopPropagation();
-            aimScore++;
-            aimScoreEl.textContent = aimScore;
-            target.remove();
-            if (aimTimeLeft > 0) spawnTarget();
-        });
-        aimPlayZone.appendChild(target);
-    }
-    function endAimGame() {
-        clearInterval(aimInterval);
-        aimPlayZone.innerHTML = '';
-        aimGameArea.style.display = 'none';
-        gameResult.style.display = 'block';
-        saveScore('aim', aimScore);
-        const unlocks = checkThemeUnlocks('aim', aimScore);
-        gameResult.innerHTML = `<h3>Final score: ${aimScore}</h3>
-            ${unlocks.length ? `<p id="unlockMessage">New cursor unlocked: ${unlocks.join(', ')}</p>` : ''}
-            <button class="game-btn" id="aimRetryBtn">Play again</button>
-            <button class="game-btn" id="backToMenuBtn1">Menu</button>`;
-        document.getElementById('aimRetryBtn').addEventListener('click', () => {
-            gameResult.style.display = 'none';
-            aimGameArea.style.display = 'block';
-            startAimGame();
-        });
-        document.getElementById('backToMenuBtn1').addEventListener('click', showGameMenu);
-    }
-    function stopAimGame() {
-        clearInterval(aimInterval);
-        aimPlayZone.innerHTML = '';
-    }
-
-    /* Reflex Test */
-    const reflexCircle = document.getElementById('reflexCircle');
-    const reflexMessage = document.getElementById('reflexMessage');
-    let reflexState = 'idle';
-    let reflexTimeout = null;
-    let reflexStartTime = 0;
-    let reflexRound = 0;
-    let reflexTimes = [];
-    const REFLEX_ROUNDS = 5;
-
-    startReflexBtn.addEventListener('click', () => {
-        gameMenu.style.display = 'none';
-        gameResult.style.display = 'none';
-        reflexGameArea.style.display = 'block';
-        reflexRound = 0;
-        reflexTimes = [];
-        nextReflexRound();
-    });
-    function nextReflexRound() {
-        if (reflexRound >= REFLEX_ROUNDS) {
-            endReflexGame();
-            return;
-        }
-        reflexRound++;
-        reflexState = 'waiting';
-        reflexCircle.className = 'waiting';
-        reflexMessage.textContent = `Round ${reflexRound}/${REFLEX_ROUNDS} — wait for cyan...`;
-        const delay = 1000 + Math.random() * 2500;
-        reflexTimeout = setTimeout(() => {
-            reflexState = 'ready';
-            reflexCircle.className = 'ready';
-            reflexStartTime = performance.now();
-        }, delay);
-    }
-    reflexCircle.addEventListener('click', () => {
-        if (reflexState === 'waiting') {
-            clearTimeout(reflexTimeout);
-            reflexMessage.textContent = 'Too soon! Retrying this round...';
-            reflexCircle.className = '';
-            reflexRound--;
-            setTimeout(nextReflexRound, 900);
-            reflexState = 'idle';
-            return;
-        }
-        if (reflexState === 'ready') {
-            const reactionTime = Math.round(performance.now() - reflexStartTime);
-            reflexTimes.push(reactionTime);
-            reflexMessage.textContent = `${reactionTime} ms!`;
-            reflexCircle.className = '';
-            reflexState = 'idle';
-            setTimeout(nextReflexRound, 700);
-        }
-    });
-    function endReflexGame() {
-        const avg = Math.round(reflexTimes.reduce((a, b) => a + b, 0) / reflexTimes.length);
-        reflexGameArea.style.display = 'none';
-        gameResult.style.display = 'block';
-        saveScore('reflex', avg);
-        const unlocks = checkThemeUnlocks('reflex', avg);
-        gameResult.innerHTML = `<h3>Average reaction time: ${avg} ms</h3>
-            ${unlocks.length ? `<p id="unlockMessage">New cursor unlocked: ${unlocks.join(', ')}</p>` : ''}
-            <button class="game-btn" id="reflexRetryBtn">Play again</button>
-            <button class="game-btn" id="backToMenuBtn2">Menu</button>`;
-        document.getElementById('reflexRetryBtn').addEventListener('click', () => {
-            gameResult.style.display = 'none';
-            reflexGameArea.style.display = 'block';
-            reflexRound = 0;
-            reflexTimes = [];
-            nextReflexRound();
-        });
-        document.getElementById('backToMenuBtn2').addEventListener('click', showGameMenu);
-    }
-    function stopReflexGame() {
-        clearTimeout(reflexTimeout);
-        reflexCircle.className = '';
-        reflexState = 'idle';
-    }
-
-    /* Leaderboard */
-    function saveScore(type, value) {
-        const key = type === 'aim' ? 'bash_aim_scores' : 'bash_reflex_scores';
-        let scores = JSON.parse(localStorage.getItem(key) || '[]');
-        scores.push({ value, date: new Date().toLocaleDateString('en-GB') });
-        scores.sort((a, b) => type === 'aim' ? b.value - a.value : a.value - b.value);
-        scores = scores.slice(0, 5);
-        localStorage.setItem(key, JSON.stringify(scores));
-    }
-    function renderLeaderboard() {
-        const aimScores = JSON.parse(localStorage.getItem('bash_aim_scores') || '[]');
-        const reflexScores = JSON.parse(localStorage.getItem('bash_reflex_scores') || '[]');
-        leaderboardList.innerHTML = '';
-        if (aimScores.length) {
-            leaderboardList.innerHTML += '<li><strong>Aim Trainer</strong></li>';
-            aimScores.forEach(s => {
-                leaderboardList.innerHTML += `<li>${s.value} targets — ${s.date}</li>`;
-            });
-        }
-        if (reflexScores.length) {
-            leaderboardList.innerHTML += '<li style="margin-top:6px;"><strong>Reflex Test</strong></li>';
-            reflexScores.forEach(s => {
-                leaderboardList.innerHTML += `<li>${s.value} ms — ${s.date}</li>`;
-            });
-        }
-        if (!aimScores.length && !reflexScores.length) {
-            leaderboardList.innerHTML = '<li>No scores yet — play to set one!</li>';
-        }
-    }
+menuBtn.addEventListener("click", () => {
+  setMenu(!stage.classList.contains("menu-open"));
+});
+backdrop.addEventListener("click", () => setMenu(false));
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") setMenu(false);
+});
 </script>
 </body>
 </html>
