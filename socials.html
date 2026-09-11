@@ -50,10 +50,7 @@
   .stage{
     position:relative;
     width:100%;height:calc(var(--vh, 1vh) * 100);min-height:320px;
-    background:
-      radial-gradient(ellipse 70% 60% at 78% 30%, rgba(107,33,168,0.16), transparent 60%),
-      radial-gradient(ellipse 90% 70% at 10% 90%, rgba(58,14,92,0.22), transparent 65%),
-      var(--bg);
+    background:var(--bg);
   }
 
   .menu-btn{
@@ -73,17 +70,7 @@
   .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
 
   .wordmark-glow{
-    position:absolute;left:clamp(300px,34vw,460px);top:clamp(180px,30vh,360px);
-    width:clamp(700px,80vw,1300px);height:clamp(700px,80vw,1300px);
-    transform:translate(-50%,-50%);
-    background:radial-gradient(circle at center,
-      rgba(139,63,209,0.65), rgba(139,63,209,0.38) 32%, rgba(107,33,168,0.16) 55%, transparent 72%);
-    z-index:2;
-    pointer-events:none;
-    transition:opacity .25s ease;
-  }
-  .stage.menu-open .wordmark-glow{
-    opacity:0;
+    display:none;
   }
 
   .wordmark{
@@ -175,9 +162,7 @@
   }
 
   .floor-glow{
-    position:absolute;left:0;right:0;bottom:0;height:22%;
-    background:linear-gradient(180deg, transparent, rgba(107,33,168,0.10));
-    z-index:1;pointer-events:none;
+    display:none;
   }
 
   .signature{
@@ -227,17 +212,8 @@
   }
 
   @media (max-width: 720px){
-    .stage{
-      background:var(--bg);
-    }
     .wordmark{
-      left:-16px;top:32px;width:min(78vw,340px);
-    }
-    .wordmark-glow{
-      display:none;
-    }
-    .floor-glow{
-      display:none;
+      left:12px;top:32px;width:min(78vw,340px);
     }
     .side-menu{
       width:100vw;
