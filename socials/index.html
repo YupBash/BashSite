@@ -66,9 +66,9 @@
   }
   .menu-btn:hover span{opacity:1;background:var(--purple);}
   .menu-btn:focus-visible{outline:2px solid var(--purple);outline-offset:4px;}
-  .menu-btn.is-open span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+  .menu-btn.is-open span:nth-child(1){ transform:translateY(calc(max(5px,0.45vw) + max(2.5px,0.2vw))) rotate(45deg); }
   .menu-btn.is-open span:nth-child(2){ opacity:0; }
-  .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
+  .menu-btn.is-open span:nth-child(3){ transform:translateY(calc(-1 * (max(5px,0.45vw) + max(2.5px,0.2vw)))) rotate(-45deg); }
 
   .wordmark-tag{
     position:absolute;left:clamp(30px,6vw,90px);top:50%;
