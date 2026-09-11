@@ -133,6 +133,7 @@
     height:calc(var(--vh, 1vh) * 100);
     width:100vw;
     z-index:10;
+    background:var(--bg);
     overflow:hidden;
     transform:translateX(-100%);
     transition:transform .35s cubic-bezier(.65,0,.35,1);
@@ -140,7 +141,7 @@
   .stage.menu-open .side-menu{ transform:translateX(0); }
   .side-menu-bg{
     position:absolute;inset:0;
-    width:220%;height:100%;
+    width:236%;height:100%;
     object-fit:fill;
     pointer-events:none;
     z-index:0;
