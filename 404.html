@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  function setVH(){
+    document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
+  }
+  setVH();
+  window.addEventListener("resize", setVH);
+  window.addEventListener("orientationchange", setVH);
+})();
+</script>
+<title>BASH — Page not found</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Permanent+Marker&display=swap">
+<style>
+  :root{
+    --bg:#08070a;
+    --ink:#f4f1ec;
+    --purple:#6b21a8;
+    --purple-glow:rgba(107,33,168,0.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    overflow:hidden;
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cg transform='rotate(-28 13 13)'%3E%3Crect x='10' y='3' width='6' height='19' rx='3' fill='%239853e0' stroke='%231a0b28' stroke-width='1.4'/%3E%3Crect x='10' y='3' width='6' height='6' rx='3' fill='%23e9d6ff'/%3E%3C/g%3E%3C/svg%3E") 8 4, auto;
+  }
+  .stage{
+    position:relative;
+    width:100%;height:calc(var(--vh, 1vh) * 100);min-height:320px;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 32%, rgba(107,33,168,0.14), transparent 62%),
+      var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+    padding:24px;
+  }
+  .wordmark-link{
+    position:absolute;top:clamp(18px,4vw,34px);left:clamp(18px,4vw,34px);
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(1.6rem,3vw,2.2rem);
+    color:var(--ink);
+    text-decoration:none;
+    opacity:.8;
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .wordmark-link:hover{ opacity:1; transform:translateY(-2px); }
+
+  .code{
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(5rem,16vw,10rem);
+    line-height:.9;
+    color:#ffffff;
+    text-shadow:0 6px 0 rgba(0,0,0,.4);
+    filter:drop-shadow(0 0 30px rgba(139,63,209,.45));
+    margin:0;
+    transform:rotate(-2deg);
+  }
+  .msg{
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(1.1rem,2.4vw,1.6rem);
+    color:#d8cdeb;
+    margin:10px 0 30px;
+    max-width:32ch;
+  }
+
+  .character{
+    height:min(var(--vh, 1vh) * 42,340px);
+    margin-bottom:20px;
+    filter:drop-shadow(0 20px 30px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(107,33,168,.28));
+    animation:characterFloat 4.5s ease-in-out infinite;
+    pointer-events:none;
+    user-select:none;
+  }
+  @keyframes characterFloat{
+    0%, 100%{ transform:translateY(0); }
+    50%{ transform:translateY(-14px); }
+  }
+
+  .home-btn{
+    display:inline-block;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(1.1rem,2vw,1.4rem);
+    color:var(--ink);
+    text-decoration:none;
+    padding:14px 30px;
+    border:2px solid rgba(255,255,255,.25);
+    border-radius:999px;
+    background:rgba(139,63,209,.12);
+    transition:transform .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .home-btn:hover, .home-btn:focus-visible{
+    transform:translateY(-2px) scale(1.03);
+    border-color:var(--purple);
+    background:rgba(139,63,209,.22);
+  }
+
+  .signature{
+    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    transform:translateX(-50%);
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(.8rem,1.6vw,1rem);
+    color:rgba(244,241,236,.45);
+    letter-spacing:.04em;
+    white-space:nowrap;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  @media (max-width: 520px){
+    .character{ height:min(var(--vh, 1vh) * 32,240px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .character{ animation:none; }
+    *{ transition-duration:.001ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <a class="wordmark-link" href="index.html">BASH</a>
+
+  <img class="character" src="assets/character.png" alt="">
+  <h1 class="code">404</h1>
+  <p class="msg">Yeah, this page doesn't exist. Probably my fault, not yours.</p>
+  <a class="home-btn" href="index.html">Back home</a>
+
+  <div class="signature">BASH &middot; 2024&ndash;2026</div>
+</div>
+</body>
+</html>
