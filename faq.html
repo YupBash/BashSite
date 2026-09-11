@@ -120,6 +120,16 @@
     scrollbar-width:thin;
   }
   .faq-col.right{ align-self:center; }
+  .stage.menu-open .faq-columns{
+    z-index:11;
+    pointer-events:none;
+  }
+  .stage.menu-open .faq-col.left{
+    opacity:0;
+  }
+  .stage.menu-open .faq-col.right{
+    pointer-events:auto;
+  }
 
   details.faq-item{
     background:rgba(10,8,14,.2);
