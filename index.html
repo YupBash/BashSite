@@ -57,12 +57,12 @@
   }
 
   .menu-btn{
-    position:absolute;top:clamp(18px,4vw,34px);left:clamp(18px,4vw,34px);
-    z-index:20;display:flex;flex-direction:column;justify-content:center;gap:6px;
-    width:30px;padding:12px 4px;background:none;border:none;cursor:pointer;
+    position:absolute;top:max(18px,4vw);left:max(18px,4vw);
+    z-index:20;display:flex;flex-direction:column;justify-content:center;gap:max(6px,0.6vw);
+    width:max(30px,3.2vw);padding:max(12px,1.2vw) max(4px,0.5vw);background:none;border:none;cursor:pointer;
   }
   .menu-btn span{
-    display:block;height:3px;width:100%;border-radius:2px;
+    display:block;height:max(3px,0.28vw);width:100%;border-radius:2px;
     background:var(--ink);opacity:.85;
     transition:transform .25s ease, opacity .2s ease, background .2s ease;
   }
@@ -73,8 +73,8 @@
   .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
 
   .top-socials{
-    position:absolute;top:clamp(18px,4vw,34px);right:clamp(18px,4vw,34px);
-    z-index:20;display:flex;align-items:center;gap:clamp(14px,2vw,22px);
+    position:absolute;top:max(18px,4vw);right:max(18px,4vw);
+    z-index:20;display:flex;align-items:center;gap:max(14px,2vw);
     transition:opacity .25s ease;
   }
   .top-socials a{
@@ -84,7 +84,7 @@
   .top-socials a:hover, .top-socials a:focus-visible{
     opacity:1;color:var(--purple);transform:translateY(-2px);
   }
-  .top-socials svg{width:clamp(18px,2.2vw,24px);height:clamp(18px,2.2vw,24px);display:block;}
+  .top-socials svg{width:max(18px,2.2vw);height:max(18px,2.2vw);display:block;}
   .stage.menu-open .top-socials{
     opacity:0;pointer-events:none;
   }
@@ -108,9 +108,9 @@
   .wordmark-tag-glow{
     position:absolute;left:50%;top:50%;
     transform:translate(-50%,-50%);
-    width:max(900px,95vw);height:max(900px,95vw);
+    width:max(500px,48vw);height:max(500px,48vw);
     background:radial-gradient(circle at center,
-      rgba(139,63,209,0.55), rgba(139,63,209,0.28) 35%, rgba(107,33,168,0.12) 58%, transparent 76%);
+      rgba(139,63,209,0.22), rgba(139,63,209,0.1) 35%, rgba(107,33,168,0.04) 58%, transparent 76%);
     z-index:-1;
     pointer-events:none;
   }
@@ -232,11 +232,11 @@
   }
 
   .signature{
-    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    position:absolute;bottom:max(14px,2.4vh);left:50%;
     transform:translateX(-50%);
     z-index:5;
     font-family:"Permanent Marker",cursive;
-    font-size:clamp(.8rem,1.6vw,1rem);
+    font-size:max(.8rem,1.6vw);
     color:rgba(244,241,236,.45);
     letter-spacing:.04em;
     white-space:nowrap;
