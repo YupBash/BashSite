@@ -15,16 +15,16 @@
 </script>
 <title>BASH</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="BASH — FAQ">
-<meta property="og:description" content="Who is BASH? Gear, contact info, and more.">
+<meta property="og:title" content="BASH — Socials">
+<meta property="og:description" content="Follow BASH on Discord, TikTok and Instagram.">
 <meta property="og:image" content="https://yupbash.vip/assets/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BASH — FAQ">
-<meta name="twitter:description" content="Who is BASH? Gear, contact info, and more.">
+<meta name="twitter:title" content="BASH — Socials">
+<meta name="twitter:description" content="Follow BASH on Discord, TikTok and Instagram.">
 <meta name="twitter:image" content="https://yupbash.vip/assets/og-image.jpg">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
-<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Permanent+Marker&display=swap">
 <style>
@@ -70,151 +70,23 @@
   .menu-btn.is-open span:nth-child(2){ opacity:0; }
   .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
 
-  .top-socials{
-    position:absolute;top:clamp(18px,4vw,34px);right:clamp(18px,4vw,34px);
-    z-index:20;display:flex;align-items:center;gap:clamp(14px,2vw,22px);
-    transition:opacity .25s ease;
-  }
-  .top-socials a{
-    color:var(--ink);opacity:.8;display:flex;
-    transition:opacity .18s ease, color .18s ease, transform .18s ease;
-  }
-  .top-socials a:hover, .top-socials a:focus-visible{
-    opacity:1;color:var(--purple);transform:translateY(-2px);
-  }
-  .top-socials svg{width:clamp(18px,2.2vw,24px);height:clamp(18px,2.2vw,24px);display:block;}
-  .stage.menu-open .top-socials{
-    opacity:0;pointer-events:none;
-  }
-
-  .faq-title-wrap{
-    position:absolute;top:clamp(70px,11vh,110px);left:50%;
-    transform:translateX(-50%);
-    z-index:2;
-  }
-  .faq-title-glow{
+  .wordmark-glow{
     display:none;
   }
 
-  .faq-title{
-    position:relative;
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(2.2rem,5vw,3.6rem);
-    color:#ffffff;
-    text-shadow:0 4px 0 rgba(0,0,0,.5);
-    letter-spacing:.02em;
-    margin:0;
-  }
-
-  .faq-columns{
-    position:absolute;inset:0;z-index:2;
-    display:flex;justify-content:space-between;align-items:center;
-    gap:clamp(20px,4vw,60px);
-    padding:clamp(150px,20vh,200px) clamp(20px,5vw,64px) clamp(30px,6vh,60px);
-  }
-  .faq-col{
-    flex:1 1 0;max-width:420px;
-    display:flex;flex-direction:column;
-    gap:clamp(14px,2vh,20px);
-    max-height:calc(var(--vh, 1vh) * 100 - 220px);
-    overflow-y:auto;
-    scrollbar-width:thin;
-  }
-  .faq-col.right{ align-self:center; }
-
-  details.faq-item{
-    background:rgba(10,8,14,.2);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:14px;
-    overflow:hidden;
-    transition:border-color .2s ease, background .2s ease;
-  }
-  details.faq-item[open]{
-    background:rgba(10,8,14,.34);
-    border-color:rgba(184,140,255,.4);
-  }
-  details.faq-item summary{
-    list-style:none;cursor:pointer;
-    display:flex;align-items:center;justify-content:space-between;gap:14px;
-    padding:clamp(16px,2vw,22px) clamp(18px,2.4vw,24px);
-    font-weight:600;
-    font-size:clamp(.95rem,1.3vw,1.12rem);
-    color:var(--ink);
-  }
-  details.faq-item summary::-webkit-details-marker{ display:none; }
-  .faq-icon{
-    flex-shrink:0;width:22px;height:22px;position:relative;
-  }
-  .faq-icon::before, .faq-icon::after{
-    content:"";position:absolute;left:50%;top:50%;
-    background:var(--ink);
-    transform:translate(-50%,-50%);
-    transition:transform .25s ease, opacity .2s ease;
-  }
-  .faq-icon::before{ width:14px;height:2px; }
-  .faq-icon::after{ width:2px;height:14px; }
-  details.faq-item[open] .faq-icon::after{ transform:translate(-50%,-50%) rotate(90deg); opacity:0; }
-  .faq-answer{
-    padding:0 clamp(18px,2.4vw,24px) clamp(18px,2.4vw,22px);
-    font-size:clamp(.88rem,1.2vw,1rem);
-    line-height:1.55;
-    color:#d8d2e4;
-  }
-
-  .spec-list{
-    display:flex;flex-direction:column;gap:8px;
-    list-style:none;margin:0;padding:0;
-  }
-  .spec-row{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:10px 14px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:10px;
-  }
-  .spec-row .spec-label{
-    font-size:.82rem;color:#a99fc2;
-  }
-  .spec-row .spec-value{
-    font-size:.86rem;font-weight:700;color:#fff;text-align:right;
-  }
-
-  .signature{
-    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
-    transform:translateX(-50%);
-    z-index:5;
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(.8rem,1.6vw,1rem);
-    color:rgba(244,241,236,.45);
-    letter-spacing:.04em;
-    white-space:nowrap;
-    pointer-events:none;
+  .wordmark{
+    position:absolute;left:clamp(16px,2vw,40px);top:clamp(30px,6vh,64px);
+    width:clamp(460px,62vw,900px);
+    z-index:3;
     user-select:none;
-    text-shadow:0 2px 4px rgba(0,0,0,.6);
-  }
-  .stage.menu-open .signature{
-    z-index:11;
-  }
-
-  .faq-character-glow{
-    display:none;
-  }
-
-  .faq-character{
-    position:absolute;left:50%;bottom:0;
-    transform:translateX(-50%);
-    width:50%;
-    z-index:1;
-    pointer-events:none;
-    filter:drop-shadow(0 20px 30px rgba(0,0,0,.6));
     transition:opacity .25s ease;
   }
-  .faq-character img{width:100%;height:auto;display:block;}
-  .stage.menu-open .faq-character{
-    z-index:11;
-    opacity:.4;
+  .wordmark img{
+    width:100%;height:auto;display:block;
+  }
+  .stage.menu-open .wordmark{
+    opacity:0;
+    pointer-events:none;
   }
 
   .menu-backdrop{
@@ -292,17 +164,63 @@
     transform:scale(1.05) rotate(0deg);
   }
 
-  @media (max-width: 860px){
-    .faq-columns{
-      position:static;
-      flex-direction:column;
-      align-items:stretch;
-      padding:clamp(120px,26vh,160px) 20px 40px;
-      height:100%;
-      overflow-y:auto;
+  .floor-glow{
+    display:none;
+  }
+
+  .signature{
+    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    transform:translateX(-50%);
+    z-index:5;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(.8rem,1.6vw,1rem);
+    color:rgba(244,241,236,.45);
+    letter-spacing:.04em;
+    white-space:nowrap;
+    pointer-events:none;
+    user-select:none;
+  }
+  .stage.menu-open .signature{
+    z-index:11;
+  }
+
+  .social-buttons{
+    position:absolute;right:clamp(4%,7vw,120px);top:50%;
+    transform:translateY(-50%);
+    z-index:3;
+    display:flex;flex-direction:column;
+    gap:clamp(20px,3vh,32px);
+    width:clamp(320px,32vw,460px);
+  }
+  .social-btn{
+    display:flex;align-items:center;gap:clamp(16px,2vw,24px);
+    padding:clamp(20px,2.6vw,30px) clamp(24px,3vw,34px);
+    border-radius:16px;
+    background:linear-gradient(155deg, var(--menu-bg-2), var(--menu-bg) 75%);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 20px 45px -20px rgba(0,0,0,.6);
+    text-decoration:none;
+    color:var(--ink);
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .social-btn:hover, .social-btn:focus-visible{
+    transform:translateX(-6px) scale(1.02);
+    border-color:var(--purple);
+    box-shadow:0 24px 50px -18px var(--purple-glow);
+  }
+  .social-btn svg{
+    width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);
+    flex-shrink:0;color:var(--ink);
+  }
+  .social-btn span{
+    font-size:clamp(1.4rem,2.2vw,2rem);
+    font-weight:600;
+  }
+
+  @media (max-width: 720px){
+    .wordmark{
+      left:12px;top:32px;width:min(78vw,340px);
     }
-    .faq-col{ max-width:none; align-self:stretch; max-height:none; overflow-y:visible; }
-    .faq-col.right{ align-self:stretch; }
     .side-menu{
       width:100vw;
     }
@@ -315,10 +233,10 @@
     }
     .menu-wordmark{ font-size:clamp(2.4rem,var(--vh, 1vh) * 9,5rem); margin-bottom:clamp(24px,var(--vh, 1vh) * 6,64px); }
     .menu-links a{ font-size:clamp(1.8rem,var(--vh, 1vh) * 7,3.8rem); }
-    .faq-title-wrap{ top:clamp(56px,9vh,80px); }
-    .faq-character{
-      width:min(72vw,320px);
-      z-index:0;
+    .social-buttons{
+      right:50%;transform:translate(50%,-50%);
+      width:min(84vw,360px);
+      top:62%;
     }
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
@@ -326,84 +244,44 @@
 </head>
 <body>
 <div class="stage">
-<div class="faq-character-glow"></div>
-
-  <div class="faq-character" aria-hidden="true">
-    <img src="assets/faq-character.png" alt="">
-  </div>
-
   <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 
-  <nav class="top-socials" aria-label="Socials">
-    <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" aria-label="Discord">
+  <div class="floor-glow"></div>
+
+  <div class="wordmark-glow"></div>
+
+  <div class="wordmark">
+    <img src="/assets/bash-wordmark.png" alt="BASH">
+  </div>
+
+  <nav class="social-buttons" aria-label="Socials">
+    <a class="social-btn" href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg>
+      <span>Discord</span>
     </a>
-    <a href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener" aria-label="TikTok">
+    <a class="social-btn" href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg>
+      <span>TikTok</span>
     </a>
-    <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" aria-label="Instagram">
+    <a class="social-btn" href="https://www.instagram.com/yupbash" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+      <span>Instagram</span>
     </a>
   </nav>
-
-  <div class="faq-title-wrap">
-    <div class="faq-title-glow"></div>
-    <h1 class="faq-title">FAQ</h1>
-  </div>
-
-  <div class="faq-columns">
-    <div class="faq-col left">
-      <details class="faq-item">
-        <summary>Who are you?<span class="faq-icon"></span></summary>
-        <div class="faq-answer">Some random dude, idk.</div>
-      </details>
-      <details class="faq-item">
-        <summary>Where can I follow you?<span class="faq-icon"></span></summary>
-        <div class="faq-answer">Discord, TikTok and Instagram are up in the top right, and on the Socials page.</div>
-      </details>
-      <details class="faq-item">
-        <summary>How often do you post?<span class="faq-icon"></span></summary>
-        <div class="faq-answer">Im too lazy to start :p</div>
-      </details>
-    </div>
-
-    <div class="faq-col right">
-      <details class="faq-item">
-        <summary>About me<span class="faq-icon"></span></summary>
-        <div class="faq-answer">I'm 21 and I'm from Belgium.</div>
-      </details>
-      <details class="faq-item">
-        <summary>How can I contact you?<span class="faq-icon"></span></summary>
-        <div class="faq-answer"><a href="mailto:yupbash@gmail.com" style="color:inherit;">yupbash@gmail.com</a></div>
-      </details>
-      <details class="faq-item">
-        <summary>What gear do you use?<span class="faq-icon"></span></summary>
-        <div class="faq-answer">
-          <ul class="spec-list">
-            <li class="spec-row"><span class="spec-label">Processor</span><span class="spec-value">Ryzen 7 5800X</span></li>
-            <li class="spec-row"><span class="spec-label">Memory</span><span class="spec-value">32 GB RAM</span></li>
-            <li class="spec-row"><span class="spec-label">Graphics Card</span><span class="spec-value">RX 9070 XT</span></li>
-            <li class="spec-row"><span class="spec-label">Mouse</span><span class="spec-value">WLMOUSE Beast X</span></li>
-            <li class="spec-row"><span class="spec-label">Keyboard</span><span class="spec-value">Gravastar Mercury V60 Pro</span></li>
-          </ul>
-        </div>
-      </details>
-    </div>
-  </div>
 
   <div class="signature">BASH &middot; 2024&ndash;2026</div>
 
   <div class="menu-backdrop" id="menuBackdrop"></div>
 
   <nav class="side-menu" id="sideMenu" aria-hidden="true">
-    <img class="side-menu-bg" src="assets/menu-bg.png" alt="">
+    <img class="side-menu-bg" src="/assets/menu-bg.png" alt="">
     <div class="side-menu-content">
-      <a class="menu-wordmark" href="index.html">BASH</a>
+      <a class="menu-wordmark" href="/">BASH</a>
       <ul class="menu-links">
-        <li><a href="socials.html">Socials</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="/socials/">Socials</a></li>
+        <li><a href="/faq/">FAQ</a></li>
       </ul>
     </div>
   </nav>
