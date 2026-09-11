@@ -85,7 +85,7 @@
   .wordmark-tag-glow{
     position:absolute;left:50%;top:50%;
     transform:translate(-50%,-50%);
-    width:clamp(900px,95vw,2450px);height:clamp(900px,95vw,2450px);
+    width:max(900px,95vw);height:max(900px,95vw);
     background:radial-gradient(circle at center,
       rgba(139,63,209,0.55), rgba(139,63,209,0.28) 35%, rgba(107,33,168,0.12) 58%, transparent 76%);
     z-index:-1;
@@ -97,10 +97,12 @@
   .wordmark-tag-text{
     display:block;
     font-family:"Permanent Marker",cursive;
-    font-size:clamp(3rem,8.5vw,13.6rem);
-    color:rgba(120,95,155,.26);
-    text-shadow:0 0 16px rgba(90,35,140,.45);
-    filter:blur(1.4px);
+    font-size:max(3.6rem,11vw);
+    color:rgba(120,95,155,.32);
+    -webkit-text-stroke:2px rgba(190,150,225,.55);
+    text-stroke:2px rgba(190,150,225,.55);
+    text-shadow:0 0 18px rgba(90,35,140,.5);
+    filter:blur(1.2px);
     letter-spacing:.03em;
     white-space:nowrap;
   }
@@ -151,11 +153,11 @@
   .menu-wordmark{
     display:block;
     font-family:"Permanent Marker",cursive;
-    font-size:clamp(3.6rem,10vw,16rem);
+    font-size:max(3.6rem,10vw);
     line-height:.85;
     color:#ffffff;
     text-decoration:none;
-    margin:0 0 clamp(40px,8vh,112px);
+    margin:0 0 max(40px,8vh);
     transform:rotate(-3deg) translateY(clamp(-60px,-6vh,-30px));
     text-shadow:0 6px 0 rgba(0,0,0,.4);
     filter:drop-shadow(0 0 22px rgba(255,255,255,.3));
@@ -173,7 +175,7 @@
   }
   .menu-links a{
     font-family:"Permanent Marker",cursive;
-    font-size:clamp(2.4rem,7vw,11.2rem);
+    font-size:max(2.4rem,7vw);
     color:var(--menu-text);
     text-decoration:none;
     display:inline-block;
@@ -212,12 +214,12 @@
     transform:translateY(-50%);
     z-index:3;
     display:flex;flex-direction:column;
-    gap:clamp(20px,3vh,42px);
-    width:clamp(320px,32vw,819px);
+    gap:max(20px,3vh);
+    width:max(320px,32vw);
   }
   .social-btn{
-    display:flex;align-items:center;gap:clamp(16px,2vw,51px);
-    padding:clamp(20px,2.6vw,67px) clamp(24px,3vw,77px);
+    display:flex;align-items:center;gap:max(16px,2vw);
+    padding:max(20px,2.6vw) max(24px,3vw);
     border-radius:16px;
     background:linear-gradient(155deg, var(--menu-bg-2), var(--menu-bg) 75%);
     border:1px solid rgba(255,255,255,.08);
@@ -232,11 +234,11 @@
     box-shadow:0 24px 50px -18px var(--purple-glow);
   }
   .social-btn svg{
-    width:clamp(30px,3.4vw,87px);height:clamp(30px,3.4vw,87px);
+    width:max(30px,3.4vw);height:max(30px,3.4vw);
     flex-shrink:0;color:var(--ink);
   }
   .social-btn span{
-    font-size:clamp(1.4rem,2.2vw,3.52rem);
+    font-size:max(1.4rem,2.2vw);
     font-weight:600;
   }
 
