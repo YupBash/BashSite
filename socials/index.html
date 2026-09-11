@@ -70,23 +70,49 @@
   .menu-btn.is-open span:nth-child(2){ opacity:0; }
   .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
 
-  .wordmark-glow{
-    display:none;
-  }
-
-  .wordmark{
-    position:absolute;left:clamp(16px,2vw,40px);top:clamp(30px,6vh,64px);
-    width:clamp(460px,62vw,900px);
+  .wordmark-tag{
+    position:absolute;left:clamp(30px,6vw,90px);top:50%;
+    transform:translateY(-50%);
     z-index:3;
     user-select:none;
+    animation:tagFloat 4.5s ease-in-out infinite;
     transition:opacity .25s ease;
   }
-  .wordmark img{
-    width:100%;height:auto;display:block;
-  }
-  .stage.menu-open .wordmark{
+  .stage.menu-open .wordmark-tag{
     opacity:0;
     pointer-events:none;
+  }
+  .wordmark-tag-glow{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:clamp(900px,95vw,1600px);height:clamp(900px,95vw,1600px);
+    background:radial-gradient(circle at center,
+      rgba(139,63,209,0.55), rgba(139,63,209,0.28) 35%, rgba(107,33,168,0.12) 58%, transparent 76%);
+    z-index:-1;
+    pointer-events:none;
+  }
+  .wordmark-tag-bar{
+    position:relative;
+    background:rgba(4,2,7,.9);
+    padding:clamp(16px,3vh,30px) clamp(46px,6vw,100px);
+    border-radius:4px;
+  }
+  .wordmark-tag-text{
+    display:block;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(2.2rem,5.5vw,4.6rem);
+    color:rgba(120,95,155,.26);
+    text-shadow:0 0 16px rgba(90,35,140,.45);
+    filter:blur(1.4px);
+    letter-spacing:.03em;
+    white-space:nowrap;
+  }
+  @keyframes tagFloat{
+    0%, 100%{ transform:translateY(-50%); }
+    50%{ transform:translateY(calc(-50% - 18px)); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wordmark-tag{ animation:none; }
   }
 
   .menu-backdrop{
@@ -218,8 +244,17 @@
   }
 
   @media (max-width: 720px){
-    .wordmark{
-      left:12px;top:32px;width:min(78vw,340px);
+    .wordmark-tag-glow{
+      display:none;
+    }
+    .wordmark-tag{
+      left:14px;
+    }
+    .wordmark-tag-bar{
+      padding:clamp(10px,2vh,18px) clamp(26px,7vw,46px);
+    }
+    .wordmark-tag-text{
+      font-size:clamp(1.6rem,7vw,2.6rem);
     }
     .side-menu{
       width:100vw;
@@ -250,10 +285,11 @@
 
   <div class="floor-glow"></div>
 
-  <div class="wordmark-glow"></div>
-
-  <div class="wordmark">
-    <img src="/assets/bash-wordmark.png" alt="BASH">
+  <div class="wordmark-tag">
+    <div class="wordmark-tag-glow"></div>
+    <div class="wordmark-tag-bar">
+      <span class="wordmark-tag-text">BASH</span>
+    </div>
   </div>
 
   <nav class="social-buttons" aria-label="Socials">
