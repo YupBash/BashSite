@@ -82,15 +82,6 @@
     opacity:0;
     pointer-events:none;
   }
-  .wordmark-tag-glow{
-    position:absolute;left:50%;top:50%;
-    transform:translate(-50%,-50%);
-    width:max(620px,58vw);height:max(620px,58vw);
-    background:radial-gradient(circle at center,
-      rgba(139,63,209,0.22), rgba(139,63,209,0.12) 28%, rgba(107,33,168,0.06) 48%, rgba(90,35,140,0.02) 68%, transparent 92%);
-    z-index:-1;
-    pointer-events:none;
-  }
   .wordmark-tag-bar{
     position:relative;
   }
@@ -243,9 +234,6 @@
   }
 
   @media (max-width: 720px){
-    .wordmark-tag-glow{
-      display:none;
-    }
     .wordmark-tag{
       left:14px;
     }
@@ -282,7 +270,6 @@
   <div class="floor-glow"></div>
 
   <div class="wordmark-tag">
-    <div class="wordmark-tag-glow"></div>
     <div class="wordmark-tag-bar">
       <span class="wordmark-tag-text">BASH</span>
     </div>
