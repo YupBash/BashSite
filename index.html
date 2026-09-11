@@ -109,7 +109,8 @@
   }
 
   .menu-backdrop{
-    position:fixed;inset:0;z-index:9;
+    position:fixed;top:0;left:0;right:0;
+    height:100svh;z-index:9;
     opacity:0;pointer-events:none;
     transition:opacity .25s ease;
   }
@@ -118,7 +119,8 @@
   }
 
   .side-menu{
-    position:fixed;top:0;left:0;bottom:0;
+    position:fixed;top:0;left:0;
+    height:100svh;
     width:min(100vw,2000px);
     z-index:10;
     overflow:hidden;
@@ -215,16 +217,17 @@
       height:min(50svh,400px);
     }
     .side-menu{
-      width:min(82vw,420px);
+      width:100vw;
     }
     .side-menu-bg{
       width:100%;
     }
     .side-menu-content{
-      padding:100px 26px 40px;
+      padding:clamp(56px,12svh,100px) 26px clamp(24px,6svh,40px);
+      overflow-y:auto;
     }
-    .menu-wordmark{ font-size:clamp(3.4rem,16vw,5rem); margin-bottom:64px; }
-    .menu-links a{ font-size:clamp(2.4rem,13vw,3.8rem); }
+    .menu-wordmark{ font-size:clamp(2.4rem,9svh,5rem); margin-bottom:clamp(24px,6svh,64px); }
+    .menu-links a{ font-size:clamp(1.8rem,7svh,3.8rem); }
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
 </style>
