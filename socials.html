@@ -51,6 +51,7 @@
     position:relative;
     width:100%;height:calc(var(--vh, 1vh) * 100);min-height:320px;
     background:var(--bg);
+    user-select:none;-webkit-user-select:none;
   }
 
   .menu-btn{
@@ -135,11 +136,12 @@
     transform:rotate(-3deg) translateY(clamp(-60px,-6vh,-30px));
     text-shadow:0 6px 0 rgba(0,0,0,.4);
     filter:drop-shadow(0 0 22px rgba(255,255,255,.3));
-    transition:filter .18s ease, color .18s ease;
+    transition:filter .18s ease, color .18s ease, transform .15s ease;
   }
   .menu-wordmark:hover, .menu-wordmark:focus-visible{
     color:#e9d6ff;
     filter:drop-shadow(0 0 30px rgba(255,255,255,.5));
+    transform:rotate(0deg) translateY(clamp(-60px,-6vh,-30px)) scale(1.05);
   }
 
   .menu-links{
