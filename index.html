@@ -3,6 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){
+  function setVH(){
+    document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
+  }
+  setVH();
+  window.addEventListener("resize", setVH);
+  window.addEventListener("orientationchange", setVH);
+})();
+</script>
 <title>BASH</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="BASH">
@@ -39,7 +49,7 @@
   }
   .stage{
     position:relative;
-    width:100%;height:100svh;min-height:320px;
+    width:100%;height:calc(var(--vh, 1vh) * 100);min-height:320px;
     background:
       radial-gradient(ellipse 70% 60% at 78% 30%, rgba(107,33,168,0.16), transparent 60%),
       radial-gradient(ellipse 90% 70% at 10% 90%, rgba(58,14,92,0.22), transparent 65%),
@@ -110,7 +120,7 @@
 
   .menu-backdrop{
     position:fixed;top:0;left:0;right:0;
-    height:100svh;z-index:9;
+    height:calc(var(--vh, 1vh) * 100);z-index:9;
     opacity:0;pointer-events:none;
     transition:opacity .25s ease;
   }
@@ -120,7 +130,7 @@
 
   .side-menu{
     position:fixed;top:0;left:0;
-    height:100svh;
+    height:calc(var(--vh, 1vh) * 100);
     width:min(100vw,2000px);
     z-index:10;
     overflow:hidden;
@@ -183,7 +193,7 @@
 
   .character{
     position:absolute;right:clamp(0%,4vw,5%);bottom:0;
-    height:min(100svh,940px);
+    height:min(var(--vh, 1vh) * 100,940px);
     filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 46px var(--purple-glow));
     z-index:11;
   }
@@ -214,7 +224,7 @@
     }
     .character{
       right:4%;bottom:0;
-      height:min(50svh,400px);
+      height:min(var(--vh, 1vh) * 50,400px);
     }
     .side-menu{
       width:100vw;
@@ -223,11 +233,11 @@
       width:100%;
     }
     .side-menu-content{
-      padding:clamp(56px,12svh,100px) 26px clamp(24px,6svh,40px);
+      padding:clamp(56px,var(--vh, 1vh) * 12,100px) 26px clamp(24px,var(--vh, 1vh) * 6,40px);
       overflow-y:auto;
     }
-    .menu-wordmark{ font-size:clamp(2.4rem,9svh,5rem); margin-bottom:clamp(24px,6svh,64px); }
-    .menu-links a{ font-size:clamp(1.8rem,7svh,3.8rem); }
+    .menu-wordmark{ font-size:clamp(2.4rem,var(--vh, 1vh) * 9,5rem); margin-bottom:clamp(24px,var(--vh, 1vh) * 6,64px); }
+    .menu-links a{ font-size:clamp(1.8rem,var(--vh, 1vh) * 7,3.8rem); }
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
 </style>
