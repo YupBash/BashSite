@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BASH</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="BASH">
-<meta property="og:description" content="Welcome to BASH's home on the internet.">
+<meta property="og:title" content="BASH — FAQ">
+<meta property="og:description" content="Who is BASH? Gear, contact info, and more.">
 <meta property="og:image" content="assets/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BASH">
-<meta name="twitter:description" content="Welcome to BASH's home on the internet.">
+<meta name="twitter:title" content="BASH — FAQ">
+<meta name="twitter:description" content="Who is BASH? Gear, contact info, and more.">
 <meta name="twitter:image" content="assets/og-image.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -40,10 +40,7 @@
   .stage{
     position:relative;
     width:100%;height:100dvh;min-height:320px;
-    background:
-      radial-gradient(ellipse 70% 60% at 78% 30%, rgba(107,33,168,0.16), transparent 60%),
-      radial-gradient(ellipse 90% 70% at 10% 90%, rgba(58,14,92,0.22), transparent 65%),
-      var(--bg);
+    background:var(--bg);
   }
 
   .menu-btn{
@@ -79,34 +76,139 @@
     opacity:0;pointer-events:none;
   }
 
-  .wordmark-glow{
-    position:absolute;left:clamp(300px,34vw,460px);top:clamp(180px,30vh,360px);
-    width:clamp(700px,80vw,1300px);height:clamp(700px,80vw,1300px);
-    transform:translate(-50%,-50%);
-    background:radial-gradient(circle at center,
-      rgba(139,63,209,0.65), rgba(139,63,209,0.38) 32%, rgba(107,33,168,0.16) 55%, transparent 72%);
+  .faq-title-wrap{
+    position:absolute;top:clamp(70px,11vh,110px);left:50%;
+    transform:translateX(-50%);
     z-index:2;
-    pointer-events:none;
-    transition:opacity .25s ease;
   }
-  .stage.menu-open .wordmark-glow{
-    opacity:0;
+  .faq-title-glow{
+    position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:clamp(700px,64vw,1100px);height:clamp(500px,46vw,820px);
+    background:radial-gradient(ellipse 50% 50% at center,
+      rgba(139,63,209,.7), rgba(139,63,209,.4) 35%, rgba(107,33,168,.16) 58%, transparent 75%);
+    z-index:-1;
+    pointer-events:none;
   }
 
-  .wordmark{
-    position:absolute;left:clamp(16px,2vw,40px);top:clamp(30px,6vh,64px);
-    width:clamp(460px,62vw,900px);
-    z-index:3;
+  .faq-title{
+    position:relative;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(2.2rem,5vw,3.6rem);
+    color:#ffffff;
+    text-shadow:0 4px 0 rgba(0,0,0,.5);
+    letter-spacing:.02em;
+    margin:0;
+  }
+
+  .faq-columns{
+    position:absolute;inset:0;z-index:2;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:clamp(20px,4vw,60px);
+    padding:clamp(150px,20vh,200px) clamp(20px,5vw,64px) clamp(30px,6vh,60px);
+  }
+  .faq-col{
+    flex:1 1 0;max-width:420px;
+    display:flex;flex-direction:column;
+    gap:clamp(14px,2vh,20px);
+    max-height:calc(100dvh - 220px);
+    overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .faq-col.right{ align-self:center; }
+
+  details.faq-item{
+    background:rgba(10,8,14,.2);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;
+    overflow:hidden;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  details.faq-item[open]{
+    background:rgba(10,8,14,.34);
+    border-color:rgba(184,140,255,.4);
+  }
+  details.faq-item summary{
+    list-style:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:clamp(16px,2vw,22px) clamp(18px,2.4vw,24px);
+    font-weight:600;
+    font-size:clamp(.95rem,1.3vw,1.12rem);
+    color:var(--ink);
+  }
+  details.faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-icon{
+    flex-shrink:0;width:22px;height:22px;position:relative;
+  }
+  .faq-icon::before, .faq-icon::after{
+    content:"";position:absolute;left:50%;top:50%;
+    background:var(--ink);
+    transform:translate(-50%,-50%);
+    transition:transform .25s ease, opacity .2s ease;
+  }
+  .faq-icon::before{ width:14px;height:2px; }
+  .faq-icon::after{ width:2px;height:14px; }
+  details.faq-item[open] .faq-icon::after{ transform:translate(-50%,-50%) rotate(90deg); opacity:0; }
+  .faq-answer{
+    padding:0 clamp(18px,2.4vw,24px) clamp(18px,2.4vw,22px);
+    font-size:clamp(.88rem,1.2vw,1rem);
+    line-height:1.55;
+    color:#d8d2e4;
+  }
+
+  .spec-list{
+    display:flex;flex-direction:column;gap:8px;
+    list-style:none;margin:0;padding:0;
+  }
+  .spec-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 14px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:10px;
+  }
+  .spec-row .spec-label{
+    font-size:.82rem;color:#a99fc2;
+  }
+  .spec-row .spec-value{
+    font-size:.86rem;font-weight:700;color:#fff;text-align:right;
+  }
+
+  .signature{
+    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    transform:translateX(-50%);
+    z-index:5;
+    font-family:"Permanent Marker",cursive;
+    font-size:clamp(.8rem,1.6vw,1rem);
+    color:rgba(244,241,236,.45);
+    letter-spacing:.04em;
+    white-space:nowrap;
+    pointer-events:none;
     user-select:none;
-    transition:opacity .25s ease;
+    text-shadow:0 2px 4px rgba(0,0,0,.6);
   }
-  .wordmark img{
-    width:100%;height:auto;display:block;
-  }
-  .stage.menu-open .wordmark{
-    opacity:0;
+
+  .faq-character-glow{
+    position:absolute;left:50%;bottom:0;
+    transform:translateX(-50%);
+    width:clamp(520px,62vw,940px);height:clamp(420px,50vw,720px);
+    background:radial-gradient(ellipse 55% 68% at 50% 100%,
+      rgba(139,63,209,.55), rgba(139,63,209,.3) 38%, rgba(107,33,168,.13) 62%, transparent 78%);
+    z-index:0;
     pointer-events:none;
   }
+
+  .faq-character{
+    position:absolute;left:50%;bottom:0;
+    transform:translateX(-50%);
+    width:50%;
+    z-index:1;
+    pointer-events:none;
+    filter:drop-shadow(0 20px 30px rgba(0,0,0,.6));
+  }
+  .faq-character img{width:100%;height:auto;display:block;}
 
   .menu-backdrop{
     position:fixed;inset:0;z-index:9;
@@ -180,41 +282,17 @@
     transform:scale(1.05) rotate(0deg);
   }
 
-  .character{
-    position:absolute;right:clamp(2%,7vw,9%);bottom:0;
-    height:min(92dvh,760px);
-    filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 46px var(--purple-glow));
-    z-index:11;
-  }
-  .character img{height:100%;width:auto;display:block;}
-
-  .floor-glow{
-    position:absolute;left:0;right:0;bottom:0;height:22%;
-    background:linear-gradient(180deg, transparent, rgba(107,33,168,0.10));
-    z-index:1;pointer-events:none;
-  }
-
-  .signature{
-    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
-    transform:translateX(-50%);
-    z-index:5;
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(.8rem,1.6vw,1rem);
-    color:rgba(244,241,236,.45);
-    letter-spacing:.04em;
-    white-space:nowrap;
-    pointer-events:none;
-    user-select:none;
-  }
-
-  @media (max-width: 720px){
-    .wordmark{
-      left:-16px;top:32px;width:min(78vw,340px);
+  @media (max-width: 860px){
+    .faq-columns{
+      position:static;
+      flex-direction:column;
+      align-items:stretch;
+      padding:clamp(120px,26vh,160px) 20px 40px;
+      height:100%;
+      overflow-y:auto;
     }
-    .character{
-      right:4%;bottom:0;
-      height:min(50dvh,400px);
-    }
+    .faq-col{ max-width:none; align-self:stretch; max-height:none; overflow-y:visible; }
+    .faq-col.right{ align-self:stretch; }
     .side-menu{
       width:min(82vw,420px);
     }
@@ -223,12 +301,26 @@
     }
     .menu-wordmark{ font-size:clamp(3.4rem,16vw,5rem); margin-bottom:64px; }
     .menu-links a{ font-size:clamp(2.4rem,13vw,3.8rem); }
+    .faq-title-wrap{ top:clamp(56px,9vh,80px); }
+    .faq-character{
+      width:min(72vw,320px);
+      z-index:0;
+    }
+    .faq-character-glow{
+      width:min(90vw,520px);height:min(70vw,420px);
+    }
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
 </style>
 </head>
 <body>
 <div class="stage">
+<div class="faq-character-glow"></div>
+
+  <div class="faq-character" aria-hidden="true">
+    <img src="assets/faq-character.png" alt="">
+  </div>
+
   <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
@@ -245,16 +337,49 @@
     </a>
   </nav>
 
-  <div class="floor-glow"></div>
-
-  <div class="wordmark-glow"></div>
-
-  <div class="wordmark">
-    <img src="assets/bash-wordmark.png" alt="BASH">
+  <div class="faq-title-wrap">
+    <div class="faq-title-glow"></div>
+    <h1 class="faq-title">FAQ</h1>
   </div>
 
-  <div class="character" aria-hidden="true">
-    <img src="assets/character.png" alt="">
+  <div class="faq-columns">
+    <div class="faq-col left">
+      <details class="faq-item">
+        <summary>Who are you?<span class="faq-icon"></span></summary>
+        <div class="faq-answer">Some random dude, idk.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Where can I follow you?<span class="faq-icon"></span></summary>
+        <div class="faq-answer">Discord, TikTok and Instagram are up in the top right, and on the Socials page.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How often do you post?<span class="faq-icon"></span></summary>
+        <div class="faq-answer">Im too lazy to start :p</div>
+      </details>
+    </div>
+
+    <div class="faq-col right">
+      <details class="faq-item">
+        <summary>About me<span class="faq-icon"></span></summary>
+        <div class="faq-answer">I'm 21 and I'm from Belgium.</div>
+      </details>
+      <details class="faq-item">
+        <summary>How can I contact you?<span class="faq-icon"></span></summary>
+        <div class="faq-answer"><a href="mailto:yupbash@gmail.com" style="color:inherit;">yupbash@gmail.com</a></div>
+      </details>
+      <details class="faq-item">
+        <summary>What gear do you use?<span class="faq-icon"></span></summary>
+        <div class="faq-answer">
+          <ul class="spec-list">
+            <li class="spec-row"><span class="spec-label">Processor</span><span class="spec-value">Ryzen 7 5800X</span></li>
+            <li class="spec-row"><span class="spec-label">Memory</span><span class="spec-value">32 GB RAM</span></li>
+            <li class="spec-row"><span class="spec-label">Graphics Card</span><span class="spec-value">RX 9070 XT</span></li>
+            <li class="spec-row"><span class="spec-label">Mouse</span><span class="spec-value">WLMOUSE Beast X</span></li>
+            <li class="spec-row"><span class="spec-label">Keyboard</span><span class="spec-value">Gravastar Mercury V60 Pro</span></li>
+          </ul>
+        </div>
+      </details>
+    </div>
   </div>
 
   <div class="signature">BASH &middot; 2024&ndash;2026</div>

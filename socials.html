@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BASH</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="BASH">
-<meta property="og:description" content="Welcome to BASH's home on the internet.">
+<meta property="og:title" content="BASH — Socials">
+<meta property="og:description" content="Follow BASH on Discord, TikTok and Instagram.">
 <meta property="og:image" content="assets/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BASH">
-<meta name="twitter:description" content="Welcome to BASH's home on the internet.">
+<meta name="twitter:title" content="BASH — Socials">
+<meta name="twitter:description" content="Follow BASH on Discord, TikTok and Instagram.">
 <meta name="twitter:image" content="assets/og-image.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -61,23 +61,6 @@
   .menu-btn.is-open span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
   .menu-btn.is-open span:nth-child(2){ opacity:0; }
   .menu-btn.is-open span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
-
-  .top-socials{
-    position:absolute;top:clamp(18px,4vw,34px);right:clamp(18px,4vw,34px);
-    z-index:20;display:flex;align-items:center;gap:clamp(14px,2vw,22px);
-    transition:opacity .25s ease;
-  }
-  .top-socials a{
-    color:var(--ink);opacity:.8;display:flex;
-    transition:opacity .18s ease, color .18s ease, transform .18s ease;
-  }
-  .top-socials a:hover, .top-socials a:focus-visible{
-    opacity:1;color:var(--purple);transform:translateY(-2px);
-  }
-  .top-socials svg{width:clamp(18px,2.2vw,24px);height:clamp(18px,2.2vw,24px);display:block;}
-  .stage.menu-open .top-socials{
-    opacity:0;pointer-events:none;
-  }
 
   .wordmark-glow{
     position:absolute;left:clamp(300px,34vw,460px);top:clamp(180px,30vh,360px);
@@ -180,14 +163,6 @@
     transform:scale(1.05) rotate(0deg);
   }
 
-  .character{
-    position:absolute;right:clamp(2%,7vw,9%);bottom:0;
-    height:min(92dvh,760px);
-    filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 46px var(--purple-glow));
-    z-index:11;
-  }
-  .character img{height:100%;width:auto;display:block;}
-
   .floor-glow{
     position:absolute;left:0;right:0;bottom:0;height:22%;
     background:linear-gradient(180deg, transparent, rgba(107,33,168,0.10));
@@ -207,13 +182,42 @@
     user-select:none;
   }
 
+  .social-buttons{
+    position:absolute;right:clamp(4%,7vw,120px);top:50%;
+    transform:translateY(-50%);
+    z-index:3;
+    display:flex;flex-direction:column;
+    gap:clamp(20px,3vh,32px);
+    width:clamp(320px,32vw,460px);
+  }
+  .social-btn{
+    display:flex;align-items:center;gap:clamp(16px,2vw,24px);
+    padding:clamp(20px,2.6vw,30px) clamp(24px,3vw,34px);
+    border-radius:16px;
+    background:linear-gradient(155deg, var(--menu-bg-2), var(--menu-bg) 75%);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 20px 45px -20px rgba(0,0,0,.6);
+    text-decoration:none;
+    color:var(--ink);
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .social-btn:hover, .social-btn:focus-visible{
+    transform:translateX(-6px) scale(1.02);
+    border-color:var(--purple);
+    box-shadow:0 24px 50px -18px var(--purple-glow);
+  }
+  .social-btn svg{
+    width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);
+    flex-shrink:0;color:var(--ink);
+  }
+  .social-btn span{
+    font-size:clamp(1.4rem,2.2vw,2rem);
+    font-weight:600;
+  }
+
   @media (max-width: 720px){
     .wordmark{
       left:-16px;top:32px;width:min(78vw,340px);
-    }
-    .character{
-      right:4%;bottom:0;
-      height:min(50dvh,400px);
     }
     .side-menu{
       width:min(82vw,420px);
@@ -223,6 +227,11 @@
     }
     .menu-wordmark{ font-size:clamp(3.4rem,16vw,5rem); margin-bottom:64px; }
     .menu-links a{ font-size:clamp(2.4rem,13vw,3.8rem); }
+    .social-buttons{
+      right:50%;transform:translate(50%,-50%);
+      width:min(84vw,360px);
+      top:62%;
+    }
   }
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
 </style>
@@ -233,18 +242,6 @@
     <span></span><span></span><span></span>
   </button>
 
-  <nav class="top-socials" aria-label="Socials">
-    <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" aria-label="Discord">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg>
-    </a>
-    <a href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener" aria-label="TikTok">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" aria-label="Instagram">
-      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
-    </a>
-  </nav>
-
   <div class="floor-glow"></div>
 
   <div class="wordmark-glow"></div>
@@ -253,9 +250,20 @@
     <img src="assets/bash-wordmark.png" alt="BASH">
   </div>
 
-  <div class="character" aria-hidden="true">
-    <img src="assets/character.png" alt="">
-  </div>
+  <nav class="social-buttons" aria-label="Socials">
+    <a class="social-btn" href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg>
+      <span>Discord</span>
+    </a>
+    <a class="social-btn" href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg>
+      <span>TikTok</span>
+    </a>
+    <a class="social-btn" href="https://www.instagram.com/yupbash" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+      <span>Instagram</span>
+    </a>
+  </nav>
 
   <div class="signature">BASH &middot; 2024&ndash;2026</div>
 
