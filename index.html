@@ -258,7 +258,7 @@
     75%{ transform:rotate(-1deg) scale(1.01); }
   }
   .character-bubble{
-    position:absolute;top:2%;right:2%;
+    position:absolute;top:0%;right:0%;
     transform:translateY(-6px);
     background:#1a0f24;
     color:var(--ink);
@@ -285,8 +285,8 @@
   }
   @media (min-width: 721px){
     .character-bubble{
-      top:22%;right:calc(100% + 16px);
-      transform:translateX(6px);
+      top:22%;right:calc(100% + 4px);
+      transform:translateX(4px);
     }
     .character-bubble.show{
       transform:translateX(0);
@@ -482,10 +482,36 @@ console.log("%cyupbash.vip", "font-size:12px;color:#6b21a8;");
 (function(){
   var char = document.querySelector(".character");
   if (!char) return;
+  var charImg = char.querySelector("img");
   var messages = ["Stop that.", "Bro, stop.", "Alright, Don't do that.", "Hey!"];
   var clicks = [];
   var busy = false;
-  char.addEventListener("click", function(){
+
+  var sampleCanvas = null, sampleCtx = null;
+  function buildSampler(){
+    if (!charImg.naturalWidth) return;
+    sampleCanvas = document.createElement("canvas");
+    sampleCanvas.width = charImg.naturalWidth;
+    sampleCanvas.height = charImg.naturalHeight;
+    sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
+    sampleCtx.drawImage(charImg, 0, 0);
+  }
+  if (charImg.complete && charImg.naturalWidth) buildSampler();
+  else charImg.addEventListener("load", buildSampler, { once: true });
+
+  function isOnCharacter(clientX, clientY){
+    if (!sampleCtx) return true;
+    var rect = charImg.getBoundingClientRect();
+    var xf = (clientX - rect.left) / rect.width;
+    var yf = (clientY - rect.top) / rect.height;
+    if (xf < 0 || xf > 1 || yf < 0 || yf > 1) return false;
+    var px = Math.min(sampleCanvas.width - 1, Math.max(0, Math.floor(xf * sampleCanvas.width)));
+    var py = Math.min(sampleCanvas.height - 1, Math.max(0, Math.floor(yf * sampleCanvas.height)));
+    return sampleCtx.getImageData(px, py, 1, 1).data[3] > 10;
+  }
+
+  char.addEventListener("click", function(e){
+    if (!isOnCharacter(e.clientX, e.clientY)) return;
     var now = Date.now();
     clicks.push(now);
     clicks = clicks.filter(function(t){ return now - t < 2500; });
