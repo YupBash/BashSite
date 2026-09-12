@@ -101,6 +101,12 @@
   }
   .menu-btn:hover span{opacity:1;background:var(--purple);}
   .menu-btn:focus-visible{outline:2px solid var(--purple);outline-offset:4px;}
+  .menu-btn.intro-pulse{border-radius:8px;animation:menuPulse 1.4s ease-out 3;}
+  @keyframes menuPulse{
+    0%{ box-shadow:0 0 0 0 rgba(107,33,168,.55); }
+    70%{ box-shadow:0 0 0 14px rgba(107,33,168,0); }
+    100%{ box-shadow:0 0 0 0 rgba(107,33,168,0); }
+  }
   .menu-btn.is-open span:nth-child(1){ transform:translateY(calc(max(5px,0.45vw) + max(2.5px,0.2vw))) rotate(45deg); }
   .menu-btn.is-open span:nth-child(2){ opacity:0; }
   .menu-btn.is-open span:nth-child(3){ transform:translateY(calc(-1 * (max(5px,0.45vw) + max(2.5px,0.2vw)))) rotate(-45deg); }
@@ -464,6 +470,26 @@ const stage = document.querySelector(".stage");
 const menuBtn = document.getElementById("menuBtn");
 const sideMenu = document.getElementById("sideMenu");
 const backdrop = document.getElementById("menuBackdrop");
+
+(function(){
+  var seen = true;
+  try { seen = localStorage.getItem("bashMenuIntroSeen"); } catch(e){}
+  if (!seen) {
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function markSeen(){ try { localStorage.setItem("bashMenuIntroSeen", "1"); } catch(e){} }
+    if (reduced) {
+      markSeen();
+    } else {
+      menuBtn.classList.add("intro-pulse");
+      var stop = function(){
+        menuBtn.classList.remove("intro-pulse");
+        markSeen();
+      };
+      menuBtn.addEventListener("click", stop, { once: true });
+      setTimeout(stop, 4300);
+    }
+  }
+})();
 
 function setMenu(open){
   stage.classList.toggle("menu-open", open);
