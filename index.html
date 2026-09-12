@@ -283,6 +283,20 @@
     border:6px solid transparent;
     border-top-color:#1a0f24;
   }
+  @media (min-width: 721px){
+    .character-bubble{
+      top:22%;right:calc(100% + 16px);
+      transform:translateX(6px);
+    }
+    .character-bubble.show{
+      transform:translateX(0);
+    }
+    .character-bubble::after{
+      top:20px;right:auto;left:100%;
+      border-top-color:transparent;
+      border-left-color:#1a0f24;
+    }
+  }
   .stage.menu-open .character{
     opacity:.4;
   }
