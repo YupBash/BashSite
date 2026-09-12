@@ -331,12 +331,13 @@
     .faq-columns{
       position:static;
       flex-direction:column;
+      justify-content:flex-start;
       align-items:stretch;
       padding:clamp(120px,26vh,160px) 20px 40px;
       height:100%;
       overflow-y:auto;
     }
-    .faq-col{ max-width:none; align-self:stretch; max-height:none; overflow-y:visible; }
+    .faq-col{ flex:0 0 auto; max-width:none; align-self:stretch; max-height:none; overflow-y:visible; }
     .faq-col.right{ align-self:stretch; }
     .side-menu{
       width:100vw;
