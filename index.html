@@ -238,6 +238,7 @@
     z-index:11;
     transition:opacity .25s ease;
     animation:characterFloat 4.5s ease-in-out infinite;
+    cursor:pointer;
   }
   .character img{height:100%;width:auto;display:block;}
   @keyframes characterFloat{
@@ -246,6 +247,41 @@
   }
   @media (prefers-reduced-motion: reduce){
     .character{ animation:none; }
+  }
+  .character.poke img{
+    animation:characterPoke .6s ease;
+  }
+  @keyframes characterPoke{
+    0%, 100%{ transform:none; }
+    25%{ transform:rotate(-3deg) scale(1.04); }
+    50%{ transform:rotate(2deg) scale(1.02); }
+    75%{ transform:rotate(-1deg) scale(1.01); }
+  }
+  .character-bubble{
+    position:absolute;top:2%;right:2%;
+    transform:translateY(-6px);
+    background:#1a0f24;
+    color:var(--ink);
+    border:1px solid rgba(255,255,255,.15);
+    padding:8px 14px;
+    border-radius:14px;
+    font-family:"Inter",system-ui,sans-serif;
+    font-size:.85rem;
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .3s ease, transform .3s ease;
+    pointer-events:none;
+    z-index:12;
+  }
+  .character-bubble.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .character-bubble::after{
+    content:"";
+    position:absolute;top:100%;right:20px;
+    border:6px solid transparent;
+    border-top-color:#1a0f24;
   }
   .stage.menu-open .character{
     opacity:.4;
@@ -420,6 +456,42 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     document.body.classList.remove("page-loaded");
     setTimeout(function(){ location.href = url.href; }, reduced ? 0 : 320);
+  });
+})();
+</script>
+<script>
+console.log("%cBASH", "font-family:'Permanent Marker',cursive;font-size:48px;color:#c98bff;text-shadow:0 0 12px rgba(107,33,168,.8);");
+console.log("%cYou opened the console. Curious one, huh.", "font-size:13px;color:#9b8aad;");
+console.log("%cyupbash.vip", "font-size:12px;color:#6b21a8;");
+</script>
+<script>
+(function(){
+  var char = document.querySelector(".character");
+  if (!char) return;
+  var messages = ["Hey!", "Okay, okay.", "That tickles.", "Stop that.", "Alright, alright!", "You found me."];
+  var clicks = [];
+  var busy = false;
+  char.addEventListener("click", function(){
+    var now = Date.now();
+    clicks.push(now);
+    clicks = clicks.filter(function(t){ return now - t < 2500; });
+    if (clicks.length < 5 || busy) return;
+    busy = true;
+    clicks = [];
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      char.classList.add("poke");
+      setTimeout(function(){ char.classList.remove("poke"); }, 600);
+    }
+    var bubble = document.createElement("div");
+    bubble.className = "character-bubble";
+    bubble.textContent = messages[Math.floor(Math.random() * messages.length)];
+    char.appendChild(bubble);
+    requestAnimationFrame(function(){ bubble.classList.add("show"); });
+    setTimeout(function(){
+      bubble.classList.remove("show");
+      setTimeout(function(){ bubble.remove(); busy = false; }, 300);
+    }, 1600);
   });
 })();
 </script>
