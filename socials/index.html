@@ -208,16 +208,18 @@
   .menu-links a{
     font-family:"Permanent Marker",cursive;
     font-size:max(2.4rem,7vw);
-    color:var(--menu-text);
+    color:#ffffff;
     text-decoration:none;
     display:inline-block;
-    text-shadow:0 4px 0 rgba(0,0,0,.35);
-    transition:color .15s ease, transform .15s ease;
+    text-shadow:0 6px 0 rgba(0,0,0,.4);
+    filter:drop-shadow(0 0 22px rgba(255,255,255,.3));
+    transition:color .15s ease, transform .15s ease, filter .18s ease;
   }
   .menu-links li:nth-child(1) a{ transform:rotate(-2deg); }
   .menu-links li:nth-child(2) a{ transform:rotate(1.5deg); }
   .menu-links li a:hover, .menu-links li a:focus-visible{
-    color:#c98bff;
+    color:#e9d6ff;
+    filter:drop-shadow(0 0 30px rgba(255,255,255,.5));
     transform:scale(1.05) rotate(0deg);
   }
 
