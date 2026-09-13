@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
 (function(){
   function setVH(){
-    document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
+    var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    document.documentElement.style.setProperty("--vh", (h * 0.01) + "px");
   }
   setVH();
   window.addEventListener("resize", setVH);
   window.addEventListener("orientationchange", setVH);
+  window.addEventListener("pageshow", setVH);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", setVH);
+  }
 })();
 </script>
 <title>BASH FAQ</title>
@@ -90,7 +95,7 @@
   }
 
   .menu-btn{
-    position:absolute;top:max(18px,4vw);left:max(18px,4vw);
+    position:absolute;top:calc(max(18px,4vw) + env(safe-area-inset-top,0px));left:calc(max(18px,4vw) + env(safe-area-inset-left,0px));
     z-index:20;display:flex;flex-direction:column;justify-content:center;gap:max(5px,0.45vw);
     width:max(24px,2.3vw);padding:max(10px,0.9vw) max(3px,0.35vw);background:none;border:none;cursor:pointer;
   }
@@ -112,7 +117,7 @@
   .menu-btn.is-open span:nth-child(3){ transform:translateY(calc(-1 * (max(5px,0.45vw) + max(2.5px,0.2vw)))) rotate(-45deg); }
 
   .top-socials{
-    position:absolute;top:max(18px,4vw);right:max(18px,4vw);
+    position:absolute;top:calc(max(18px,4vw) + env(safe-area-inset-top,0px));right:calc(max(18px,4vw) + env(safe-area-inset-right,0px));
     z-index:20;display:flex;align-items:center;gap:max(11px,1.4vw);
     transition:opacity .25s ease;
   }
@@ -223,7 +228,7 @@
   }
 
   .signature{
-    position:absolute;bottom:max(14px,2.4vh);left:50%;
+    position:absolute;bottom:calc(max(14px,2.4vh) + env(safe-area-inset-bottom,0px));left:50%;
     transform:translateX(-50%);
     z-index:5;
     font-family:"Permanent Marker",cursive;

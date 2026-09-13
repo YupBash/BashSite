@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
 (function(){
   function setVH(){
-    document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
+    var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    document.documentElement.style.setProperty("--vh", (h * 0.01) + "px");
   }
   setVH();
   window.addEventListener("resize", setVH);
   window.addEventListener("orientationchange", setVH);
+  window.addEventListener("pageshow", setVH);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", setVH);
+  }
 })();
 </script>
 <title>BASH — Page not found</title>
@@ -79,7 +84,7 @@
     padding:24px;
   }
   .wordmark-link{
-    position:absolute;top:clamp(18px,4vw,34px);left:clamp(18px,4vw,34px);
+    position:absolute;top:calc(clamp(18px,4vw,34px) + env(safe-area-inset-top,0px));left:calc(clamp(18px,4vw,34px) + env(safe-area-inset-left,0px));
     font-family:"Permanent Marker",cursive;
     font-size:clamp(1.6rem,3vw,2.2rem);
     color:var(--ink);
@@ -139,7 +144,7 @@
   }
 
   .signature{
-    position:absolute;bottom:clamp(14px,2.4vh,24px);left:50%;
+    position:absolute;bottom:calc(clamp(14px,2.4vh,24px) + env(safe-area-inset-bottom,0px));left:50%;
     transform:translateX(-50%);
     font-family:"Permanent Marker",cursive;
     font-size:clamp(.8rem,1.6vw,1rem);
