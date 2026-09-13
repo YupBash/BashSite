@@ -61,7 +61,7 @@
     --purple-glow:rgba(107,33,168,0.55);
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
+  html,body{margin:0;padding:0;height:100%;height:100dvh;}
   body{
     background:var(--bg);
     color:var(--ink);
@@ -75,7 +75,7 @@
   }
   .stage{
     position:relative;
-    width:100%;height:calc(var(--vh, 1vh) * 100);min-height:320px;
+    width:100%;height:calc(var(--vh, 1vh) * 100);height:100dvh;min-height:320px;
     background:
       radial-gradient(ellipse 60% 50% at 50% 32%, rgba(107,33,168,0.14), transparent 62%),
       var(--bg);
