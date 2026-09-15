@@ -41,13 +41,13 @@
     user-select:none;-webkit-user-select:none;
   }
   .topbar{
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:12px;
     padding:16px clamp(16px,4vw,48px);
     border-bottom:1px solid var(--line);
   }
   .brand{
     font-weight:700;font-size:1.1rem;letter-spacing:.04em;
-    display:flex;align-items:center;gap:8px;
+    display:flex;align-items:center;gap:8px;flex-shrink:0;
     cursor:pointer;background:none;border:none;color:var(--ink);font-family:inherit;padding:0;
   }
   .brand:hover{color:#c98bff;}
@@ -55,7 +55,16 @@
     background:var(--gold);color:var(--gold-ink);font-size:.65rem;font-weight:700;
     padding:2px 6px;border-radius:3px;letter-spacing:.03em;
   }
-  .nav-tabs{display:flex;align-items:center;gap:6px;}
+  .nav-tabs{
+    display:flex;align-items:center;gap:6px;min-width:0;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tabs > *{flex-shrink:0;}
+  @media (max-width:640px){
+    .brand .tag{display:none;}
+    .brand{font-size:.95rem;}
+  }
   .home-link{
     display:flex;align-items:center;gap:6px;
     background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
@@ -523,15 +532,163 @@
   @media (max-width:600px){
     .reel-card{flex-basis:120px;height:120px;}
   }
+
+  /* achievements trophy button */
+  .ach-toggle{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    width:36px;height:36px;border-radius:6px;font-size:1rem;line-height:1;
+    cursor:pointer;transition:border-color .15s ease;
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .ach-toggle:hover{border-color:var(--gold);}
+  .ach-toggle .ach-dot{
+    position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;
+    background:#eb4b4b;box-shadow:0 0 4px rgba(235,75,75,.8);
+  }
+
+  /* global toasts (achievements, offline earnings outside the wallet modal) */
+  .global-toasts{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;
+    pointer-events:none;
+  }
+  .toast{
+    background:rgba(20,14,30,.97);border:1px solid var(--c-gold);border-radius:8px;
+    padding:10px 18px;font-size:.82rem;font-weight:600;text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+    animation:toastIn .3s ease;
+  }
+
+  /* daily case banner */
+  .daily-banner{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    background:linear-gradient(160deg, rgba(228,174,57,.14), var(--panel-2));
+    border:1px solid rgba(228,174,57,.35);border-radius:8px;
+    padding:14px 18px;margin-bottom:28px;
+  }
+  .daily-info .daily-title{font-family:"Permanent Marker",cursive;font-size:1.05rem;color:var(--c-gold);}
+  .daily-info .daily-sub{font-size:.78rem;color:var(--ink-dim);margin-top:2px;}
+  .daily-claim-btn{
+    background:var(--gold);color:var(--gold-ink);border:none;border-radius:6px;
+    padding:10px 22px;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .daily-claim-btn:hover{transform:translateY(-2px);}
+  .daily-claim-btn:disabled{opacity:.5;cursor:default;transform:none;background:var(--panel);color:var(--ink-dim);}
+
+  /* achievements modal */
+  .ach-shell{
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:10px;
+    width:100%;max-width:560px;max-height:85vh;overflow-y:auto;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.8);
+  }
+  .ach-list{padding:8px 20px 20px;}
+  .ach-row{
+    display:flex;align-items:center;gap:14px;padding:12px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .ach-row:last-child{border-bottom:none;}
+  .ach-icon{
+    flex:0 0 40px;width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+    background:var(--panel);border:1px solid var(--line);
+  }
+  .ach-row.unlocked .ach-icon{background:radial-gradient(circle at 35% 30%, #fff8de, #e4ae39 55%, #9c7318);border-color:transparent;}
+  .ach-row.locked{opacity:.45;}
+  .ach-text .ach-name{font-size:.88rem;font-weight:700;}
+  .ach-text .ach-desc{font-size:.72rem;color:var(--ink-dim);margin-top:2px;}
+
+  /* trade-up view */
+  .tradeup-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .tradeup-status{font-size:.85rem;color:var(--ink-dim);}
+  .tradeup-status strong{color:var(--ink);}
+  .tradeup-btn{
+    background:var(--gold);color:var(--gold-ink);border:none;border-radius:6px;
+    padding:11px 24px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;
+  }
+  .tradeup-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .tradeup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+  .tradeup-item{
+    position:relative;background:var(--panel);border:2px solid transparent;border-bottom:3px solid var(--c-milspec);
+    border-radius:4px;padding:10px;text-align:center;cursor:pointer;transition:border-color .12s ease, transform .12s ease;
+  }
+  .tradeup-item:hover{transform:translateY(-2px);}
+  .tradeup-item.selected{border-color:var(--c-gold);background:rgba(228,174,57,.12);}
+  .tradeup-item.disabled{opacity:.3;cursor:not-allowed;}
+  .tradeup-item img{width:100%;height:60px;object-fit:contain;display:block;margin-bottom:6px;}
+  .tradeup-item .n{font-size:.68rem;font-weight:600;line-height:1.2;}
+  .tradeup-item .w{font-size:.6rem;color:var(--ink-dim);margin-top:2px;}
+  .tradeup-check{
+    position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;
+    background:var(--c-gold);color:#3a2a00;font-size:.65rem;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tradeup-empty{color:var(--ink-dim);font-size:.9rem;text-align:center;padding:60px 0;}
+
+  /* case battles view */
+  .battle-setup{
+    display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;
+  }
+  .battle-field label{display:block;font-size:.72rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .battle-field select{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 12px;border-radius:6px;font-family:inherit;font-size:.85rem;min-width:220px;
+  }
+  .battle-amount-toggle{display:flex;gap:6px;}
+  .battle-amount-toggle button{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    padding:8px 16px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;
+  }
+  .battle-amount-toggle button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.25);}
+  .battle-start-btn{
+    background:var(--gold);color:var(--gold-ink);border:none;border-radius:6px;
+    padding:11px 26px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;
+  }
+  .battle-start-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .battle-sides{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:700px){ .battle-sides{grid-template-columns:1fr;} }
+  .battle-side-head{
+    font-family:"Permanent Marker",cursive;font-size:1.1rem;margin-bottom:10px;text-align:center;
+  }
+  .battle-side-head.you{color:#8ee08e;}
+  .battle-side-head.bot{color:#eb4b4b;}
+  .battle-reels{display:flex;flex-direction:column;gap:8px;}
+  .battle-reels .reel-wrap{height:90px;}
+  .battle-reels .reel-card{flex-basis:100px;height:76px;padding:5px;}
+  .battle-reels .reel-card img{height:38px;margin-bottom:3px;}
+  .battle-reels .reel-card .n{font-size:.56rem;}
+  .battle-result{text-align:center;margin-top:24px;padding:20px;border-radius:8px;}
+  .battle-result.win{background:rgba(142,224,142,.1);border:1px solid rgba(142,224,142,.4);}
+  .battle-result.lose{background:rgba(235,75,75,.1);border:1px solid rgba(235,75,75,.4);}
+  .battle-result-title{font-family:"Permanent Marker",cursive;font-size:1.6rem;}
+  .battle-result.win .battle-result-title{color:#8ee08e;}
+  .battle-result.lose .battle-result-title{color:#eb4b4b;}
+  .battle-result-sub{color:var(--ink-dim);font-size:.9rem;margin-top:8px;}
+  .battle-totals{display:flex;justify-content:center;gap:30px;margin-top:14px;}
+  .battle-totals .bt-val{font-size:1.1rem;font-weight:700;}
+
+  /* share/export button */
+  .share-btn{
+    background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;
+    padding:11px 22px;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .share-btn:hover{border-color:var(--gold);}
 </style>
 </head>
 <body>
+<div class="global-toasts" id="globalToasts"></div>
 <div class="topbar">
   <button class="brand" id="brandHome">BASH ADDICTION <span class="tag">SIM</span></button>
   <div class="nav-tabs">
     <a class="home-link" href="/">&larr; Back to site</a>
     <button id="tabCases" class="active">Cases</button>
+    <button id="tabBattle">Battle</button>
+    <button id="tabTradeup">Trade-Up</button>
     <button id="tabInventory">Inventory</button>
+    <button id="achToggle" class="ach-toggle" title="Achievements" aria-label="Achievements">🏆</button>
     <button id="sfxToggle" class="sfx-toggle" title="Toggle sound" aria-label="Toggle sound">🔊</button>
     <button id="walletBtn" class="wallet-btn"><span class="ic">$</span><span id="walletAmount">0.00</span></button>
   </div>
@@ -578,6 +735,16 @@
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="achModal">
+  <div class="ach-shell">
+    <div class="ck-top">
+      <h2>Achievements</h2>
+      <button class="modal-close" id="achClose">Close</button>
+    </div>
+    <div class="ach-list" id="achList"></div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="inspectModal">
   <div class="inspect-shell">
     <button class="modal-close inspect-close" id="inspectClose">Close</button>
@@ -605,6 +772,7 @@
       <div class="inspect-price" id="inspectPriceRow"></div>
 
       <button class="inv-sell inspect-sell" id="inspectSellBtn">Sell</button>
+      <button class="share-btn" id="inspectShareBtn" style="margin-top:10px;margin-left:10px;">📷 Share</button>
     </div>
   </div>
 </div>
@@ -614,6 +782,14 @@
   <div id="view-cases" class="view active">
     <h1>Open a Case</h1>
     <p class="sub">Pick a container. Odds match real CS2 rates.</p>
+
+    <div class="daily-banner hidden" id="dailyBanner">
+      <div class="daily-info">
+        <div class="daily-title">🎁 Daily Free Case</div>
+        <div class="daily-sub" id="dailyStreakText">Streak: 0 days</div>
+      </div>
+      <button class="daily-claim-btn" id="dailyClaimBtn">Claim</button>
+    </div>
 
     <div class="big-cases-section hidden" id="bigCasesSection">
       <div class="big-cases-head">
@@ -668,6 +844,7 @@
       <div class="result-actions">
         <button id="openAgainBtn" class="primary">Open Again</button>
         <button id="toInventoryBtn">View Inventory</button>
+        <button class="share-btn" id="resultShareBtn">📷 Share</button>
       </div>
     </div>
 
@@ -690,6 +867,72 @@
       <button class="sell-all-btn" id="sellAllBtn">Sell All (<span id="invTotalValue">$0.00</span>)</button>
     </div>
     <div class="inv-grid" id="invGrid"></div>
+  </div>
+
+  <div id="view-tradeup" class="view">
+    <h1>Trade-Up Contract</h1>
+    <p class="sub">Trade 10 skins of the same rarity for 1 random skin of the next rarity up. Extraordinary items (knives/gloves) can't be traded up.</p>
+    <div class="tradeup-toolbar">
+      <div class="tradeup-status" id="tradeupStatus">Select 10 items of the same rarity.</div>
+      <button class="tradeup-btn" id="tradeupBtn" disabled>Trade Up</button>
+    </div>
+    <div class="tradeup-grid" id="tradeupGrid"></div>
+
+    <div class="result-card hidden" id="tradeupResultCard">
+      <div class="result-glow" id="tradeupResultGlow"><div class="rare-badge hidden" id="tradeupResultBadge">★</div><img id="tradeupResultImg" src="" alt=""></div>
+      <div class="result-name" id="tradeupResultName"></div>
+      <div class="result-rarity" id="tradeupResultRarity"></div>
+      <div class="result-wear" id="tradeupResultWear"></div>
+      <div class="result-price" id="tradeupResultPrice"></div>
+      <div class="result-actions">
+        <button id="tradeupAgainBtn" class="primary">Trade Up Again</button>
+        <button id="tradeupToInventoryBtn">View Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-battle" class="view">
+    <h1>Case Battles</h1>
+    <p class="sub">You vs a bot. Same case, same odds. Whoever pulls the bigger total wins everything.</p>
+    <div class="battle-setup">
+      <div class="battle-field">
+        <label>Case</label>
+        <select id="battleCaseSelect"></select>
+      </div>
+      <div class="battle-field">
+        <label>Rounds</label>
+        <div class="battle-amount-toggle" id="battleRoundsToggle">
+          <button data-r="1" class="active">x1</button>
+          <button data-r="3">x3</button>
+          <button data-r="5">x5</button>
+        </div>
+      </div>
+      <button class="battle-start-btn" id="battleStartBtn">Start Battle</button>
+    </div>
+
+    <div class="battle-sides hidden" id="battleSides">
+      <div>
+        <div class="battle-side-head you">YOU</div>
+        <div class="battle-reels" id="battleYouReels"></div>
+      </div>
+      <div>
+        <div class="battle-side-head bot">BOT</div>
+        <div class="battle-reels" id="battleBotReels"></div>
+      </div>
+    </div>
+
+    <div class="battle-result hidden" id="battleResult">
+      <div class="battle-result-title" id="battleResultTitle"></div>
+      <div class="battle-result-sub" id="battleResultSub"></div>
+      <div class="battle-totals">
+        <div class="bt-val" style="color:#8ee08e;">You: <span id="battleYouTotal">$0.00</span></div>
+        <div class="bt-val" style="color:#eb4b4b;">Bot: <span id="battleBotTotal">$0.00</span></div>
+      </div>
+      <div class="result-actions" style="margin-top:20px;">
+        <button id="battleAgainBtn" class="primary">Battle Again</button>
+        <button id="battleToInventoryBtn">View Inventory</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -801,6 +1044,185 @@
   function updateSfxToggleUI(){
     const btn = $("#sfxToggle");
     if (btn) btn.textContent = sfxMuted ? "🔇" : "🔊";
+  }
+
+  // ==================================================================
+  // global toasts
+  // ==================================================================
+  function showToast(text){
+    const box = document.getElementById("globalToasts");
+    if (!box) return;
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = text;
+    box.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  // ==================================================================
+  // stats + achievements
+  // ==================================================================
+  const STATS_KEY = "cs2sim_stats";
+  const ACH_KEY = "cs2sim_achievements";
+
+  let stats = {
+    casesOpened: 0,
+    knivesFound: 0,
+    highestDropValue: 0,
+    itemsSold: 0,
+    battlesWon: 0,
+    battlesPlayed: 0,
+    tradeUpsDone: 0
+  };
+  function loadStats(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(STATS_KEY));
+      if (raw) stats = Object.assign({}, stats, raw);
+    } catch(e){}
+  }
+  function saveStats(){
+    try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch(e){}
+  }
+
+  let unlockedAchievements = [];
+  function loadAchievements(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(ACH_KEY));
+      if (Array.isArray(raw)) unlockedAchievements = raw;
+    } catch(e){}
+  }
+  function saveAchievements(){
+    try { localStorage.setItem(ACH_KEY, JSON.stringify(unlockedAchievements)); } catch(e){}
+  }
+
+  const ACHIEVEMENTS = [
+    { id:"first-blood",  icon:"🎉", name:"First Blood",       desc:"Open your first case.",                    check: s => s.casesOpened >= 1 },
+    { id:"getting-lucky", icon:"🔪", name:"Getting Lucky",     desc:"Pull your first knife or glove.",          check: s => s.knivesFound >= 1 },
+    { id:"high-roller",  icon:"💰", name:"High Roller",       desc:"Pull a single item worth $1,000+.",        check: s => s.highestDropValue >= 1000 },
+    { id:"whale",        icon:"🐋", name:"Whale",              desc:"Pull a single item worth $5,000+.",        check: s => s.highestDropValue >= 5000 },
+    { id:"cant-stop",    icon:"📦", name:"Can't Stop",        desc:"Open 50 cases.",                            check: s => s.casesOpened >= 50 },
+    { id:"degenerate",   icon:"🎰", name:"Degenerate",        desc:"Open 250 cases.",                           check: s => s.casesOpened >= 250 },
+    { id:"rock-bottom",  icon:"📉", name:"Rock Bottom",       desc:"Sell 100 items.",                           check: s => s.itemsSold >= 100 },
+    { id:"warlord",      icon:"⚔️", name:"Warlord",           desc:"Win 10 case battles.",                     check: s => s.battlesWon >= 10 },
+    { id:"upgrade-complete", icon:"⬆️", name:"Upgrade Complete", desc:"Complete your first trade-up contract.", check: s => s.tradeUpsDone >= 1 },
+    { id:"loyal-customer", icon:"🔥", name:"Loyal Customer",  desc:"Reach a 7-day daily case streak.",          check: (s, d) => (d ? d.streak : 0) >= 7 }
+  ];
+
+  function checkAchievements(){
+    const daily = getDailyState();
+    ACHIEVEMENTS.forEach(a => {
+      if (unlockedAchievements.includes(a.id)) return;
+      if (a.check(stats, daily)){
+        unlockedAchievements.push(a.id);
+        showToast("🏆 Achievement unlocked: " + a.name);
+      }
+    });
+    saveAchievements();
+  }
+
+  function recordObtainedItem(item){
+    if (isRare(item)) stats.knivesFound++;
+    const price = dropPrice(item);
+    if (price != null && price > stats.highestDropValue) stats.highestDropValue = price;
+    saveStats();
+    checkAchievements();
+  }
+
+  function renderAchievements(){
+    const list = $("#achList");
+    if (!list) return;
+    list.innerHTML = "";
+    ACHIEVEMENTS.forEach(a => {
+      const unlocked = unlockedAchievements.includes(a.id);
+      const row = document.createElement("div");
+      row.className = "ach-row " + (unlocked ? "unlocked" : "locked");
+      row.innerHTML =
+        '<div class="ach-icon">' + (unlocked ? a.icon : "🔒") + '</div>' +
+        '<div class="ach-text"><div class="ach-name">' + a.name + '</div><div class="ach-desc">' + a.desc + '</div></div>';
+      list.appendChild(row);
+    });
+  }
+
+  // ==================================================================
+  // daily free case
+  // ==================================================================
+  const DAILY_KEY = "cs2sim_daily";
+  let dailyState = { lastClaim: 0, streak: 0 };
+  function loadDailyState(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(DAILY_KEY));
+      if (raw) dailyState = Object.assign({ lastClaim: 0, streak: 0 }, raw);
+    } catch(e){}
+  }
+  function saveDailyState(){
+    try { localStorage.setItem(DAILY_KEY, JSON.stringify(dailyState)); } catch(e){}
+  }
+  function getDailyState(){ return dailyState; }
+  function isSameDay(a, b){
+    const da = new Date(a), db = new Date(b);
+    return da.toDateString() === db.toDateString();
+  }
+  function canClaimDaily(){
+    if (!dailyState.lastClaim) return true;
+    return !isSameDay(dailyState.lastClaim, Date.now());
+  }
+  function claimDailyStreak(){
+    const now = Date.now();
+    const oneDayAgo = now - 26 * 3600 * 1000; // generous grace window so "every 24h" doesn't punish being a bit late
+    if (dailyState.lastClaim && dailyState.lastClaim >= oneDayAgo){
+      dailyState.streak += 1;
+    } else {
+      dailyState.streak = 1;
+    }
+    dailyState.lastClaim = now;
+    saveDailyState();
+    checkAchievements();
+  }
+
+  let dailyCase = null;
+  function ensureDailyCase(){
+    if (dailyCase || !CASES.length) return dailyCase;
+    const real = CASES.filter(c => c.kind === "case");
+    const base = real.slice().sort((a, b) => (casePrice(a) || 0) - (casePrice(b) || 0))[0];
+    if (!base) return null;
+    dailyCase = {
+      id: "daily-free-case",
+      name: "Daily Free Case",
+      image: base.image,
+      kind: "case",
+      date: "2026/01/01",
+      contains: base.contains,
+      rare: base.rare
+    };
+    return dailyCase;
+  }
+  function isDailyCase(c){ return !!c && c.id === "daily-free-case"; }
+
+  function fmtCountdown(ms){
+    ms = Math.max(0, ms);
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+  }
+
+  function renderDailyBanner(){
+    const banner = $("#dailyBanner");
+    if (!banner) return;
+    banner.classList.remove("hidden");
+    const streakText = $("#dailyStreakText");
+    const claimBtn = $("#dailyClaimBtn");
+    const claimable = canClaimDaily();
+    streakText.textContent = "Streak: " + dailyState.streak + " day" + (dailyState.streak === 1 ? "" : "s") +
+      (claimable ? "" : " · next free case in " + fmtCountdown(nextClaimAt() - Date.now()));
+    claimBtn.disabled = !claimable;
+    claimBtn.textContent = claimable ? "Claim" : "Claimed";
+  }
+  function nextClaimAt(){
+    if (!dailyState.lastClaim) return Date.now();
+    const d = new Date(dailyState.lastClaim);
+    d.setHours(24,0,0,0);
+    return d.getTime();
   }
 
   let CASES = [];
@@ -1038,13 +1460,25 @@
     resultCard.classList.add("hidden");
     $("#batchResultCard").classList.add("hidden");
     openBtn.classList.remove("hidden");
-    $("#openAmountToggle").classList.remove("hidden");
+    if (isDailyCase(c)){
+      openAmount = 1;
+      $("#openAmountToggle").classList.add("hidden");
+    } else {
+      $("#openAmountToggle").classList.remove("hidden");
+    }
     refreshOpenButton();
     switchView("open");
   }
 
   function refreshOpenButton(){
     if (!currentCase) return;
+    if (isDailyCase(currentCase)){
+      const claimable = canClaimDaily();
+      openBtn.innerHTML = claimable ? "Claim Daily Case (FREE)" : "Already claimed — come back tomorrow";
+      openBtn.classList.toggle("insufficient", !claimable);
+      openBtn.disabled = spinning || !claimable;
+      return;
+    }
     const price = casePrice(currentCase);
     const totalCost = price != null ? price * openAmount : null;
     const label = openAmount === 1 ? "Open Container" : `Open ${openAmount} Containers`;
@@ -1126,14 +1560,20 @@
     row.stopTicks = startReelTicks(track, slotW);
   }
 
-  function saveToInventory(item){
+  function pushInventoryItem(item, meta){
     let inv = [];
     try { inv = JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){}
-    inv.unshift({ ...item, caseId: currentCase.id, caseName: currentCase.name, ts: Date.now() });
+    inv.unshift({ ...item, ...meta, ts: Date.now() });
     try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
+  }
+  function saveToInventory(item){
+    pushInventoryItem(item, { caseId: currentCase.id, caseName: currentCase.name });
+    stats.casesOpened++;
+    recordObtainedItem(item);
   }
 
   function showResult(item){
+    window.__lastResultItem = item;
     $("#resultImg").src = item.image;
     $("#resultName").textContent = item.name;
     const color = item.color || "#4b69ff";
@@ -1171,7 +1611,8 @@
 
   openBtn.addEventListener("click", () => {
     if (spinning || !currentCase) return;
-    const price = casePrice(currentCase);
+    if (isDailyCase(currentCase) && !canClaimDaily()) return;
+    const price = isDailyCase(currentCase) ? null : casePrice(currentCase);
     const totalCost = price != null ? price * openAmount : null;
     if (totalCost != null && getBalance() < totalCost) return;
     if (totalCost != null) addBalance(-totalCost);
@@ -1214,6 +1655,10 @@
         if (completed === rows.length){
           spinning = false;
           reelStack.classList.add("hidden");
+          if (isDailyCase(currentCase)){
+            claimDailyStreak();
+            renderDailyBanner();
+          }
           if (!isBatch){
             showResult(drops[0]);
           } else {
@@ -1300,6 +1745,7 @@
   let inspectIdx = null;
   function openInspect(it, idx){
     inspectIdx = idx;
+    window.__lastInspectItem = it;
     const color = it.color || "#4b69ff";
     $("#inspectImg").src = it.image;
     $("#inspectGlow").style.setProperty("--glow-color", color + "40");
@@ -1353,6 +1799,9 @@
     try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
     addBalance(price);
     playSell();
+    stats.itemsSold++;
+    saveStats();
+    checkAchievements();
     renderInventory();
   }
 
@@ -1364,16 +1813,303 @@
     try { localStorage.setItem(INV_KEY, JSON.stringify([])); } catch(e){}
     if (total > 0) addBalance(total);
     playSell();
+    stats.itemsSold += inv.length;
+    saveStats();
+    checkAchievements();
     renderInventory();
   }
   $("#sellAllBtn").addEventListener("click", sellAllItems);
 
+  // ==================================================================
+  // trade-up contract — 10 same-rarity skins -> 1 skin of the next rarity up
+  // ==================================================================
+  let tradeupSelected = []; // indices into the current inventory array
+
+  function getInventory(){
+    try { return JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){ return []; }
+  }
+  function setInventory(inv){
+    try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
+  }
+
+  function tradeupEligible(it){
+    return it.kind !== "capsule" && it.rarity && it.rarity !== "Extraordinary";
+  }
+
+  function renderTradeupGrid(){
+    const grid = $("#tradeupGrid");
+    const inv = getInventory();
+    tradeupSelected = tradeupSelected.filter(idx => idx < inv.length);
+    const activeRarity = tradeupSelected.length ? inv[tradeupSelected[0]].rarity : null;
+    grid.innerHTML = "";
+    if (!inv.length){
+      grid.innerHTML = '<div class="tradeup-empty">No items yet — open a case to get started.</div>';
+    } else {
+      inv.forEach((it, idx) => {
+        const eligible = tradeupEligible(it);
+        const blocked = eligible && activeRarity && it.rarity !== activeRarity;
+        const selected = tradeupSelected.includes(idx);
+        const div = document.createElement("div");
+        div.className = "tradeup-item" + (selected ? " selected" : "") + ((!eligible || blocked) ? " disabled" : "");
+        div.style.borderBottomColor = it.color || "#4b69ff";
+        const wearLine = it.kind === "capsule" ? "" : `<div class="w">${it.wear || ""}</div>`;
+        div.innerHTML = (selected ? '<div class="tradeup-check">✓</div>' : "") +
+          `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}`;
+        if (eligible && !blocked){
+          div.addEventListener("click", () => {
+            const pos = tradeupSelected.indexOf(idx);
+            if (pos >= 0){
+              tradeupSelected.splice(pos, 1);
+            } else if (tradeupSelected.length < 10){
+              tradeupSelected.push(idx);
+            }
+            renderTradeupGrid();
+          });
+        }
+        grid.appendChild(div);
+      });
+    }
+    const status = $("#tradeupStatus");
+    const btn = $("#tradeupBtn");
+    if (tradeupSelected.length){
+      status.innerHTML = `<strong>${tradeupSelected.length}/10</strong> selected · rarity: <strong>${activeRarity}</strong>`;
+    } else {
+      status.textContent = "Select 10 items of the same rarity.";
+    }
+    btn.disabled = tradeupSelected.length !== 10;
+  }
+
+  function nextRarityTier(rarity){
+    const idx = CASE_RARITY_ORDER.indexOf(rarity);
+    if (idx < 0 || idx >= CASE_RARITY_ORDER.length - 1) return null;
+    return CASE_RARITY_ORDER[idx + 1];
+  }
+
+  function collectPoolByRarity(rarity){
+    const seen = {};
+    CASES.forEach(c => {
+      if (c.kind === "capsule" || isDailyCase(c)) return;
+      (c.contains || []).concat(c.rare || []).forEach(it => {
+        if (it.rarity === rarity && !(it.name in seen) && itemWearPrices(it.name)) seen[it.name] = it;
+      });
+    });
+    return Object.values(seen);
+  }
+
+  function rollItemDrop(item){
+    const wp = itemWearPrices(item.name);
+    const availableWears = (wp && Object.keys(wp).length) ? WEARS.filter(w => w in wp) : WEARS;
+    const wear = availableWears[Math.floor(Math.random() * availableWears.length)];
+    const range = WEAR_RANGES[wear];
+    const float = range[0] + Math.random() * (range[1] - range[0]);
+    const seed = Math.floor(Math.random() * 1000) + 1;
+    return { ...item, wear, float, seed, kind: "case" };
+  }
+
+  function showTradeupResult(item){
+    $("#tradeupResultImg").src = item.image;
+    $("#tradeupResultName").textContent = item.name;
+    const color = item.color || "#4b69ff";
+    $("#tradeupResultRarity").textContent = isRare(item) ? "★ Rare Special Item" : item.rarity;
+    $("#tradeupResultRarity").style.color = color;
+    $("#tradeupResultWear").textContent = item.wear || "";
+    $("#tradeupResultGlow").style.setProperty("--glow-color", color + "59");
+    $("#tradeupResultBadge").classList.toggle("hidden", !isRare(item));
+    const price = dropPrice(item);
+    $("#tradeupResultPrice").textContent = price != null ? fmtPrice(price) : "";
+    $("#tradeupResultCard").classList.remove("hidden");
+  }
+
+  $("#tradeupBtn").addEventListener("click", () => {
+    if (tradeupSelected.length !== 10) return;
+    const inv = getInventory();
+    const rarity = inv[tradeupSelected[0]].rarity;
+    const nextTier = nextRarityTier(rarity);
+    if (!nextTier) return;
+    const pool = collectPoolByRarity(nextTier);
+    if (!pool.length) return;
+    const base = pool[Math.floor(Math.random() * pool.length)];
+    const output = rollItemDrop(base);
+
+    const toRemove = new Set(tradeupSelected);
+    const remaining = inv.filter((it, idx) => !toRemove.has(idx));
+    setInventory(remaining);
+    pushInventoryItem(output, { caseId: "tradeup", caseName: "Trade-Up Contract" });
+    stats.tradeUpsDone++;
+    recordObtainedItem(output);
+
+    tradeupSelected = [];
+    playLand(isRare(output));
+    $("#tradeupGrid").classList.add("hidden");
+    $(".tradeup-toolbar").classList.add("hidden");
+    showTradeupResult(output);
+  });
+
+  $("#tradeupAgainBtn").addEventListener("click", () => {
+    $("#tradeupResultCard").classList.add("hidden");
+    $("#tradeupGrid").classList.remove("hidden");
+    $(".tradeup-toolbar").classList.remove("hidden");
+    renderTradeupGrid();
+  });
+  $("#tradeupToInventoryBtn").addEventListener("click", () => {
+    inventoryBackTarget = "cases";
+    switchView("inventory");
+  });
+
+  // ==================================================================
+  // case battles — you vs a bot, same case, higher total takes everything
+  // ==================================================================
+  let battleRounds = 1;
+  let battleSavedCurrentCase = null;
+
+  function renderBattleCaseOptions(){
+    const sel = $("#battleCaseSelect");
+    const prevVal = sel.value;
+    sel.innerHTML = "";
+    const list = CASES.filter(c => c.kind !== "capsule" && !isDailyCase(c))
+      .slice()
+      .sort((a, b) => (casePrice(a) || 0) - (casePrice(b) || 0));
+    list.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      const p = casePrice(c);
+      opt.textContent = c.name + (p != null ? ` (${fmtPrice(p)})` : "");
+      sel.appendChild(opt);
+    });
+    if (prevVal && list.some(c => c.id === prevVal)) sel.value = prevVal;
+    updateBattleStartLabel();
+  }
+
+  function getSelectedBattleCase(){
+    const id = $("#battleCaseSelect").value;
+    return CASES.find(c => c.id === id) || null;
+  }
+
+  function updateBattleStartLabel(){
+    const c = getSelectedBattleCase();
+    const btn = $("#battleStartBtn");
+    if (!btn) return;
+    if (!c){ btn.textContent = "Start Battle"; btn.disabled = true; return; }
+    const price = casePrice(c);
+    const cost = price != null ? price * battleRounds : 0;
+    btn.textContent = "Start Battle (" + fmtPrice(cost) + ")";
+    btn.disabled = spinning || (price != null && getBalance() < cost);
+  }
+
+  $("#battleCaseSelect").addEventListener("change", updateBattleStartLabel);
+  $("#battleRoundsToggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    document.querySelectorAll("#battleRoundsToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    battleRounds = parseInt(btn.dataset.r, 10);
+    updateBattleStartLabel();
+  });
+
+  function runBattle(){
+    const c = getSelectedBattleCase();
+    if (!c || spinning) return;
+    const price = casePrice(c);
+    const cost = price != null ? price * battleRounds : 0;
+    if (price != null && getBalance() < cost) return;
+    if (cost > 0) addBalance(-cost);
+
+    spinning = true;
+    $("#battleStartBtn").disabled = true;
+    $("#battleResult").classList.add("hidden");
+    $("#battleSides").classList.remove("hidden");
+    $("#battleYouReels").innerHTML = "";
+    $("#battleBotReels").innerHTML = "";
+
+    battleSavedCurrentCase = currentCase;
+    currentCase = c;
+
+    const youDrops = [], botDrops = [];
+    const youRows = [], botRows = [];
+    for (let i = 0; i < battleRounds; i++){
+      const yd = pickDrop(c); youDrops.push(yd);
+      const bd = pickDrop(c); botDrops.push(bd);
+      youRows.push(buildReelRow(yd));
+      botRows.push(buildReelRow(bd));
+    }
+    youRows.forEach(r => $("#battleYouReels").appendChild(r.wrap));
+    botRows.forEach(r => $("#battleBotReels").appendChild(r.wrap));
+
+    requestAnimationFrame(() => {
+      $("#battleSides").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    playSpinStart();
+
+    const allRows = youRows.concat(botRows);
+    let completed = 0;
+    allRows.forEach(row => {
+      spinReelRow(row);
+      const onEnd = () => {
+        row.track.removeEventListener("transitionend", onEnd);
+        if (row.stopTicks) row.stopTicks();
+        completed++;
+        if (completed === allRows.length){
+          finishBattle(c, cost, youDrops, botDrops);
+        }
+      };
+      row.track.addEventListener("transitionend", onEnd);
+    });
+  }
+
+  function finishBattle(c, cost, youDrops, botDrops){
+    currentCase = battleSavedCurrentCase;
+    spinning = false;
+
+    const youTotal = youDrops.reduce((s, it) => s + (dropPrice(it) || 0), 0);
+    const botTotal = botDrops.reduce((s, it) => s + (dropPrice(it) || 0), 0);
+    const won = youTotal >= botTotal;
+
+    stats.battlesPlayed++;
+    let wonAnyRare = false;
+    if (won){
+      stats.battlesWon++;
+      youDrops.concat(botDrops).forEach(it => {
+        pushInventoryItem(it, { caseId: c.id, caseName: c.name + " (battle)" });
+        recordObtainedItem(it);
+        if (isRare(it)) wonAnyRare = true;
+      });
+    }
+    saveStats();
+    checkAchievements();
+
+    playLand(won && wonAnyRare);
+
+    $("#battleSides").classList.add("hidden");
+    const box = $("#battleResult");
+    box.className = "battle-result " + (won ? "win" : "lose");
+    box.classList.remove("hidden");
+    $("#battleResultTitle").textContent = won ? "YOU WIN" : "YOU LOSE";
+    $("#battleResultSub").textContent = won
+      ? "You take everything — net " + fmtPrice(youTotal + botTotal - cost)
+      : "The bot took the pot. Better luck next time.";
+    $("#battleYouTotal").textContent = fmtPrice(youTotal);
+    $("#battleBotTotal").textContent = fmtPrice(botTotal);
+    updateBattleStartLabel();
+  }
+
+  $("#battleStartBtn").addEventListener("click", runBattle);
+  $("#battleAgainBtn").addEventListener("click", () => {
+    $("#battleResult").classList.add("hidden");
+    updateBattleStartLabel();
+  });
+  $("#battleToInventoryBtn").addEventListener("click", () => {
+    inventoryBackTarget = "cases";
+    switchView("inventory");
+  });
+
   function switchView(name){
-    ["cases","open","inventory"].forEach(v => {
+    ["cases","open","inventory","battle","tradeup"].forEach(v => {
       $("#view-" + v).classList.toggle("active", v === name);
     });
     $("#tabCases").classList.toggle("active", name === "cases" || name === "open");
     $("#tabInventory").classList.toggle("active", name === "inventory");
+    $("#tabBattle").classList.toggle("active", name === "battle");
+    $("#tabTradeup").classList.toggle("active", name === "tradeup");
     if (name === "inventory"){
       renderInventory();
       const backBtn = $("#backFromInventory");
@@ -1381,6 +2117,8 @@
         ? "← Back to " + currentCase.name
         : "← Cases";
     }
+    if (name === "tradeup") renderTradeupGrid();
+    if (name === "battle") renderBattleCaseOptions();
   }
 
   $("#tabCases").addEventListener("click", () => switchView("cases"));
@@ -1388,6 +2126,8 @@
     inventoryBackTarget = "cases";
     switchView("inventory");
   });
+  $("#tabBattle").addEventListener("click", () => switchView("battle"));
+  $("#tabTradeup").addEventListener("click", () => switchView("tradeup"));
 
   $("#kindFilter").addEventListener("click", (e) => {
     const btn = e.target.closest("button");
@@ -1740,6 +2480,122 @@
     updateSfxToggleUI();
   });
   updateSfxToggleUI();
+
+  // stats / achievements / daily case
+  loadStats();
+  loadAchievements();
+  loadDailyState();
+  checkAchievements();
+  renderDailyBanner();
+  setInterval(renderDailyBanner, 1000);
+
+  const achModal = $("#achModal");
+  $("#achToggle").addEventListener("click", () => {
+    renderAchievements();
+    achModal.classList.remove("hidden");
+  });
+  $("#achClose").addEventListener("click", () => achModal.classList.add("hidden"));
+  achModal.addEventListener("click", (e) => { if (e.target === achModal) achModal.classList.add("hidden"); });
+
+  $("#dailyClaimBtn").addEventListener("click", () => {
+    if (!canClaimDaily()) return;
+    const dc = ensureDailyCase();
+    if (!dc) return;
+    openCaseView(dc);
+  });
+
+  // share/export — draws the drop onto a canvas and downloads it as a PNG
+  function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(" ");
+    let line = "";
+    const lines = [];
+    words.forEach(word => {
+      const test = line ? line + " " + word : word;
+      if (ctx.measureText(test).width > maxWidth && line){
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+    if (line) lines.push(line);
+    const startY = y - (lines.length - 1) * lineHeight / 2;
+    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+    return lines.length;
+  }
+
+  // Steam's CDN doesn't send CORS headers on item images, so they can never be drawn onto
+  // an exportable canvas (it would "taint" the canvas and toDataURL would throw) - draw a
+  // stylized medallion in the item's rarity color instead of a real screenshot of the skin.
+  function shareItemImage(item){
+    const w = 700, h = 500;
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    const color = item.color || "#4b69ff";
+
+    const bg = ctx.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, "#1c1426");
+    bg.addColorStop(1, "#08070a");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    const glow = ctx.createRadialGradient(w/2, 185, 20, w/2, 185, 260);
+    glow.addColorStop(0, color + "55");
+    glow.addColorStop(1, color + "00");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.beginPath();
+    ctx.arc(w/2, 185, 105, 0, Math.PI * 2);
+    ctx.fillStyle = color + "22";
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.font = "700 84px 'Chakra Petch', sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(isRare(item) ? "★" : "◆", w/2, 192);
+    ctx.textBaseline = "alphabetic";
+
+    ctx.fillStyle = "#f4f1ec";
+    ctx.font = "700 30px 'Chakra Petch', sans-serif";
+    const nameLines = wrapCanvasText(ctx, item.name, w/2, 355, 620, 36);
+    const afterName = 355 + (nameLines - 1) * 18 + 45;
+
+    ctx.fillStyle = color;
+    ctx.font = "700 16px 'Chakra Petch', sans-serif";
+    ctx.fillText((isRare(item) ? "★ RARE SPECIAL ITEM" : item.rarity || "") + (item.wear ? " · " + item.wear : ""), w/2, afterName);
+
+    const price = dropPrice(item);
+    if (price != null){
+      ctx.fillStyle = "#8ee08e";
+      ctx.font = "700 26px 'Chakra Petch', sans-serif";
+      ctx.fillText(fmtPrice(price), w/2, afterName + 40);
+    }
+
+    ctx.fillStyle = "#9a90ab";
+    ctx.font = "600 13px 'Chakra Petch', sans-serif";
+    ctx.fillText("BASH ADDICTION — yupbash.vip/cases", w/2, h - 24);
+
+    const a = document.createElement("a");
+    a.download = "bash-addiction-drop.png";
+    a.href = canvas.toDataURL("image/png");
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  $("#resultShareBtn").addEventListener("click", () => {
+    const item = window.__lastResultItem;
+    if (item) shareItemImage(item);
+  });
+  $("#inspectShareBtn").addEventListener("click", () => {
+    const item = window.__lastInspectItem;
+    if (item) shareItemImage(item);
+  });
 
   Promise.all([
     fetch("cases-data.json").then(r => r.json()),
