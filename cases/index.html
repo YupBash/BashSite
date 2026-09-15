@@ -324,6 +324,14 @@
   .wallet-btn:hover{border-color:var(--gold);}
   .wallet-btn .ic{color:#8ee08e;}
 
+  .sfx-toggle{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    width:36px;height:36px;border-radius:6px;font-size:1rem;line-height:1;
+    cursor:pointer;transition:border-color .15s ease;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sfx-toggle:hover{border-color:var(--gold);}
+
   .modal-overlay{
     position:fixed;inset:0;background:rgba(4,3,6,.75);backdrop-filter:blur(3px);
     display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;
@@ -522,6 +530,7 @@
     <a class="home-link" href="/">&larr; Back to site</a>
     <button id="tabCases" class="active">Cases</button>
     <button id="tabInventory">Inventory</button>
+    <button id="sfxToggle" class="sfx-toggle" title="Toggle sound" aria-label="Toggle sound">🔊</button>
     <button id="walletBtn" class="wallet-btn"><span class="ic">$</span><span id="walletAmount">0.00</span></button>
   </div>
 </div>
@@ -711,6 +720,79 @@
   const INV_KEY = "cs2sim_inventory";
   const BAL_KEY = "cs2sim_balance";
   const STARTER_BALANCE = 10;
+
+  // ==================================================================
+  // sound effects — synthesized with Web Audio API, no audio files
+  // ==================================================================
+  const SFX_KEY = "cs2sim_sfx_muted";
+  let sfxMuted = localStorage.getItem(SFX_KEY) === "1";
+  let audioCtx = null;
+
+  function getAudioCtx(){
+    if (!audioCtx){
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e){ return null; }
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function tone(ctx, { freq, start = 0, dur, type = "sine", peak = 0.15, freqEnd = null }){
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    const t0 = ctx.currentTime + start;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (freqEnd != null) osc.frequency.linearRampToValueAtTime(freqEnd, t0 + dur);
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(peak, t0 + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  }
+
+  function playSpinStart(){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 220, freqEnd: 520, dur: 0.18, type: "triangle", peak: 0.12 });
+  }
+
+  function playLand(isRareDrop){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 160, dur: 0.14, type: "sine", peak: 0.22 });
+    tone(ctx, { freq: 900, start: 0.02, dur: 0.05, type: "square", peak: 0.06 });
+    if (isRareDrop){
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+      notes.forEach((f, i) => {
+        tone(ctx, { freq: f, start: 0.1 + i * 0.09, dur: 0.16, type: "sine", peak: 0.16 });
+      });
+    }
+  }
+
+  function playClickCoin(){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 1000, freqEnd: 1400, dur: 0.05, type: "square", peak: 0.07 });
+  }
+
+  function playSell(){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 700, dur: 0.08, type: "triangle", peak: 0.15 });
+    tone(ctx, { freq: 1050, start: 0.07, dur: 0.12, type: "triangle", peak: 0.15 });
+  }
+
+  function updateSfxToggleUI(){
+    const btn = $("#sfxToggle");
+    if (btn) btn.textContent = sfxMuted ? "🔇" : "🔊";
+  }
 
   let CASES = [];
   let PRICES = { cases:{}, items:{}, stickers:{} };
@@ -1080,6 +1162,7 @@
     requestAnimationFrame(() => {
       reelStack.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+    playSpinStart();
 
     let completed = 0;
     rows.forEach((row, i) => {
@@ -1087,6 +1170,7 @@
       const onEnd = () => {
         row.track.removeEventListener("transitionend", onEnd);
         saveToInventory(drops[i]);
+        playLand(isRare(drops[i]));
         completed++;
         if (completed === rows.length){
           spinning = false;
@@ -1229,6 +1313,7 @@
     inv.splice(idx, 1);
     try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
     addBalance(price);
+    playSell();
     renderInventory();
   }
 
@@ -1239,6 +1324,7 @@
     const total = inv.reduce((sum, it) => sum + (dropPrice(it) || 0), 0);
     try { localStorage.setItem(INV_KEY, JSON.stringify([])); } catch(e){}
     if (total > 0) addBalance(total);
+    playSell();
     renderInventory();
   }
   $("#sellAllBtn").addEventListener("click", sellAllItems);
@@ -1559,6 +1645,7 @@
     const val = currentClickValue();
     addBalance(val);
     ckState.lifetime += val;
+    playClickCoin();
     const pop = document.createElement("div");
     pop.className = "click-pop";
     pop.textContent = "+" + fmtBig(val);
@@ -1595,6 +1682,13 @@
   window.addEventListener("beforeunload", saveClickerState);
 
   updateWalletUI();
+
+  $("#sfxToggle").addEventListener("click", () => {
+    sfxMuted = !sfxMuted;
+    try { localStorage.setItem(SFX_KEY, sfxMuted ? "1" : "0"); } catch(e){}
+    updateSfxToggleUI();
+  });
+  updateSfxToggleUI();
 
   Promise.all([
     fetch("cases-data.json").then(r => r.json()),
