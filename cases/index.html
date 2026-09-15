@@ -133,12 +133,27 @@
     margin-bottom:28px;
   }
   .mini-item{
+    position:relative;
     background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;
     padding:8px 6px;text-align:center;
   }
   .mini-item img{width:100%;height:50px;object-fit:contain;display:block;margin-bottom:4px;}
   .mini-item .n{font-size:.62rem;color:var(--ink-dim);line-height:1.2;
     overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+  .rare-badge{
+    position:absolute;top:4px;left:4px;width:18px;height:18px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff8de, #e4ae39 55%, #9c7318);
+    box-shadow:0 0 6px rgba(228,174,57,.8), 0 1px 2px rgba(0,0,0,.5);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.62rem;color:#3a2a00;font-weight:900;z-index:2;line-height:1;
+  }
+  .mini-item.is-rare, .reel-card.is-rare, .inv-item.is-rare, .batch-item.is-rare{
+    background:linear-gradient(160deg, rgba(228,174,57,.18), var(--panel-2) 65%);
+  }
+  .result-glow .rare-badge, .inspect-stage .rare-badge{
+    top:10px;left:10px;width:26px;height:26px;font-size:.85rem;
+  }
 
   .open-btn{
     display:block;margin:0 auto;
@@ -162,7 +177,7 @@
 
   .batch-result{padding:20px 0 0;}
   .batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
-  .batch-item{background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;padding:8px 6px;text-align:center;}
+  .batch-item{position:relative;background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;padding:8px 6px;text-align:center;}
   .batch-item img{width:100%;height:60px;object-fit:contain;display:block;margin-bottom:4px;}
   .batch-item .n{font-size:.66rem;color:var(--ink);line-height:1.2;
     overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
@@ -197,6 +212,7 @@
     will-change:transform;
   }
   .reel-card{
+    position:relative;
     flex:0 0 150px;height:140px;
     background:var(--panel-2);border-radius:6px;
     border-bottom:4px solid var(--c-milspec);
@@ -208,6 +224,7 @@
   /* result */
   .result-card{text-align:center;padding:20px 0 0;}
   .result-glow{
+    position:relative;
     width:220px;height:160px;margin:0 auto 6px;border-radius:10px;
     display:flex;align-items:center;justify-content:center;
     background:radial-gradient(ellipse at center, var(--glow-color,rgba(75,105,255,.35)), transparent 72%);
@@ -230,6 +247,7 @@
     display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;
   }
   .inv-item{
+    position:relative;
     background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;
     padding:10px;text-align:center;cursor:pointer;
     transition:transform .12s ease, background .12s ease;
@@ -513,6 +531,7 @@
     <button class="modal-close inspect-close" id="inspectClose">Close</button>
     <div class="inspect-stage">
       <div class="inspect-glow" id="inspectGlow"></div>
+      <div class="rare-badge hidden" id="inspectBadge">★</div>
       <img class="inspect-img" id="inspectImg" src="" alt="">
     </div>
     <div class="inspect-info">
@@ -583,7 +602,7 @@
     </div>
 
     <div class="result-card hidden" id="resultCard">
-      <div class="result-glow" id="resultGlow"><img id="resultImg" src="" alt=""></div>
+      <div class="result-glow" id="resultGlow"><div class="rare-badge hidden" id="resultBadge">★</div><img id="resultImg" src="" alt=""></div>
       <div class="result-name" id="resultName"></div>
       <div class="result-rarity" id="resultRarity"></div>
       <div class="result-wear" id="resultWear"></div>
@@ -727,6 +746,9 @@
   const resultCard = $("#resultCard");
   const openBtn = $("#openBtn");
 
+  function isRare(it){ return it.rarity === "Extraordinary"; }
+  function rareBadgeHtml(it){ return isRare(it) ? '<div class="rare-badge">★</div>' : ""; }
+
   function itemsByRarity(c){
     const order = rarityOrderFor(c);
     const map = {};
@@ -812,10 +834,10 @@
     rarityOrderFor(c).forEach(r => {
       (map[r] || []).forEach(it => {
         const div = document.createElement("div");
-        div.className = "mini-item";
+        div.className = "mini-item" + (isRare(it) ? " is-rare" : "");
         div.style.borderBottomColor = it.color || "#4b69ff";
         const priceLabel = poolItemPriceLabel(it, c.kind);
-        div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+        div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
           (priceLabel ? `<div class="price">${priceLabel}</div>` : "");
         containsGrid.appendChild(div);
       });
@@ -853,9 +875,9 @@
     for (let i = 0; i < TOTAL; i++){
       const it = (i === WIN_INDEX) ? winningItem : allItems[Math.floor(Math.random()*allItems.length)];
       const card = document.createElement("div");
-      card.className = "reel-card";
+      card.className = "reel-card" + (isRare(it) ? " is-rare" : "");
       card.style.borderBottomColor = it.color || "#4b69ff";
-      card.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
+      card.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
       reelTrack.appendChild(card);
     }
     // force layout
@@ -885,6 +907,7 @@
     $("#resultRarity").style.color = color;
     $("#resultWear").textContent = item.kind === "capsule" ? "" : item.wear;
     $("#resultGlow").style.setProperty("--glow-color", color + "59");
+    $("#resultBadge").classList.toggle("hidden", !isRare(item));
     const price = dropPrice(item);
     $("#resultPrice").textContent = price != null ? fmtPrice(price) : "";
     resultCard.classList.remove("hidden");
@@ -898,9 +921,9 @@
       const price = dropPrice(it);
       if (price != null) total += price;
       const div = document.createElement("div");
-      div.className = "batch-item";
+      div.className = "batch-item" + (isRare(it) ? " is-rare" : "");
       div.style.borderBottomColor = it.color || "#4b69ff";
-      div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+      div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
         (price != null ? `<div class="price">${fmtPrice(price)}</div>` : "");
       grid.appendChild(div);
     });
@@ -1002,11 +1025,11 @@
     }
     inv.forEach((it, idx) => {
       const div = document.createElement("div");
-      div.className = "inv-item";
+      div.className = "inv-item" + (isRare(it) ? " is-rare" : "");
       div.style.borderBottomColor = it.color || "#4b69ff";
       const price = dropPrice(it);
       const wearLine = it.kind === "capsule" ? "" : `<div class="w">${it.wear}</div>`;
-      div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}` +
+      div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}` +
         (price != null ? `<div class="price">${fmtPrice(price)}</div><button class="inv-sell" data-idx="${idx}">Sell for ${fmtPrice(price)}</button>` : "");
       div.addEventListener("click", (e) => {
         if (e.target.closest(".inv-sell")) return;
@@ -1025,6 +1048,7 @@
     const color = it.color || "#4b69ff";
     $("#inspectImg").src = it.image;
     $("#inspectGlow").style.setProperty("--glow-color", color + "40");
+    $("#inspectBadge").classList.toggle("hidden", !isRare(it));
     $("#inspectRarity").textContent = it.rarity === "Extraordinary" ?
       (it.kind === "capsule" ? "★ Extraordinary Sticker" : "★ Rare Special Item") : it.rarity;
     $("#inspectRarity").style.color = color;
