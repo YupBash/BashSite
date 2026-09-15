@@ -151,6 +151,25 @@
   .open-btn:hover{transform:translateY(-2px);}
   .open-btn:disabled{opacity:.5;cursor:default;transform:none;}
 
+  .open-amount-toggle{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+  .open-amount-toggle button{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    padding:6px 16px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .open-amount-toggle button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.2);}
+  .open-amount-toggle button:hover{color:var(--ink);}
+
+  .batch-result{padding:20px 0 0;}
+  .batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
+  .batch-item{background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;padding:8px 6px;text-align:center;}
+  .batch-item img{width:100%;height:60px;object-fit:contain;display:block;margin-bottom:4px;}
+  .batch-item .n{font-size:.66rem;color:var(--ink);line-height:1.2;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  .batch-item .price{font-size:.64rem;color:#8ee08e;font-weight:700;margin-top:2px;}
+  .batch-total{text-align:center;color:var(--ink-dim);font-size:.9rem;margin-bottom:20px;}
+  .batch-total strong{color:#8ee08e;}
+
   /* reel */
   .reel-wrap{
     position:relative;height:170px;overflow:hidden;
@@ -550,6 +569,12 @@
     <div class="case-image-wrap"><img id="openCaseImg" src="" alt=""></div>
     <div class="contains-label">Contains one of the following:</div>
     <div class="contains-grid" id="containsGrid"></div>
+    <div class="open-amount-toggle" id="openAmountToggle">
+      <button data-amt="1" class="active">x1</button>
+      <button data-amt="3">x3</button>
+      <button data-amt="5">x5</button>
+      <button data-amt="10">x10</button>
+    </div>
     <button class="open-btn" id="openBtn">Open Container</button>
 
     <div class="reel-wrap hidden" id="reelWrap">
@@ -566,6 +591,16 @@
       <div class="result-actions">
         <button id="openAgainBtn" class="primary">Open Again</button>
         <button id="toInventoryBtn">View Inventory</button>
+      </div>
+    </div>
+
+    <div class="batch-result hidden" id="batchResultCard">
+      <div class="contains-label">You got:</div>
+      <div class="batch-grid" id="batchGrid"></div>
+      <div class="batch-total" id="batchTotal"></div>
+      <div class="result-actions">
+        <button id="batchOpenAgainBtn" class="primary">Open Again</button>
+        <button id="batchToInventoryBtn">View Inventory</button>
       </div>
     </div>
   </div>
@@ -606,7 +641,7 @@
   };
   const INV_KEY = "cs2sim_inventory";
   const BAL_KEY = "cs2sim_balance";
-  const STARTER_BALANCE = 50;
+  const STARTER_BALANCE = 10;
 
   let CASES = [];
   let PRICES = { cases:{}, items:{}, stickers:{} };
@@ -615,6 +650,7 @@
   let filterKind = "all";
   let sortMode = "date-desc";
   let inventoryBackTarget = "cases";
+  let openAmount = 1;
 
   function rarityOrderFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_ORDER : CASE_RARITY_ORDER; }
   function rarityWeightsFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_WEIGHTS : CASE_RARITY_WEIGHTS; }
@@ -786,7 +822,9 @@
     });
     reelWrap.classList.add("hidden");
     resultCard.classList.add("hidden");
+    $("#batchResultCard").classList.add("hidden");
     openBtn.classList.remove("hidden");
+    $("#openAmountToggle").classList.remove("hidden");
     refreshOpenButton();
     switchView("open");
   }
@@ -794,9 +832,11 @@
   function refreshOpenButton(){
     if (!currentCase) return;
     const price = casePrice(currentCase);
-    const costLabel = price != null ? ` <span class="cost">(${fmtPrice(price)})</span>` : "";
-    openBtn.innerHTML = "Open Container" + costLabel;
-    const canAfford = price == null || getBalance() >= price;
+    const totalCost = price != null ? price * openAmount : null;
+    const label = openAmount === 1 ? "Open Container" : `Open ${openAmount} Containers`;
+    const costLabel = totalCost != null ? ` <span class="cost">(${fmtPrice(totalCost)})</span>` : "";
+    openBtn.innerHTML = label + costLabel;
+    const canAfford = totalCost == null || getBalance() >= totalCost;
     openBtn.classList.toggle("insufficient", !canAfford);
     openBtn.disabled = spinning || !canAfford;
   }
@@ -850,37 +890,96 @@
     resultCard.classList.remove("hidden");
   }
 
+  function showBatchResult(drops){
+    const grid = $("#batchGrid");
+    grid.innerHTML = "";
+    let total = 0;
+    drops.forEach(it => {
+      const price = dropPrice(it);
+      if (price != null) total += price;
+      const div = document.createElement("div");
+      div.className = "batch-item";
+      div.style.borderBottomColor = it.color || "#4b69ff";
+      div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+        (price != null ? `<div class="price">${fmtPrice(price)}</div>` : "");
+      grid.appendChild(div);
+    });
+    $("#batchTotal").innerHTML = `Total value: <strong>${fmtPrice(total)}</strong>`;
+    $("#batchResultCard").classList.remove("hidden");
+    requestAnimationFrame(() => {
+      $("#batchResultCard").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
   openBtn.addEventListener("click", () => {
     if (spinning || !currentCase) return;
     const price = casePrice(currentCase);
-    if (price != null && getBalance() < price) return;
-    if (price != null) addBalance(-price);
-    spinning = true;
-    openBtn.disabled = true;
+    const totalCost = price != null ? price * openAmount : null;
+    if (totalCost != null && getBalance() < totalCost) return;
+    if (totalCost != null) addBalance(-totalCost);
+
     resultCard.classList.add("hidden");
-    reelWrap.classList.remove("hidden");
-    const drop = pickDrop(currentCase);
-    buildReel(drop);
-    requestAnimationFrame(() => {
-      reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-    const onEnd = () => {
-      reelTrack.removeEventListener("transitionend", onEnd);
-      spinning = false;
-      saveToInventory(drop);
-      showResult(drop);
-    };
-    reelTrack.addEventListener("transitionend", onEnd);
+    $("#batchResultCard").classList.add("hidden");
+
+    if (openAmount === 1){
+      spinning = true;
+      openBtn.disabled = true;
+      reelWrap.classList.remove("hidden");
+      const drop = pickDrop(currentCase);
+      buildReel(drop);
+      requestAnimationFrame(() => {
+        reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      const onEnd = () => {
+        reelTrack.removeEventListener("transitionend", onEnd);
+        spinning = false;
+        saveToInventory(drop);
+        showResult(drop);
+      };
+      reelTrack.addEventListener("transitionend", onEnd);
+    } else {
+      openBtn.classList.add("hidden");
+      $("#openAmountToggle").classList.add("hidden");
+      const drops = [];
+      for (let i = 0; i < openAmount; i++){
+        const d = pickDrop(currentCase);
+        saveToInventory(d);
+        drops.push(d);
+      }
+      showBatchResult(drops);
+    }
   });
 
   $("#openAgainBtn").addEventListener("click", () => {
     resultCard.classList.add("hidden");
     reelWrap.classList.add("hidden");
     openBtn.classList.remove("hidden");
+    $("#openAmountToggle").classList.remove("hidden");
+    refreshOpenButton();
+  });
+
+  $("#batchOpenAgainBtn").addEventListener("click", () => {
+    $("#batchResultCard").classList.add("hidden");
+    openBtn.classList.remove("hidden");
+    $("#openAmountToggle").classList.remove("hidden");
+    refreshOpenButton();
+  });
+
+  $("#openAmountToggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    document.querySelectorAll("#openAmountToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    openAmount = parseInt(btn.dataset.amt, 10);
     refreshOpenButton();
   });
 
   $("#toInventoryBtn").addEventListener("click", () => {
+    inventoryBackTarget = "open";
+    switchView("inventory");
+  });
+
+  $("#batchToInventoryBtn").addEventListener("click", () => {
     inventoryBackTarget = "open";
     switchView("inventory");
   });
@@ -1017,36 +1116,36 @@
   const CK_KEY = "cs2sim_clicker_v1";
 
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:15,          cps:0.1,     color:"#9fb2c9" },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:100,         cps:1,       color:"#5e98d9" },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:1100,        cps:8,       color:"#4b69ff" },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:12000,       cps:47,      color:"#8847ff" },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:130000,      cps:260,     color:"#d32ce6" },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1400000,     cps:1400,    color:"#eb4b4b" },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:20000000,    cps:7800,    color:"#e4ae39" },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:330000000,   cps:44000,   color:"#ff8a3d" },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:5100000000,  cps:260000,  color:"#ff5555" },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:75000000000, cps:1600000, color:"#ffe066" }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:45,          cps:0.1,     color:"#9fb2c9" },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:300,         cps:1,       color:"#5e98d9" },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:3300,        cps:8,       color:"#4b69ff" },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:36000,       cps:47,      color:"#8847ff" },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:390000,      cps:260,     color:"#d32ce6" },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:4200000,     cps:1400,    color:"#eb4b4b" },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:60000000,    cps:7800,    color:"#e4ae39" },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:990000000,   cps:44000,   color:"#ff8a3d" },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:15300000000, cps:260000,  color:"#ff5555" },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:225000000000,cps:1600000, color:"#ffe066" }
   ];
 
   const CLICK_UPGRADES = [
-    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$1 per click.",                       cost:50,       type:"click-add",  value:1 },
-    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$2 per click. Very clicky.",          cost:500,      type:"click-add",  value:2 },
-    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x2. It's just faster.",    cost:5000,     type:"click-mult", value:2 },
-    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$10 per click.",                 cost:25000,    type:"click-add",  value:10 },
-    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x2.",                      cost:150000,   type:"click-mult", value:2 },
-    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$50 per click.",                      cost:800000,   type:"click-add",  value:50 },
-    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x3.",                      cost:5000000,  type:"click-mult", value:3 },
-    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x2.",                      cost:40000000, type:"click-mult", value:2 }
+    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$1 per click.",                       cost:150,      type:"click-add",  value:1 },
+    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$2 per click. Very clicky.",          cost:1500,     type:"click-add",  value:2 },
+    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x2. It's just faster.",    cost:15000,    type:"click-mult", value:2 },
+    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$10 per click.",                 cost:75000,    type:"click-add",  value:10 },
+    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x2.",                      cost:450000,   type:"click-mult", value:2 },
+    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$50 per click.",                      cost:2400000,  type:"click-add",  value:50 },
+    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x3.",                      cost:15000000, type:"click-mult", value:3 },
+    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x2.",                      cost:120000000,type:"click-mult", value:2 }
   ];
 
   const GLOBAL_UPGRADES = [
-    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All income x2.", cost:10000,       type:"global-mult", value:2 },
-    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All income x2.", cost:200000,      type:"global-mult", value:2 },
-    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All income x2.", cost:3000000,     type:"global-mult", value:2 },
-    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All income x2.", cost:60000000,    type:"global-mult", value:2 },
-    { id:"offshore-account",  name:"Offshore Account",             flavor:"All income x2.", cost:900000000,   type:"global-mult", value:2 },
-    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All income x3.", cost:20000000000, type:"global-mult", value:3 }
+    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All income x2.", cost:30000,       type:"global-mult", value:2 },
+    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All income x2.", cost:600000,      type:"global-mult", value:2 },
+    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All income x2.", cost:9000000,     type:"global-mult", value:2 },
+    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All income x2.", cost:180000000,   type:"global-mult", value:2 },
+    { id:"offshore-account",  name:"Offshore Account",             flavor:"All income x2.", cost:2700000000,  type:"global-mult", value:2 },
+    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All income x3.", cost:60000000000, type:"global-mult", value:3 }
   ];
 
   const ALL_UPGRADES = CLICK_UPGRADES.concat(GLOBAL_UPGRADES);
@@ -1284,7 +1383,12 @@
     renderShop();
   });
 
+  const MIN_CLICK_INTERVAL_MS = 100; // caps manual clicking around 10/s, blocks autoclickers
+  let lastClickTime = 0;
   clickerBtn.addEventListener("click", (e) => {
+    const now = performance.now();
+    if (now - lastClickTime < MIN_CLICK_INTERVAL_MS) return;
+    lastClickTime = now;
     const val = currentClickValue();
     addBalance(val);
     ckState.lifetime += val;
