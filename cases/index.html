@@ -175,8 +175,6 @@
   .open-amount-toggle button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.2);}
   .open-amount-toggle button:hover{color:var(--ink);}
 
-  .batch-progress{text-align:center;color:var(--ink-dim);font-size:.85rem;margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase;}
-
   .batch-result{padding:20px 0 0;}
   .batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
   .batch-item{position:relative;background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;padding:8px 6px;text-align:center;}
@@ -188,11 +186,15 @@
   .batch-total strong{color:#8ee08e;}
 
   /* reel */
+  .reel-stack{display:flex;flex-direction:column;gap:12px;margin:24px 0;}
   .reel-wrap{
     position:relative;height:170px;overflow:hidden;
     background:var(--panel);border:1px solid var(--line);border-radius:8px;
-    margin:24px 0;
   }
+  .reel-stack.multi .reel-wrap{height:110px;}
+  .reel-stack.multi .reel-card{flex-basis:110px;height:90px;padding:6px;}
+  .reel-stack.multi .reel-card img{height:44px;margin-bottom:4px;}
+  .reel-stack.multi .reel-card .n{font-size:.6rem;}
   .reel-wrap::before, .reel-wrap::after{
     content:"";position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none;
   }
@@ -282,6 +284,24 @@
     background:rgba(0,0,0,.55);border:1px solid var(--line);
     color:var(--ink-dim);font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
     padding:2px 6px;border-radius:4px;
+  }
+
+  .big-cases-section{margin-bottom:34px;}
+  .big-cases-head{margin-bottom:14px;}
+  .big-cases-head h2{
+    font-family:"Permanent Marker",cursive;font-size:1.3rem;margin:0 0 4px;
+    color:var(--c-gold);text-shadow:0 2px 0 rgba(0,0,0,.4);
+  }
+  .big-cases-head p{color:var(--ink-dim);font-size:.82rem;margin:0;}
+  .big-case-grid .case-card{
+    border-color:rgba(228,174,57,.35);
+    background:linear-gradient(160deg, rgba(228,174,57,.12), var(--panel));
+  }
+  .big-case-grid .case-card:hover, .big-case-grid .case-card:focus-visible{
+    border-color:var(--c-gold);
+  }
+  .big-case-grid .kind-tag{
+    background:rgba(228,174,57,.22);color:#ffe9b0;border-color:rgba(228,174,57,.5);
   }
   .mini-item .price{font-size:.62rem;color:#8ee08e;font-weight:700;margin-top:2px;}
   .open-btn .cost{font-weight:400;opacity:.85;font-size:.85em;}
@@ -573,6 +593,15 @@
   <div id="view-cases" class="view active">
     <h1>Open a Case</h1>
     <p class="sub">Pick a container. Odds match real CS2 rates.</p>
+
+    <div class="big-cases-section hidden" id="bigCasesSection">
+      <div class="big-cases-head">
+        <h2>⚡ Big Cases</h2>
+        <p>Guaranteed knife or glove every time — one finish, every model in the pool.</p>
+      </div>
+      <div class="case-grid big-case-grid" id="bigCaseGrid"></div>
+    </div>
+
     <div class="cases-toolbar">
       <div class="kind-filter" id="kindFilter">
         <button data-kind="all" class="active">All</button>
@@ -607,11 +636,7 @@
     </div>
     <button class="open-btn" id="openBtn">Open Container</button>
 
-    <div class="batch-progress hidden" id="batchProgress"></div>
-    <div class="reel-wrap hidden" id="reelWrap">
-      <div class="reel-marker"></div>
-      <div class="reel-track" id="reelTrack"></div>
-    </div>
+    <div class="reel-stack hidden" id="reelStack"></div>
 
     <div class="result-card hidden" id="resultCard">
       <div class="result-glow" id="resultGlow"><div class="rare-badge hidden" id="resultBadge">★</div><img id="resultImg" src="" alt=""></div>
@@ -775,8 +800,7 @@
   const $ = (sel) => document.querySelector(sel);
   const caseGrid = $("#caseGrid");
   const containsGrid = $("#containsGrid");
-  const reelWrap = $("#reelWrap");
-  const reelTrack = $("#reelTrack");
+  const reelStack = $("#reelStack");
   const resultCard = $("#resultCard");
   const openBtn = $("#openBtn");
 
@@ -826,7 +850,7 @@
   }
 
   function getFilteredSortedCases(){
-    let list = CASES.filter(c => filterKind === "all" || c.kind === filterKind);
+    let list = CASES.filter(c => c.kind !== "big" && (filterKind === "all" || c.kind === filterKind));
     const priceOf = c => { const p = casePrice(c); return p == null ? 0 : p; };
     list = list.slice();
     switch (sortMode){
@@ -840,6 +864,25 @@
     return list;
   }
 
+  function kindLabel(c){
+    if (c.kind === "capsule") return "Capsule";
+    if (c.kind === "big") return "Big Case";
+    return "Case";
+  }
+
+  function makeCaseCard(c){
+    const div = document.createElement("div");
+    div.className = "case-card";
+    div.tabIndex = 0;
+    const price = casePrice(c);
+    const tag = price != null ? `<div class="price-tag">${fmtPrice(price)}</div>` : "";
+    const kindTag = `<div class="kind-tag">${kindLabel(c)}</div>`;
+    div.innerHTML = `${tag}<img src="${c.image}" alt="" loading="lazy"><div class="name">${c.name}</div>${kindTag}`;
+    div.addEventListener("click", () => openCaseView(c));
+    div.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCaseView(c); } });
+    return div;
+  }
+
   function renderCaseGrid(){
     caseGrid.innerHTML = "";
     const list = getFilteredSortedCases();
@@ -847,18 +890,20 @@
       caseGrid.innerHTML = '<p style="color:var(--ink-dim);grid-column:1/-1;">No containers match.</p>';
       return;
     }
-    list.forEach(c => {
-      const div = document.createElement("div");
-      div.className = "case-card";
-      div.tabIndex = 0;
-      const price = casePrice(c);
-      const tag = price != null ? `<div class="price-tag">${fmtPrice(price)}</div>` : "";
-      const kindTag = `<div class="kind-tag">${c.kind === "capsule" ? "Capsule" : "Case"}</div>`;
-      div.innerHTML = `${tag}<img src="${c.image}" alt="" loading="lazy"><div class="name">${c.name}</div>${kindTag}`;
-      div.addEventListener("click", () => openCaseView(c));
-      div.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCaseView(c); } });
-      caseGrid.appendChild(div);
-    });
+    list.forEach(c => caseGrid.appendChild(makeCaseCard(c)));
+  }
+
+  function renderBigCaseGrid(){
+    const grid = $("#bigCaseGrid");
+    const section = $("#bigCasesSection");
+    const list = CASES.filter(c => c.kind === "big");
+    grid.innerHTML = "";
+    if (!list.length){
+      section.classList.add("hidden");
+      return;
+    }
+    section.classList.remove("hidden");
+    list.forEach(c => grid.appendChild(makeCaseCard(c)));
   }
 
   function openCaseView(c){
@@ -878,7 +923,7 @@
         containsGrid.appendChild(div);
       });
     });
-    reelWrap.classList.add("hidden");
+    reelStack.classList.add("hidden");
     resultCard.classList.add("hidden");
     $("#batchResultCard").classList.add("hidden");
     openBtn.classList.remove("hidden");
@@ -899,10 +944,16 @@
     openBtn.disabled = spinning || !canAfford;
   }
 
-  function buildReel(winningItem, fast){
-    reelTrack.innerHTML = "";
-    reelTrack.style.transition = "none";
-    reelTrack.style.transform = "translateX(0px)";
+  function buildReelRow(winningItem){
+    const wrap = document.createElement("div");
+    wrap.className = "reel-wrap";
+    const marker = document.createElement("div");
+    marker.className = "reel-marker";
+    const track = document.createElement("div");
+    track.className = "reel-track";
+    wrap.appendChild(marker);
+    wrap.appendChild(track);
+
     const SLOT_W = 162; // card 150 + gap 12
     const TOTAL = 60;
     const WIN_INDEX = 48;
@@ -914,17 +965,21 @@
       card.className = "reel-card" + (isRare(it) ? " is-rare" : "");
       card.style.borderBottomColor = it.color || "#4b69ff";
       card.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
-      reelTrack.appendChild(card);
+      track.appendChild(card);
     }
-    // force layout
-    reelTrack.offsetHeight;
-    const wrapWidth = reelWrap.clientWidth;
+    return { wrap, track, WIN_INDEX, SLOT_W };
+  }
+
+  function spinReelRow(row){
+    const { wrap, track, WIN_INDEX, SLOT_W } = row;
+    // force layout so clientWidth is accurate now that the row is in the DOM
+    track.offsetHeight;
+    const wrapWidth = wrap.clientWidth;
     const randomOffset = (Math.random() * 100) - 50; // land not always dead center
     const targetX = -(WIN_INDEX * SLOT_W + SLOT_W/2 - wrapWidth/2 - randomOffset);
-    const duration = fast ? 1.6 : 6;
     requestAnimationFrame(() => {
-      reelTrack.style.transition = `transform ${duration}s cubic-bezier(.12,.75,.12,1)`;
-      reelTrack.style.transform = `translateX(${targetX}px)`;
+      track.style.transition = "transform 6s cubic-bezier(.12,.75,.12,1)";
+      track.style.transform = `translateX(${targetX}px)`;
     });
   }
 
@@ -991,45 +1046,42 @@
       openBtn.classList.add("hidden");
       $("#openAmountToggle").classList.add("hidden");
     }
-    reelWrap.classList.remove("hidden");
-    const progressEl = $("#batchProgress");
-    progressEl.classList.toggle("hidden", !isBatch);
 
-    let idx = 0;
-    const playNext = () => {
-      const drop = drops[idx];
-      if (isBatch) progressEl.textContent = `Draw ${idx + 1} of ${drops.length}`;
-      buildReel(drop, isBatch);
-      if (idx === 0){
-        requestAnimationFrame(() => {
-          reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
-        });
-      }
+    reelStack.innerHTML = "";
+    reelStack.classList.toggle("multi", isBatch);
+    reelStack.classList.remove("hidden");
+
+    const rows = drops.map(drop => buildReelRow(drop));
+    rows.forEach(row => reelStack.appendChild(row.wrap));
+
+    requestAnimationFrame(() => {
+      reelStack.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    let completed = 0;
+    rows.forEach((row, i) => {
+      spinReelRow(row);
       const onEnd = () => {
-        reelTrack.removeEventListener("transitionend", onEnd);
-        saveToInventory(drop);
-        idx++;
-        if (idx < drops.length){
-          setTimeout(playNext, 450);
-        } else {
+        row.track.removeEventListener("transitionend", onEnd);
+        saveToInventory(drops[i]);
+        completed++;
+        if (completed === rows.length){
           spinning = false;
-          progressEl.classList.add("hidden");
+          reelStack.classList.add("hidden");
           if (!isBatch){
             showResult(drops[0]);
           } else {
-            reelWrap.classList.add("hidden");
             showBatchResult(drops);
           }
         }
       };
-      reelTrack.addEventListener("transitionend", onEnd);
-    };
-    playNext();
+      row.track.addEventListener("transitionend", onEnd);
+    });
   });
 
   $("#openAgainBtn").addEventListener("click", () => {
     resultCard.classList.add("hidden");
-    reelWrap.classList.add("hidden");
+    reelStack.classList.add("hidden");
     openBtn.classList.remove("hidden");
     $("#openAmountToggle").classList.remove("hidden");
     refreshOpenButton();
@@ -1527,6 +1579,7 @@
   ]).then(([data, prices]) => {
     CASES = data;
     PRICES = prices;
+    renderBigCaseGrid();
     renderCaseGrid();
   }).catch(err => { caseGrid.innerHTML = '<p style="color:#eb4b4b">Failed to load case data: ' + err + '</p>'; });
 })();
