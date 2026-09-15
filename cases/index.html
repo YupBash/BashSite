@@ -783,6 +783,13 @@
     tone(ctx, { freq: 1000, freqEnd: 1400, dur: 0.05, type: "square", peak: 0.07 });
   }
 
+  function playTick(){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 700, dur: 0.028, type: "square", peak: 0.05 });
+  }
+
   function playSell(){
     if (sfxMuted) return;
     const ctx = getAudioCtx();
@@ -1073,6 +1080,34 @@
     return { wrap, track, WIN_INDEX };
   }
 
+  function getTranslateX(el){
+    const t = getComputedStyle(el).transform;
+    if (!t || t === "none") return 0;
+    const m = t.match(/matrix\(([^)]+)\)/);
+    if (!m) return 0;
+    const parts = m[1].split(",").map(s => parseFloat(s.trim()));
+    return parts[4] || 0;
+  }
+
+  // plays a soft tick every time the reel scrolls past another card, so it's synced
+  // to the actual eased/decelerating animation instead of a fixed interval
+  function startReelTicks(track, slotW){
+    let lastSlot = -1;
+    let running = true;
+    function poll(){
+      if (!running) return;
+      const x = getTranslateX(track);
+      const slot = Math.floor(-x / slotW);
+      if (slot > lastSlot){
+        lastSlot = slot;
+        playTick();
+      }
+      requestAnimationFrame(poll);
+    }
+    requestAnimationFrame(poll);
+    return () => { running = false; };
+  }
+
   function spinReelRow(row){
     const { wrap, track, WIN_INDEX } = row;
     // force layout so widths/offsets are accurate now that the row is in the DOM
@@ -1088,6 +1123,7 @@
       track.style.transition = "transform 6s cubic-bezier(.12,.75,.12,1)";
       track.style.transform = `translateX(${targetX}px)`;
     });
+    row.stopTicks = startReelTicks(track, slotW);
   }
 
   function saveToInventory(item){
@@ -1171,6 +1207,7 @@
       spinReelRow(row);
       const onEnd = () => {
         row.track.removeEventListener("transitionend", onEnd);
+        if (row.stopTicks) row.stopTicks();
         saveToInventory(drops[i]);
         playLand(isRare(drops[i]));
         completed++;
