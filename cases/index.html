@@ -175,6 +175,8 @@
   .open-amount-toggle button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.2);}
   .open-amount-toggle button:hover{color:var(--ink);}
 
+  .batch-progress{text-align:center;color:var(--ink-dim);font-size:.85rem;margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase;}
+
   .batch-result{padding:20px 0 0;}
   .batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
   .batch-item{position:relative;background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;padding:8px 6px;text-align:center;}
@@ -257,6 +259,15 @@
   .inv-item .n{font-size:.7rem;font-weight:600;line-height:1.25;}
   .inv-item .w{font-size:.62rem;color:var(--ink-dim);margin-top:2px;}
   .inv-empty{color:var(--ink-dim);font-size:.9rem;text-align:center;padding:60px 0;}
+  .inv-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
+  .inv-header .sub{margin:0;}
+  .sell-all-btn{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    padding:9px 18px;border-radius:6px;font-family:inherit;font-size:.82rem;font-weight:700;
+    cursor:pointer;transition:border-color .15s ease;
+  }
+  .sell-all-btn:hover{border-color:var(--gold);}
+  .sell-all-btn:disabled{opacity:.4;cursor:default;}
 
   /* prices / wallet */
   .price-tag{
@@ -596,6 +607,7 @@
     </div>
     <button class="open-btn" id="openBtn">Open Container</button>
 
+    <div class="batch-progress hidden" id="batchProgress"></div>
     <div class="reel-wrap hidden" id="reelWrap">
       <div class="reel-marker"></div>
       <div class="reel-track" id="reelTrack"></div>
@@ -627,7 +639,10 @@
   <div id="view-inventory" class="view">
     <button class="back-btn" id="backFromInventory">&larr; Cases</button>
     <h1>Inventory</h1>
-    <p class="sub"><span id="invCount">0</span> items unboxed. Stored locally in your browser only.</p>
+    <div class="inv-header">
+      <p class="sub"><span id="invCount">0</span> items unboxed. Stored locally in your browser only.</p>
+      <button class="sell-all-btn" id="sellAllBtn">Sell All (<span id="invTotalValue">$0.00</span>)</button>
+    </div>
     <div class="inv-grid" id="invGrid"></div>
   </div>
 
@@ -672,10 +687,22 @@
   let openAmount = 1;
 
   function rarityOrderFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_ORDER : CASE_RARITY_ORDER; }
-  function rarityWeightsFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_WEIGHTS : CASE_RARITY_WEIGHTS; }
+  function rarityWeightsFor(c){
+    if (c.rarityWeights) return c.rarityWeights;
+    return c.kind === "capsule" ? CAPSULE_RARITY_WEIGHTS : CASE_RARITY_WEIGHTS;
+  }
 
   function fmtPrice(v){
     return (v == null) ? null : "$" + v.toFixed(2);
+  }
+  function fmtCompact(n){
+    const sign = n < 0 ? "-" : "";
+    n = Math.abs(n);
+    if (n < 1000) return sign + n.toFixed(2);
+    const units = ["K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+    let u = -1, v = n;
+    while (v >= 1000 && u < units.length - 1){ v /= 1000; u++; }
+    return sign + v.toFixed(2) + units[u];
   }
   function casePrice(c){
     const p = PRICES.cases[c.id];
@@ -741,7 +768,7 @@
   function updateWalletUI(){
     const b = getBalance();
     const amt = document.getElementById("walletAmount");
-    if (amt) amt.textContent = b.toFixed(2);
+    if (amt) amt.textContent = fmtCompact(b);
     if (currentCase) refreshOpenButton();
   }
 
@@ -872,7 +899,7 @@
     openBtn.disabled = spinning || !canAfford;
   }
 
-  function buildReel(winningItem){
+  function buildReel(winningItem, fast){
     reelTrack.innerHTML = "";
     reelTrack.style.transition = "none";
     reelTrack.style.transform = "translateX(0px)";
@@ -894,8 +921,9 @@
     const wrapWidth = reelWrap.clientWidth;
     const randomOffset = (Math.random() * 100) - 50; // land not always dead center
     const targetX = -(WIN_INDEX * SLOT_W + SLOT_W/2 - wrapWidth/2 - randomOffset);
+    const duration = fast ? 1.6 : 6;
     requestAnimationFrame(() => {
-      reelTrack.style.transition = "transform 6s cubic-bezier(.12,.75,.12,1)";
+      reelTrack.style.transition = `transform ${duration}s cubic-bezier(.12,.75,.12,1)`;
       reelTrack.style.transform = `translateX(${targetX}px)`;
     });
   }
@@ -953,33 +981,50 @@
     resultCard.classList.add("hidden");
     $("#batchResultCard").classList.add("hidden");
 
-    if (openAmount === 1){
-      spinning = true;
-      openBtn.disabled = true;
-      reelWrap.classList.remove("hidden");
-      const drop = pickDrop(currentCase);
-      buildReel(drop);
-      requestAnimationFrame(() => {
-        reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-      const onEnd = () => {
-        reelTrack.removeEventListener("transitionend", onEnd);
-        spinning = false;
-        saveToInventory(drop);
-        showResult(drop);
-      };
-      reelTrack.addEventListener("transitionend", onEnd);
-    } else {
+    const isBatch = openAmount > 1;
+    const drops = [];
+    for (let i = 0; i < openAmount; i++) drops.push(pickDrop(currentCase));
+
+    spinning = true;
+    openBtn.disabled = true;
+    if (isBatch){
       openBtn.classList.add("hidden");
       $("#openAmountToggle").classList.add("hidden");
-      const drops = [];
-      for (let i = 0; i < openAmount; i++){
-        const d = pickDrop(currentCase);
-        saveToInventory(d);
-        drops.push(d);
-      }
-      showBatchResult(drops);
     }
+    reelWrap.classList.remove("hidden");
+    const progressEl = $("#batchProgress");
+    progressEl.classList.toggle("hidden", !isBatch);
+
+    let idx = 0;
+    const playNext = () => {
+      const drop = drops[idx];
+      if (isBatch) progressEl.textContent = `Draw ${idx + 1} of ${drops.length}`;
+      buildReel(drop, isBatch);
+      if (idx === 0){
+        requestAnimationFrame(() => {
+          reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+      }
+      const onEnd = () => {
+        reelTrack.removeEventListener("transitionend", onEnd);
+        saveToInventory(drop);
+        idx++;
+        if (idx < drops.length){
+          setTimeout(playNext, 450);
+        } else {
+          spinning = false;
+          progressEl.classList.add("hidden");
+          if (!isBatch){
+            showResult(drops[0]);
+          } else {
+            reelWrap.classList.add("hidden");
+            showBatchResult(drops);
+          }
+        }
+      };
+      reelTrack.addEventListener("transitionend", onEnd);
+    };
+    playNext();
   });
 
   $("#openAgainBtn").addEventListener("click", () => {
@@ -1028,6 +1073,9 @@
     $("#invCount").textContent = inv.length;
     const grid = $("#invGrid");
     grid.innerHTML = "";
+    const totalValue = inv.reduce((sum, it) => sum + (dropPrice(it) || 0), 0);
+    $("#invTotalValue").textContent = fmtPrice(totalValue);
+    $("#sellAllBtn").disabled = !inv.length;
     if (!inv.length){
       grid.innerHTML = '<div class="inv-empty">No items yet — open a case to get started.</div>';
       return;
@@ -1108,6 +1156,17 @@
     addBalance(price);
     renderInventory();
   }
+
+  function sellAllItems(){
+    let inv = [];
+    try { inv = JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){}
+    if (!inv.length) return;
+    const total = inv.reduce((sum, it) => sum + (dropPrice(it) || 0), 0);
+    try { localStorage.setItem(INV_KEY, JSON.stringify([])); } catch(e){}
+    if (total > 0) addBalance(total);
+    renderInventory();
+  }
+  $("#sellAllBtn").addEventListener("click", sellAllItems);
 
   function switchView(name){
     ["cases","open","inventory"].forEach(v => {
