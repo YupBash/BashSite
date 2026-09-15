@@ -23,6 +23,7 @@
 <link rel="canonical" href="https://yupbash.vip/faq/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="BASH — FAQ">
+<meta property="og:site_name" content="BASH">
 <meta property="og:description" content="Who is BASH? Gear, contact info, and more.">
 <meta property="og:image" content="https://yupbash.vip/assets/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -160,6 +161,10 @@
     background:rgba(10,8,14,.34);
     border-color:rgba(184,140,255,.4);
   }
+  details.faq-item summary:focus-visible{
+    outline:2px solid var(--purple);
+    outline-offset:-2px;
+  }
   details.faq-item summary{
     list-style:none;cursor:pointer;
     display:flex;align-items:center;justify-content:space-between;gap:14px;
@@ -186,6 +191,11 @@
     font-size:max(.88rem,1.2vw);
     line-height:1.55;
     color:#d8d2e4;
+  }
+  .faq-answer a:focus-visible{
+    outline:2px solid var(--purple);
+    outline-offset:2px;
+    border-radius:2px;
   }
 
   .spec-list{
