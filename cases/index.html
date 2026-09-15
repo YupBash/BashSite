@@ -694,7 +694,14 @@
   function itemPrice(name, wear){
     const wp = itemWearPrices(name);
     if (!wp) return null;
-    return (wear in wp) ? wp[wear] : null;
+    if (wear in wp) return wp[wear];
+    // this exact wear isn't traded for this finish (or the item was rolled before
+    // pickDrop started respecting available wears) - fall back to the closest wear we do have
+    const idx = WEARS.indexOf(wear);
+    const available = Object.keys(wp);
+    if (!available.length) return null;
+    available.sort((a, b) => Math.abs(WEARS.indexOf(a) - idx) - Math.abs(WEARS.indexOf(b) - idx));
+    return wp[available[0]];
   }
   function priceRangeLabel(name){
     const r = itemPriceRange(name);
@@ -782,7 +789,9 @@
     if (c.kind === "capsule"){
       return { ...item, kind: "capsule" };
     }
-    const wear = WEARS[Math.floor(Math.random() * WEARS.length)];
+    const wp = itemWearPrices(item.name);
+    const availableWears = (wp && Object.keys(wp).length) ? WEARS.filter(w => w in wp) : WEARS;
+    const wear = availableWears[Math.floor(Math.random() * availableWears.length)];
     const range = WEAR_RANGES[wear];
     const float = range[0] + Math.random() * (range[1] - range[0]);
     const seed = Math.floor(Math.random() * 1000) + 1;
