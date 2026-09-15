@@ -438,6 +438,8 @@
   }
   .ck-building:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.18);}
   .ck-building.unaffordable{opacity:.4;cursor:not-allowed;}
+  .ck-building.maxed{opacity:.7;cursor:default;border-color:rgba(228,174,57,.4);}
+  .ck-building.maxed .cost{color:var(--c-gold);}
   .ck-building-badge{
     flex:0 0 40px;width:40px;height:40px;border-radius:8px;
     display:flex;align-items:center;justify-content:center;
@@ -1369,16 +1371,16 @@
   const CK_KEY = "cs2sim_clicker_v1";
 
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.01,  color:"#9fb2c9" },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.04,  color:"#5e98d9" },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.15,  color:"#4b69ff" },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.55,  color:"#8847ff" },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:2,     color:"#d32ce6" },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:7,     color:"#eb4b4b" },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:24,    color:"#e4ae39" },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:80,    color:"#ff8a3d" },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:250,   color:"#ff5555" },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:700,   color:"#ffe066" }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.01,  color:"#9fb2c9", maxOwned:10 },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.04,  color:"#5e98d9", maxOwned:10 },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.15,  color:"#4b69ff", maxOwned:10 },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.55,  color:"#8847ff", maxOwned:10 },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:2,     color:"#d32ce6", maxOwned:10 },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:7,     color:"#eb4b4b", maxOwned:5 },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:24,    color:"#e4ae39", maxOwned:5 },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:80,    color:"#ff8a3d", maxOwned:5 },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:250,   color:"#ff5555", maxOwned:5 },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:700,   color:"#ffe066", maxOwned:5 }
   ];
 
   const CLICK_UPGRADES = [
@@ -1428,9 +1430,13 @@
     return sign + "$" + v.toFixed(2) + units[u];
   }
 
+  const MAX_CPS = 1000;
+
   function buildingCost(b, n){ return Math.ceil(b.baseCost * Math.pow(1.15, n)); }
+  function roomLeft(b){ return Math.max(0, (b.maxOwned || Infinity) - (ckState.owned[b.id] || 0)); }
   function buildingCostForAmount(b, amount){
     const owned = ckState.owned[b.id] || 0;
+    amount = Math.min(amount, roomLeft(b));
     let total = 0;
     for (let i = 0; i < amount; i++) total += buildingCost(b, owned + i);
     return total;
@@ -1438,8 +1444,9 @@
   function maxAffordable(b){
     const owned = ckState.owned[b.id] || 0;
     const bal = getBalance();
+    const cap = roomLeft(b);
     let n = 0, cost = 0;
-    while (n < 10000){
+    while (n < cap){
       const next = buildingCost(b, owned + n);
       if (cost + next > bal) break;
       cost += next; n++;
@@ -1452,7 +1459,7 @@
     BUILDINGS.forEach(b => { base += (ckState.owned[b.id] || 0) * b.cps; });
     let mult = 1;
     GLOBAL_UPGRADES.forEach(u => { if (ckState.upgrades[u.id]) mult *= u.value; });
-    return base * mult;
+    return Math.min(base * mult, MAX_CPS);
   }
   function currentClickValue(){
     let add = 0.02, mult = 1;
@@ -1466,6 +1473,7 @@
   }
 
   function buyBuilding(b, n, cost){
+    n = Math.min(n, roomLeft(b));
     if (n < 1 || getBalance() < cost) return;
     addBalance(-cost);
     ckState.owned[b.id] = (ckState.owned[b.id] || 0) + n;
@@ -1489,18 +1497,23 @@
     const bal = getBalance();
     BUILDINGS.forEach((b, idx) => {
       const owned = ckState.owned[b.id] || 0;
+      const room = roomLeft(b);
+      const maxed = room === 0;
       let buyN, cost;
-      if (buyAmount === "max"){
+      if (maxed){
+        buyN = 0; cost = 0;
+      } else if (buyAmount === "max"){
         const m = maxAffordable(b);
         buyN = Math.max(1, m.n);
         cost = m.n > 0 ? m.cost : buildingCost(b, owned);
       } else {
-        buyN = buyAmount;
+        buyN = Math.min(buyAmount, room);
         cost = buildingCostForAmount(b, buyN);
       }
-      const affordable = bal >= cost;
+      const affordable = !maxed && bal >= cost;
       const row = document.createElement("div");
-      row.className = "ck-building" + (affordable ? "" : " unaffordable");
+      row.className = "ck-building" + (maxed ? " maxed" : (affordable ? "" : " unaffordable"));
+      const ownedLabel = "Owned: " + owned + "/" + b.maxOwned + (!maxed && buyN > 1 ? " (buy " + buyN + ")" : "");
       row.innerHTML =
         '<div class="ck-building-badge" style="background:' + b.color + '">' + (idx + 1) + '</div>' +
         '<div class="ck-building-info">' +
@@ -1509,10 +1522,10 @@
           '<div class="bs">' + fmtBig(b.cps) + '/s each</div>' +
         '</div>' +
         '<div class="ck-building-buy">' +
-          '<div class="cost">' + fmtBig(cost) + '</div>' +
-          '<div class="owned">Owned: ' + owned + (buyN > 1 ? " (buy " + buyN + ")" : "") + '</div>' +
+          '<div class="cost">' + (maxed ? "MAX" : fmtBig(cost)) + '</div>' +
+          '<div class="owned">' + ownedLabel + '</div>' +
         '</div>';
-      row.addEventListener("click", () => buyBuilding(b, buyN, cost));
+      if (!maxed) row.addEventListener("click", () => buyBuilding(b, buyN, cost));
       list.appendChild(row);
     });
   }
@@ -1574,7 +1587,8 @@
   function renderCkStats(){
     const b = getBalance();
     $("#ckBalance").textContent = fmtBig(b);
-    $("#ckCps").textContent = fmtBig(currentCps()) + "/s";
+    const cps = currentCps();
+    $("#ckCps").textContent = fmtBig(cps) + "/s" + (cps >= MAX_CPS ? " (MAX)" : "");
     $("#ckClickVal").textContent = fmtBig(currentClickValue());
     $("#ckLifetime").textContent = fmtBig(ckState.lifetime);
   }
