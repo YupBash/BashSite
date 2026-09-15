@@ -203,7 +203,18 @@
   }
   .menu-links li:nth-child(1) a{ transform:rotate(-2deg); }
   .menu-links li:nth-child(2) a{ transform:rotate(1.5deg); }
-  .menu-links li:nth-child(3) a{ transform:rotate(-1.5deg); }
+  .menu-secret{
+    position:absolute;left:clamp(24px,7vw,90px);bottom:max(16px,2vh);
+    font-family:"Chakra Petch",system-ui,sans-serif;
+    font-size:.68rem;
+    color:rgba(244,241,236,.22);
+    text-decoration:none;
+    letter-spacing:.02em;
+    transition:color .2s ease;
+  }
+  .menu-secret:hover, .menu-secret:focus-visible{
+    color:rgba(244,241,236,.65);
+  }
   .menu-links li a:hover, .menu-links li a:focus-visible{
     color:#e9d6ff;
     filter:drop-shadow(0 0 30px rgba(255,255,255,.5));
@@ -345,8 +356,8 @@
       <ul class="menu-links">
         <li><a href="/socials/">Socials</a></li>
         <li><a href="/faq/">FAQ</a></li>
-        <li><a href="/cases/">Gambling for you</a></li>
       </ul>
+      <a class="menu-secret" href="/cases/">gambling for you</a>
     </div>
   </nav>
 </div>
