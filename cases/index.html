@@ -773,6 +773,15 @@
     }
     return priceRangeLabel(it.name);
   }
+  // numeric price for sorting a pool item, cheapest wear first for skins
+  function poolItemSortPrice(it, kind){
+    if (kind === "capsule"){
+      const p = stickerPrice(it.name);
+      return p != null ? p : 0;
+    }
+    const r = itemPriceRange(it.name);
+    return r ? r[0] : 0;
+  }
   // price of an actual drop (has .kind set by pickDrop)
   function dropPrice(it){
     if (it.kind === "capsule") return stickerPrice(it.name);
@@ -913,7 +922,8 @@
     containsGrid.innerHTML = "";
     const map = itemsByRarity(c);
     rarityOrderFor(c).forEach(r => {
-      (map[r] || []).forEach(it => {
+      const items = (map[r] || []).slice().sort((a, b) => poolItemSortPrice(a, c.kind) - poolItemSortPrice(b, c.kind));
+      items.forEach(it => {
         const div = document.createElement("div");
         div.className = "mini-item" + (isRare(it) ? " is-rare" : "");
         div.style.borderBottomColor = it.color || "#4b69ff";
