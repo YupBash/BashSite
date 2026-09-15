@@ -401,8 +401,10 @@
     cursor:pointer;box-shadow:0 12px 30px -10px rgba(107,33,168,.7), inset 0 0 0 4px rgba(255,255,255,.08);
     transition:transform .08s ease;
     user-select:none;position:relative;
+    display:flex;align-items:center;justify-content:center;
   }
   .clicker-btn:active{transform:scale(.93);}
+  .clicker-icon{width:84px;height:84px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4));pointer-events:none;}
   .ck-click-value{color:var(--ink-dim);font-size:.76rem;text-align:center;}
   .ck-click-value strong{color:#8ee08e;}
 
@@ -463,6 +465,7 @@
     .ck-body{flex-direction:column;overflow-y:auto;}
     .ck-click-area{flex:0 0 auto;border-right:none;border-bottom:1px solid var(--line);padding:16px;}
     .clicker-btn{width:120px;height:120px;font-size:.9rem;}
+    .clicker-icon{width:64px;height:64px;}
     .ck-stats{gap:16px;}
   }
 
@@ -539,7 +542,14 @@
     <div class="ck-tooltip hidden" id="ckTooltip"></div>
     <div class="ck-body">
       <div class="ck-click-area">
-        <button class="clicker-btn" id="clickerBtn">CLICK</button>
+        <button class="clicker-btn" id="clickerBtn" aria-label="Click for money">
+          <svg class="clicker-icon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" fill="#ffe066"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#c98b1f" stroke-width="4"/>
+            <circle cx="50" cy="50" r="33" fill="none" stroke="#c98b1f" stroke-width="2" opacity=".55"/>
+            <text x="50" y="67" text-anchor="middle" font-family="Chakra Petch, sans-serif" font-weight="700" font-size="46" fill="#8a5a12">$</text>
+          </svg>
+        </button>
         <div class="ck-click-value">Fake money, stored in your browser only.</div>
       </div>
       <div class="ck-shop">
