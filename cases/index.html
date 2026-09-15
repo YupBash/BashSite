@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BASH Addiction — Case Simulator</title>
+<meta name="description" content="A CS2 case-opening simulator with real market prices and an idle clicker. Just for fun.">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/favicon-180.png">
+<meta name="theme-color" content="#3a0e5c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Permanent+Marker&display=swap">
+<style>
+  :root{
+    --bg:#08070a;
+    --panel:#150f1c;
+    --panel-2:#1c1426;
+    --line:rgba(255,255,255,.08);
+    --ink:#f4f1ec;
+    --ink-dim:#9a90ab;
+    --gold:#6b21a8;
+    --gold-ink:#fff;
+    --c-consumer:#b0c3d9;
+    --c-milspec:#4b69ff;
+    --c-restricted:#8847ff;
+    --c-classified:#d32ce6;
+    --c-covert:#eb4b4b;
+    --c-gold:#e4ae39;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{
+    color:var(--ink);
+    font-family:"Chakra Petch",system-ui,sans-serif;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 70% 50% at 80% 0%, rgba(107,33,168,.14), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 10% 100%, rgba(58,14,92,.14), transparent 65%),
+      var(--bg);
+    user-select:none;-webkit-user-select:none;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px clamp(16px,4vw,48px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    font-weight:700;font-size:1.1rem;letter-spacing:.04em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .brand .tag{
+    background:var(--gold);color:var(--gold-ink);font-size:.65rem;font-weight:700;
+    padding:2px 6px;border-radius:3px;letter-spacing:.03em;
+  }
+  .nav-tabs{display:flex;gap:6px;}
+  .nav-tabs button{
+    background:var(--panel);color:var(--ink-dim);border:1px solid var(--line);
+    padding:8px 16px;border-radius:6px;font-family:inherit;font-size:.85rem;font-weight:600;
+    cursor:pointer;transition:border-color .15s ease, color .15s ease;
+  }
+  .nav-tabs button.active{color:var(--ink);border-color:var(--gold);}
+  .nav-tabs button:hover{color:var(--ink);}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:32px clamp(16px,4vw,48px) 80px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  h1{font-size:1.6rem;letter-spacing:.02em;margin:0 0 6px;}
+  .sub{color:var(--ink-dim);font-size:.9rem;margin:0 0 28px;}
+
+  /* toolbar */
+  .cases-toolbar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    gap:12px;margin-bottom:18px;
+  }
+  .kind-filter{display:flex;gap:6px;}
+  .kind-filter button{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    padding:7px 14px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:600;
+    cursor:pointer;transition:border-color .15s ease, color .15s ease;
+  }
+  .kind-filter button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.2);}
+  .kind-filter button:hover{color:var(--ink);}
+  .sort-select{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    padding:7px 12px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:600;
+    cursor:pointer;
+  }
+  .sort-select:hover{border-color:var(--gold);}
+
+  /* case grid */
+  .case-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;
+  }
+  .case-card{
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:8px;
+    padding:18px 14px;text-align:center;cursor:pointer;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .case-card:hover, .case-card:focus-visible{
+    border-color:var(--gold);transform:translateY(-3px);
+    outline:none;
+  }
+  .case-card img{width:100%;max-width:120px;height:90px;object-fit:contain;margin:0 auto 10px;display:block;}
+  .case-card .name{font-size:.85rem;font-weight:600;}
+
+  /* open view */
+  .back-btn{
+    background:none;border:none;color:var(--ink-dim);font-family:inherit;
+    font-size:.85rem;cursor:pointer;padding:0 0 20px;display:block;
+  }
+  .back-btn:hover{color:var(--ink);}
+  .unlock-header{text-align:center;margin-bottom:8px;}
+  .unlock-label{color:var(--ink-dim);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;}
+  .unlock-case-name{font-family:"Permanent Marker",cursive;font-size:1.7rem;text-shadow:0 3px 0 rgba(0,0,0,.4);}
+  .case-image-wrap{display:flex;justify-content:center;padding:20px 0;}
+  .case-image-wrap img{width:180px;height:135px;object-fit:contain;filter:drop-shadow(0 20px 24px rgba(0,0,0,.5));}
+  .contains-label{color:var(--ink-dim);font-size:.8rem;margin-bottom:10px;}
+  .contains-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;
+    margin-bottom:28px;
+  }
+  .mini-item{
+    background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;
+    padding:8px 6px;text-align:center;
+  }
+  .mini-item img{width:100%;height:50px;object-fit:contain;display:block;margin-bottom:4px;}
+  .mini-item .n{font-size:.62rem;color:var(--ink-dim);line-height:1.2;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+  .open-btn{
+    display:block;margin:0 auto;
+    background:var(--gold);color:var(--gold-ink);border:none;border-radius:6px;
+    padding:14px 40px;font-family:inherit;font-size:1rem;font-weight:700;
+    cursor:pointer;letter-spacing:.02em;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 20px -8px rgba(107,33,168,.6);
+  }
+  .open-btn:hover{transform:translateY(-2px);}
+  .open-btn:disabled{opacity:.5;cursor:default;transform:none;}
+
+  /* reel */
+  .reel-wrap{
+    position:relative;height:170px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    margin:24px 0;
+  }
+  .reel-wrap::before, .reel-wrap::after{
+    content:"";position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none;
+  }
+  .reel-wrap::before{left:0;background:linear-gradient(90deg,var(--panel),transparent);}
+  .reel-wrap::after{right:0;background:linear-gradient(-90deg,var(--panel),transparent);}
+  .reel-marker{
+    position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--gold);
+    transform:translateX(-50%);z-index:3;box-shadow:0 0 12px rgba(107,33,168,.8);
+  }
+  .reel-marker::before, .reel-marker::after{
+    content:"";position:absolute;left:50%;transform:translateX(-50%);
+    border-left:7px solid transparent;border-right:7px solid transparent;
+  }
+  .reel-marker::before{top:-1px;border-top:9px solid var(--gold);}
+  .reel-marker::after{bottom:-1px;border-bottom:9px solid var(--gold);}
+  .reel-track{
+    position:absolute;top:0;left:0;height:100%;
+    display:flex;align-items:center;gap:12px;padding:0 12px;
+    will-change:transform;
+  }
+  .reel-card{
+    flex:0 0 150px;height:140px;
+    background:var(--panel-2);border-radius:6px;
+    border-bottom:4px solid var(--c-milspec);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;
+  }
+  .reel-card img{width:100%;height:70px;object-fit:contain;margin-bottom:8px;}
+  .reel-card .n{font-size:.68rem;text-align:center;color:var(--ink-dim);line-height:1.25;}
+
+  /* result */
+  .result-card{text-align:center;padding:20px 0 0;}
+  .result-glow{
+    width:220px;height:160px;margin:0 auto 6px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at center, var(--glow-color,rgba(75,105,255,.35)), transparent 72%);
+  }
+  .result-glow img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));}
+  .result-name{font-size:1.15rem;font-weight:700;margin-top:6px;}
+  .result-rarity{font-size:.85rem;font-weight:600;margin-top:2px;}
+  .result-wear{color:var(--ink-dim);font-size:.8rem;margin-top:4px;}
+  .result-actions{display:flex;gap:10px;justify-content:center;margin-top:22px;}
+  .result-actions button{
+    background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;
+    padding:11px 22px;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .result-actions button:hover{border-color:var(--gold);}
+  .result-actions button.primary{background:var(--gold);color:var(--gold-ink);border-color:var(--gold);}
+
+  /* inventory */
+  .inv-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;
+  }
+  .inv-item{
+    background:var(--panel);border-bottom:3px solid var(--c-milspec);border-radius:4px;
+    padding:10px;text-align:center;cursor:pointer;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .inv-item:hover{background:rgba(255,255,255,.04);transform:translateY(-2px);}
+  .inv-item img{width:100%;height:70px;object-fit:contain;display:block;margin-bottom:6px;}
+  .inv-item .n{font-size:.7rem;font-weight:600;line-height:1.25;}
+  .inv-item .w{font-size:.62rem;color:var(--ink-dim);margin-top:2px;}
+  .inv-empty{color:var(--ink-dim);font-size:.9rem;text-align:center;padding:60px 0;}
+
+  /* prices / wallet */
+  .price-tag{
+    position:absolute;top:8px;right:8px;
+    background:rgba(0,0,0,.55);border:1px solid var(--line);
+    color:#8ee08e;font-size:.68rem;font-weight:700;
+    padding:2px 7px;border-radius:4px;
+  }
+  .case-card{position:relative;}
+  .kind-tag{
+    position:absolute;top:8px;left:8px;
+    background:rgba(0,0,0,.55);border:1px solid var(--line);
+    color:var(--ink-dim);font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    padding:2px 6px;border-radius:4px;
+  }
+  .mini-item .price{font-size:.62rem;color:#8ee08e;font-weight:700;margin-top:2px;}
+  .open-btn .cost{font-weight:400;opacity:.85;font-size:.85em;}
+  .open-btn.insufficient{opacity:.5;cursor:not-allowed;}
+  .result-price{color:#8ee08e;font-weight:700;font-size:.95rem;margin-top:6px;}
+  .inv-item .price{font-size:.66rem;color:#8ee08e;font-weight:700;margin-top:3px;}
+  .inv-sell{
+    margin-top:6px;width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);
+    color:var(--ink);border-radius:4px;padding:4px 0;font-family:inherit;font-size:.62rem;font-weight:700;
+    cursor:pointer;letter-spacing:.03em;
+  }
+  .inv-sell:hover{border-color:var(--gold);color:var(--gold);}
+
+  .wallet-btn{
+    display:flex;align-items:center;gap:6px;
+    background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    padding:8px 14px;border-radius:6px;font-family:inherit;font-size:.85rem;font-weight:700;
+    cursor:pointer;transition:border-color .15s ease;
+  }
+  .wallet-btn:hover{border-color:var(--gold);}
+  .wallet-btn .ic{color:#8ee08e;}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(4,3,6,.75);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;
+  }
+  .modal-close{
+    background:none;border:1px solid var(--line);color:var(--ink-dim);
+    padding:8px 20px;border-radius:6px;font-family:inherit;font-size:.8rem;cursor:pointer;
+  }
+  .modal-close:hover{color:var(--ink);border-color:var(--gold);}
+
+  /* clicker / idle game */
+  .clicker-shell{
+    position:relative;
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:10px;
+    width:100%;max-width:960px;height:min(88vh,780px);
+    display:flex;flex-direction:column;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.8);
+    overflow:hidden;
+  }
+  .ck-top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .ck-top h2{margin:0;font-size:1.1rem;font-weight:700;letter-spacing:.03em;}
+
+  .ck-stats{
+    display:flex;gap:26px;padding:12px 20px;border-bottom:1px solid var(--line);
+    flex-shrink:0;flex-wrap:wrap;
+  }
+  .ck-stat{font-size:.72rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
+  .ck-stat strong{display:block;font-size:1.05rem;color:var(--ink);margin-top:3px;letter-spacing:0;text-transform:none;font-family:"Chakra Petch",sans-serif;}
+  .ck-stat.money strong{color:#8ee08e;}
+
+  .ck-upgrades-bar{
+    display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--line);
+    overflow-x:auto;overflow-y:visible;flex-shrink:0;min-height:56px;align-items:center;
+  }
+  .ck-upgrade-icon{
+    flex:0 0 auto;min-width:42px;height:42px;border-radius:6px;padding:0 6px;
+    background:var(--panel);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;position:relative;
+    transition:border-color .15s ease, transform .1s ease;
+  }
+  .ck-upgrade-icon .badge-val{font-size:.72rem;font-weight:700;white-space:nowrap;}
+  .ck-upgrade-icon.kind-click{border-color:rgba(107,33,168,.5);}
+  .ck-upgrade-icon.kind-click .badge-val{color:#c98bff;}
+  .ck-upgrade-icon.kind-global{border-color:rgba(142,224,142,.5);}
+  .ck-upgrade-icon.kind-global .badge-val{color:#8ee08e;}
+  .ck-upgrade-icon:hover{transform:translateY(-2px);}
+  .ck-upgrade-icon.affordable{border-color:var(--c-gold);box-shadow:0 0 10px rgba(228,174,57,.4);}
+  .ck-tooltip{
+    position:absolute;transform:translateX(-50%);
+    background:#0a0710;border:1px solid var(--line);border-radius:6px;
+    padding:10px 12px;width:200px;text-align:left;z-index:40;
+    box-shadow:0 10px 30px rgba(0,0,0,.6);
+    pointer-events:none;
+  }
+  .ck-tooltip .t-name{font-weight:700;font-size:.8rem;margin-bottom:3px;}
+  .ck-tooltip .t-kind{font-size:.64rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+  .ck-tooltip .t-desc{font-size:.7rem;color:var(--ink-dim);margin-bottom:6px;}
+  .ck-tooltip .t-cost{font-size:.72rem;color:#8ee08e;font-weight:700;}
+  .ck-upgrades-empty{color:var(--ink-dim);font-size:.75rem;}
+
+  .ck-body{flex:1;display:flex;min-height:0;}
+  .ck-click-area{
+    flex:0 0 260px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;border-right:1px solid var(--line);padding:20px;
+  }
+  .clicker-btn{
+    width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #8847ff, #6b21a8 70%);
+    border:none;color:#fff;font-family:"Permanent Marker",cursive;font-size:1.05rem;
+    cursor:pointer;box-shadow:0 12px 30px -10px rgba(107,33,168,.7), inset 0 0 0 4px rgba(255,255,255,.08);
+    transition:transform .08s ease;
+    user-select:none;position:relative;
+  }
+  .clicker-btn:active{transform:scale(.93);}
+  .ck-click-value{color:var(--ink-dim);font-size:.76rem;text-align:center;}
+  .ck-click-value strong{color:#8ee08e;}
+
+  .ck-shop{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .ck-shop-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .ck-shop-head span{font-size:.78rem;font-weight:700;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;}
+  .buy-amount-toggle{display:flex;gap:4px;}
+  .buy-amount-toggle button{
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    padding:4px 10px;border-radius:4px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;
+  }
+  .buy-amount-toggle button.active{color:var(--ink);border-color:var(--gold);background:rgba(107,33,168,.25);}
+
+  .ck-shop-list{flex:1;overflow-y:auto;padding:10px;}
+  .ck-building{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+    margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.02);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .ck-building:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.18);}
+  .ck-building.unaffordable{opacity:.4;cursor:not-allowed;}
+  .ck-building-badge{
+    flex:0 0 40px;width:40px;height:40px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.95rem;color:#0a0710;
+  }
+  .ck-building-info{flex:1;min-width:0;}
+  .ck-building-info .bn{font-size:.85rem;font-weight:700;}
+  .ck-building-info .bf{font-size:.68rem;color:var(--ink-dim);margin-top:1px;font-style:italic;}
+  .ck-building-info .bs{font-size:.68rem;color:var(--ink-dim);margin-top:3px;}
+  .ck-building-buy{flex:0 0 auto;text-align:right;}
+  .ck-building-buy .cost{font-size:.85rem;font-weight:700;color:#8ee08e;}
+  .ck-building-buy .owned{font-size:.66rem;color:var(--ink-dim);margin-top:2px;white-space:nowrap;}
+
+  .ck-toast{
+    position:absolute;top:16px;left:50%;transform:translateX(-50%);
+    background:rgba(20,14,30,.97);border:1px solid var(--c-gold);border-radius:8px;
+    padding:10px 18px;font-size:.8rem;font-weight:600;z-index:30;text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+    animation:toastIn .3s ease;
+  }
+  @keyframes toastIn{ 0%{opacity:0;transform:translate(-50%,-8px);} 100%{opacity:1;transform:translate(-50%,0);} }
+
+  .click-pop{
+    position:absolute;pointer-events:none;color:#8ee08e;font-weight:700;font-size:1rem;
+    animation:clickPop .7s ease-out forwards;
+  }
+  @keyframes clickPop{
+    0%{ transform:translateY(0); opacity:1; }
+    100%{ transform:translateY(-40px); opacity:0; }
+  }
+
+  @media (max-width:640px){
+    .ck-body{flex-direction:column;overflow-y:auto;}
+    .ck-click-area{flex:0 0 auto;border-right:none;border-bottom:1px solid var(--line);padding:16px;}
+    .clicker-btn{width:120px;height:120px;font-size:.9rem;}
+    .ck-stats{gap:16px;}
+  }
+
+  /* inspect (CS2-style detail view) */
+  .inspect-shell{
+    position:relative;
+    background:linear-gradient(160deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:10px;
+    width:100%;max-width:620px;max-height:90vh;overflow-y:auto;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.8);
+  }
+  .inspect-close{position:absolute;top:14px;right:14px;z-index:5;}
+  .inspect-stage{
+    position:relative;height:260px;display:flex;align-items:center;justify-content:center;
+    border-bottom:1px solid var(--line);overflow:hidden;
+  }
+  .inspect-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center, var(--glow-color,rgba(75,105,255,.4)), transparent 70%);}
+  .inspect-img{position:relative;max-width:78%;max-height:78%;object-fit:contain;filter:drop-shadow(0 20px 30px rgba(0,0,0,.6));}
+  .inspect-info{padding:24px 28px 28px;}
+  .inspect-rarity{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+  .inspect-name{margin:4px 0 4px;font-size:1.3rem;font-weight:700;}
+  .inspect-wear-name{color:var(--ink-dim);font-size:.85rem;margin-bottom:18px;}
+
+  .inspect-float-row{margin-bottom:20px;}
+  .wear-bar{position:relative;height:10px;border-radius:5px;overflow:hidden;display:flex;}
+  .wear-seg{height:100%;}
+  .wear-seg.fn{width:7%;background:#4b9fff;}
+  .wear-seg.mw{width:8%;background:#6ec6ff;}
+  .wear-seg.ft{width:23%;background:#8ee08e;}
+  .wear-seg.ww{width:7%;background:#e0c368;}
+  .wear-seg.bs{width:55%;background:#d9683f;}
+  .wear-marker{position:absolute;top:-4px;width:3px;height:18px;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.7);transform:translateX(-50%);}
+  .wear-labels{display:flex;justify-content:space-between;font-size:.6rem;color:var(--ink-dim);margin-top:4px;}
+  .inspect-float-value{font-size:.78rem;color:var(--ink-dim);margin-top:9px;}
+  .inspect-float-value strong{color:var(--ink);font-weight:700;font-family:monospace;}
+
+  .inspect-stats{display:flex;gap:22px;margin-bottom:18px;flex-wrap:wrap;}
+  .inspect-stats .stat{font-size:.7rem;color:var(--ink-dim);}
+  .inspect-stats .stat strong{display:block;color:var(--ink);font-size:.88rem;margin-top:2px;font-weight:700;}
+
+  .inspect-price{font-size:1.15rem;font-weight:700;color:#8ee08e;margin-bottom:18px;}
+  .inspect-sell{width:auto;padding:11px 26px;font-size:.82rem;}
+
+  .hidden{display:none !important;}
+  @media (max-width:600px){
+    .reel-card{flex-basis:120px;height:120px;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">BASH ADDICTION <span class="tag">SIM</span></div>
+  <div class="nav-tabs">
+    <button id="tabCases" class="active">Cases</button>
+    <button id="tabInventory">Inventory</button>
+    <button id="walletBtn" class="wallet-btn"><span class="ic">$</span><span id="walletAmount">0.00</span></button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="walletModal">
+  <div class="clicker-shell">
+    <div class="ck-top">
+      <h2>BASH Addiction</h2>
+      <button class="modal-close" id="walletClose">Close</button>
+    </div>
+    <div class="ck-stats">
+      <div class="ck-stat money">Balance<strong id="ckBalance">$0.00</strong></div>
+      <div class="ck-stat money">Per second<strong id="ckCps">$0.00/s</strong></div>
+      <div class="ck-stat">Per click<strong id="ckClickVal">$1.00</strong></div>
+      <div class="ck-stat">Lifetime earned<strong id="ckLifetime">$0.00</strong></div>
+    </div>
+    <div class="ck-upgrades-bar" id="ckUpgradesBar"></div>
+    <div class="ck-tooltip hidden" id="ckTooltip"></div>
+    <div class="ck-body">
+      <div class="ck-click-area">
+        <button class="clicker-btn" id="clickerBtn">CLICK</button>
+        <div class="ck-click-value">Fake money, stored in your browser only.</div>
+      </div>
+      <div class="ck-shop">
+        <div class="ck-shop-head">
+          <span>Buildings</span>
+          <div class="buy-amount-toggle" id="buyAmountToggle">
+            <button data-amt="1" class="active">x1</button>
+            <button data-amt="10">x10</button>
+            <button data-amt="max">max</button>
+          </div>
+        </div>
+        <div class="ck-shop-list" id="shopList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="inspectModal">
+  <div class="inspect-shell">
+    <button class="modal-close inspect-close" id="inspectClose">Close</button>
+    <div class="inspect-stage">
+      <div class="inspect-glow" id="inspectGlow"></div>
+      <img class="inspect-img" id="inspectImg" src="" alt="">
+    </div>
+    <div class="inspect-info">
+      <div class="inspect-rarity" id="inspectRarity"></div>
+      <h2 class="inspect-name" id="inspectName"></h2>
+      <div class="inspect-wear-name" id="inspectWearName"></div>
+
+      <div class="inspect-float-row hidden" id="inspectFloatRow">
+        <div class="wear-bar">
+          <div class="wear-seg fn"></div><div class="wear-seg mw"></div><div class="wear-seg ft"></div><div class="wear-seg ww"></div><div class="wear-seg bs"></div>
+          <div class="wear-marker" id="wearMarker"></div>
+        </div>
+        <div class="wear-labels"><span>FN</span><span>MW</span><span>FT</span><span>WW</span><span>BS</span></div>
+        <div class="inspect-float-value">Float value: <strong id="inspectFloat">0.00000000</strong></div>
+      </div>
+
+      <div class="inspect-stats" id="inspectStats"></div>
+
+      <div class="inspect-price" id="inspectPriceRow"></div>
+
+      <button class="inv-sell inspect-sell" id="inspectSellBtn">Sell</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div id="view-cases" class="view active">
+    <h1>Open a Case</h1>
+    <p class="sub">Pick a container. Odds match real CS2 rates.</p>
+    <div class="cases-toolbar">
+      <div class="kind-filter" id="kindFilter">
+        <button data-kind="all" class="active">All</button>
+        <button data-kind="case">Cases</button>
+        <button data-kind="capsule">Capsules</button>
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="name-asc">Name: A-Z</option>
+      </select>
+    </div>
+    <div class="case-grid" id="caseGrid"></div>
+  </div>
+
+  <div id="view-open" class="view">
+    <button class="back-btn" id="backToCases">&larr; Cases</button>
+    <div class="unlock-header">
+      <div class="unlock-label">Unlock Container</div>
+      <div class="unlock-case-name" id="openCaseName"></div>
+    </div>
+    <div class="case-image-wrap"><img id="openCaseImg" src="" alt=""></div>
+    <div class="contains-label">Contains one of the following:</div>
+    <div class="contains-grid" id="containsGrid"></div>
+    <button class="open-btn" id="openBtn">Open Container</button>
+
+    <div class="reel-wrap hidden" id="reelWrap">
+      <div class="reel-marker"></div>
+      <div class="reel-track" id="reelTrack"></div>
+    </div>
+
+    <div class="result-card hidden" id="resultCard">
+      <div class="result-glow" id="resultGlow"><img id="resultImg" src="" alt=""></div>
+      <div class="result-name" id="resultName"></div>
+      <div class="result-rarity" id="resultRarity"></div>
+      <div class="result-wear" id="resultWear"></div>
+      <div class="result-price" id="resultPrice"></div>
+      <div class="result-actions">
+        <button id="openAgainBtn" class="primary">Open Again</button>
+        <button id="toInventoryBtn">View Inventory</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-inventory" class="view">
+    <h1>Inventory</h1>
+    <p class="sub"><span id="invCount">0</span> items unboxed. Stored locally in your browser only.</p>
+    <div class="inv-grid" id="invGrid"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const CASE_RARITY_ORDER = ["Mil-Spec Grade","Restricted","Classified","Covert","Extraordinary"];
+  const CASE_RARITY_WEIGHTS = {
+    "Mil-Spec Grade": 79.92,
+    "Restricted": 15.98,
+    "Classified": 3.2,
+    "Covert": 0.64,
+    "Extraordinary": 0.26
+  };
+  const CAPSULE_RARITY_ORDER = ["High Grade","Remarkable","Exotic","Extraordinary"];
+  const CAPSULE_RARITY_WEIGHTS = {
+    "High Grade": 80,
+    "Remarkable": 16,
+    "Exotic": 3.2,
+    "Extraordinary": 0.8
+  };
+  const WEARS = ["Factory New","Minimal Wear","Field-Tested","Well-Worn","Battle-Scarred"];
+  const WEAR_RANGES = {
+    "Factory New":    [0.00, 0.07],
+    "Minimal Wear":   [0.07, 0.15],
+    "Field-Tested":   [0.15, 0.38],
+    "Well-Worn":      [0.38, 0.45],
+    "Battle-Scarred": [0.45, 1.00]
+  };
+  const INV_KEY = "cs2sim_inventory";
+  const BAL_KEY = "cs2sim_balance";
+  const STARTER_BALANCE = 50;
+
+  let CASES = [];
+  let PRICES = { cases:{}, items:{}, stickers:{} };
+  let currentCase = null;
+  let spinning = false;
+  let filterKind = "all";
+  let sortMode = "date-desc";
+
+  function rarityOrderFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_ORDER : CASE_RARITY_ORDER; }
+  function rarityWeightsFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_WEIGHTS : CASE_RARITY_WEIGHTS; }
+
+  function fmtPrice(v){
+    return (v == null) ? null : "$" + v.toFixed(2);
+  }
+  function casePrice(c){
+    const p = PRICES.cases[c.id];
+    return typeof p === "number" ? p : null;
+  }
+  function itemWearPrices(name){
+    return PRICES.items[name] || null;
+  }
+  function itemPriceRange(name){
+    const wp = itemWearPrices(name);
+    if (!wp) return null;
+    const vals = Object.values(wp);
+    if (!vals.length) return null;
+    return [Math.min(...vals), Math.max(...vals)];
+  }
+  function itemPrice(name, wear){
+    const wp = itemWearPrices(name);
+    if (!wp) return null;
+    return (wear in wp) ? wp[wear] : null;
+  }
+  function priceRangeLabel(name){
+    const r = itemPriceRange(name);
+    if (!r) return "";
+    if (r[0] === r[1]) return fmtPrice(r[0]);
+    return fmtPrice(r[0]) + " – " + fmtPrice(r[1]);
+  }
+  function stickerPrice(name){
+    const p = PRICES.stickers[name];
+    return (typeof p === "number") ? p : null;
+  }
+  // price of a specific pool item, given the container kind it belongs to
+  function poolItemPriceLabel(it, kind){
+    if (kind === "capsule"){
+      const p = stickerPrice(it.name);
+      return p != null ? fmtPrice(p) : "";
+    }
+    return priceRangeLabel(it.name);
+  }
+  // price of an actual drop (has .kind set by pickDrop)
+  function dropPrice(it){
+    if (it.kind === "capsule") return stickerPrice(it.name);
+    return itemPrice(it.name, it.wear);
+  }
+
+  function getBalance(){
+    let b = parseFloat(localStorage.getItem(BAL_KEY));
+    if (isNaN(b)) b = STARTER_BALANCE;
+    return b;
+  }
+  function setBalance(v){
+    v = Math.max(0, v);
+    try { localStorage.setItem(BAL_KEY, String(v)); } catch(e){}
+    updateWalletUI();
+  }
+  function addBalance(delta){ setBalance(getBalance() + delta); }
+  function updateWalletUI(){
+    const b = getBalance();
+    const amt = document.getElementById("walletAmount");
+    if (amt) amt.textContent = b.toFixed(2);
+    if (currentCase) refreshOpenButton();
+  }
+
+  const $ = (sel) => document.querySelector(sel);
+  const caseGrid = $("#caseGrid");
+  const containsGrid = $("#containsGrid");
+  const reelWrap = $("#reelWrap");
+  const reelTrack = $("#reelTrack");
+  const resultCard = $("#resultCard");
+  const openBtn = $("#openBtn");
+
+  function itemsByRarity(c){
+    const order = rarityOrderFor(c);
+    const map = {};
+    order.forEach(r => map[r] = []);
+    (c.contains || []).forEach(it => { if (map[it.rarity]) map[it.rarity].push(it); });
+    (c.rare || []).forEach(it => { if (map["Extraordinary"]) map["Extraordinary"].push(it); });
+    return map;
+  }
+
+  function weightedPickRarity(c){
+    const order = rarityOrderFor(c);
+    const weights = rarityWeightsFor(c);
+    const total = order.reduce((s, r) => s + weights[r], 0);
+    let roll = Math.random() * total;
+    for (const r of order){
+      if (roll < weights[r]) return r;
+      roll -= weights[r];
+    }
+    return order[0];
+  }
+
+  function pickDrop(c){
+    const map = itemsByRarity(c);
+    let rarity = weightedPickRarity(c);
+    let pool = map[rarity];
+    if (!pool || !pool.length){
+      rarity = rarityOrderFor(c)[0];
+      pool = map[rarity];
+    }
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    if (c.kind === "capsule"){
+      return { ...item, kind: "capsule" };
+    }
+    const wear = WEARS[Math.floor(Math.random() * WEARS.length)];
+    const range = WEAR_RANGES[wear];
+    const float = range[0] + Math.random() * (range[1] - range[0]);
+    const seed = Math.floor(Math.random() * 1000) + 1;
+    return { ...item, wear, float, seed, kind: "case" };
+  }
+
+  function getFilteredSortedCases(){
+    let list = CASES.filter(c => filterKind === "all" || c.kind === filterKind);
+    const priceOf = c => { const p = casePrice(c); return p == null ? 0 : p; };
+    list = list.slice();
+    switch (sortMode){
+      case "price-desc": list.sort((a, b) => priceOf(b) - priceOf(a)); break;
+      case "price-asc":  list.sort((a, b) => priceOf(a) - priceOf(b)); break;
+      case "name-asc":   list.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "date-asc":   list.sort((a, b) => (a.date || "").localeCompare(b.date || "")); break;
+      case "date-desc":
+      default:           list.sort((a, b) => (b.date || "").localeCompare(a.date || "")); break;
+    }
+    return list;
+  }
+
+  function renderCaseGrid(){
+    caseGrid.innerHTML = "";
+    const list = getFilteredSortedCases();
+    if (!list.length){
+      caseGrid.innerHTML = '<p style="color:var(--ink-dim);grid-column:1/-1;">No containers match.</p>';
+      return;
+    }
+    list.forEach(c => {
+      const div = document.createElement("div");
+      div.className = "case-card";
+      div.tabIndex = 0;
+      const price = casePrice(c);
+      const tag = price != null ? `<div class="price-tag">${fmtPrice(price)}</div>` : "";
+      const kindTag = `<div class="kind-tag">${c.kind === "capsule" ? "Capsule" : "Case"}</div>`;
+      div.innerHTML = `${tag}<img src="${c.image}" alt="" loading="lazy"><div class="name">${c.name}</div>${kindTag}`;
+      div.addEventListener("click", () => openCaseView(c));
+      div.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCaseView(c); } });
+      caseGrid.appendChild(div);
+    });
+  }
+
+  function openCaseView(c){
+    currentCase = c;
+    $("#openCaseName").textContent = "Unlock " + c.name;
+    $("#openCaseImg").src = c.image;
+    containsGrid.innerHTML = "";
+    const map = itemsByRarity(c);
+    rarityOrderFor(c).forEach(r => {
+      (map[r] || []).forEach(it => {
+        const div = document.createElement("div");
+        div.className = "mini-item";
+        div.style.borderBottomColor = it.color || "#4b69ff";
+        const priceLabel = poolItemPriceLabel(it, c.kind);
+        div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+          (priceLabel ? `<div class="price">${priceLabel}</div>` : "");
+        containsGrid.appendChild(div);
+      });
+    });
+    reelWrap.classList.add("hidden");
+    resultCard.classList.add("hidden");
+    openBtn.classList.remove("hidden");
+    refreshOpenButton();
+    switchView("open");
+  }
+
+  function refreshOpenButton(){
+    if (!currentCase) return;
+    const price = casePrice(currentCase);
+    const costLabel = price != null ? ` <span class="cost">(${fmtPrice(price)})</span>` : "";
+    openBtn.innerHTML = "Open Container" + costLabel;
+    const canAfford = price == null || getBalance() >= price;
+    openBtn.classList.toggle("insufficient", !canAfford);
+    openBtn.disabled = spinning || !canAfford;
+  }
+
+  function buildReel(winningItem){
+    reelTrack.innerHTML = "";
+    reelTrack.style.transition = "none";
+    reelTrack.style.transform = "translateX(0px)";
+    const SLOT_W = 162; // card 150 + gap 12
+    const TOTAL = 60;
+    const WIN_INDEX = 48;
+    const map = itemsByRarity(currentCase);
+    const allItems = rarityOrderFor(currentCase).flatMap(r => map[r] || []);
+    for (let i = 0; i < TOTAL; i++){
+      const it = (i === WIN_INDEX) ? winningItem : allItems[Math.floor(Math.random()*allItems.length)];
+      const card = document.createElement("div");
+      card.className = "reel-card";
+      card.style.borderBottomColor = it.color || "#4b69ff";
+      card.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
+      reelTrack.appendChild(card);
+    }
+    // force layout
+    reelTrack.offsetHeight;
+    const wrapWidth = reelWrap.clientWidth;
+    const randomOffset = (Math.random() * 100) - 50; // land not always dead center
+    const targetX = -(WIN_INDEX * SLOT_W + SLOT_W/2 - wrapWidth/2 - randomOffset);
+    requestAnimationFrame(() => {
+      reelTrack.style.transition = "transform 6s cubic-bezier(.12,.75,.12,1)";
+      reelTrack.style.transform = `translateX(${targetX}px)`;
+    });
+  }
+
+  function saveToInventory(item){
+    let inv = [];
+    try { inv = JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){}
+    inv.unshift({ ...item, caseId: currentCase.id, caseName: currentCase.name, ts: Date.now() });
+    try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
+  }
+
+  function showResult(item){
+    $("#resultImg").src = item.image;
+    $("#resultName").textContent = item.name;
+    const color = item.color || "#4b69ff";
+    $("#resultRarity").textContent = item.rarity === "Extraordinary" ?
+      (item.kind === "capsule" ? "★ Extraordinary Sticker" : "★ Rare Special Item") : item.rarity;
+    $("#resultRarity").style.color = color;
+    $("#resultWear").textContent = item.kind === "capsule" ? "" : item.wear;
+    $("#resultGlow").style.setProperty("--glow-color", color + "59");
+    const price = dropPrice(item);
+    $("#resultPrice").textContent = price != null ? fmtPrice(price) : "";
+    resultCard.classList.remove("hidden");
+  }
+
+  openBtn.addEventListener("click", () => {
+    if (spinning || !currentCase) return;
+    const price = casePrice(currentCase);
+    if (price != null && getBalance() < price) return;
+    if (price != null) addBalance(-price);
+    spinning = true;
+    openBtn.disabled = true;
+    resultCard.classList.add("hidden");
+    reelWrap.classList.remove("hidden");
+    const drop = pickDrop(currentCase);
+    buildReel(drop);
+    requestAnimationFrame(() => {
+      reelWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    const onEnd = () => {
+      reelTrack.removeEventListener("transitionend", onEnd);
+      spinning = false;
+      saveToInventory(drop);
+      showResult(drop);
+    };
+    reelTrack.addEventListener("transitionend", onEnd);
+  });
+
+  $("#openAgainBtn").addEventListener("click", () => {
+    resultCard.classList.add("hidden");
+    reelWrap.classList.add("hidden");
+    openBtn.classList.remove("hidden");
+    refreshOpenButton();
+  });
+
+  $("#toInventoryBtn").addEventListener("click", () => switchView("inventory"));
+  $("#backToCases").addEventListener("click", () => switchView("cases"));
+
+  function renderInventory(){
+    let inv = [];
+    try { inv = JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){}
+    $("#invCount").textContent = inv.length;
+    const grid = $("#invGrid");
+    grid.innerHTML = "";
+    if (!inv.length){
+      grid.innerHTML = '<div class="inv-empty">No items yet — open a case to get started.</div>';
+      return;
+    }
+    inv.forEach((it, idx) => {
+      const div = document.createElement("div");
+      div.className = "inv-item";
+      div.style.borderBottomColor = it.color || "#4b69ff";
+      const price = dropPrice(it);
+      const wearLine = it.kind === "capsule" ? "" : `<div class="w">${it.wear}</div>`;
+      div.innerHTML = `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}` +
+        (price != null ? `<div class="price">${fmtPrice(price)}</div><button class="inv-sell" data-idx="${idx}">Sell for ${fmtPrice(price)}</button>` : "");
+      div.addEventListener("click", (e) => {
+        if (e.target.closest(".inv-sell")) return;
+        openInspect(it, idx);
+      });
+      grid.appendChild(div);
+    });
+    grid.querySelectorAll(".inv-sell").forEach(btn => {
+      btn.addEventListener("click", () => sellItem(parseInt(btn.dataset.idx, 10)));
+    });
+  }
+
+  let inspectIdx = null;
+  function openInspect(it, idx){
+    inspectIdx = idx;
+    const color = it.color || "#4b69ff";
+    $("#inspectImg").src = it.image;
+    $("#inspectGlow").style.setProperty("--glow-color", color + "40");
+    $("#inspectRarity").textContent = it.rarity === "Extraordinary" ?
+      (it.kind === "capsule" ? "★ Extraordinary Sticker" : "★ Rare Special Item") : it.rarity;
+    $("#inspectRarity").style.color = color;
+    $("#inspectName").textContent = it.name;
+    $("#inspectWearName").textContent = it.kind === "capsule" ? "Sticker" : (it.wear || "");
+
+    const floatRow = $("#inspectFloatRow");
+    if (it.kind === "capsule" || typeof it.float !== "number"){
+      floatRow.classList.add("hidden");
+    } else {
+      floatRow.classList.remove("hidden");
+      $("#inspectFloat").textContent = it.float.toFixed(8);
+      $("#wearMarker").style.left = Math.min(100, Math.max(0, it.float * 100)) + "%";
+    }
+
+    let statsHtml = "";
+    if (it.kind !== "capsule" && typeof it.seed === "number"){
+      statsHtml += `<div class="stat">Paint Seed<strong>${it.seed}</strong></div>`;
+    }
+    if (it.caseName){
+      statsHtml += `<div class="stat">From<strong>${it.caseName}</strong></div>`;
+    }
+    $("#inspectStats").innerHTML = statsHtml;
+
+    const price = dropPrice(it);
+    const sellBtn = $("#inspectSellBtn");
+    if (price != null){
+      $("#inspectPriceRow").textContent = fmtPrice(price);
+      sellBtn.classList.remove("hidden");
+      sellBtn.textContent = "Sell for " + fmtPrice(price);
+    } else {
+      $("#inspectPriceRow").textContent = "Price unavailable";
+      sellBtn.classList.add("hidden");
+    }
+
+    $("#inspectModal").classList.remove("hidden");
+  }
+
+  function sellItem(idx){
+    let inv = [];
+    try { inv = JSON.parse(localStorage.getItem(INV_KEY)) || []; } catch(e){}
+    const it = inv[idx];
+    if (!it) return;
+    const price = dropPrice(it);
+    if (price == null) return;
+    inv.splice(idx, 1);
+    try { localStorage.setItem(INV_KEY, JSON.stringify(inv)); } catch(e){}
+    addBalance(price);
+    renderInventory();
+  }
+
+  function switchView(name){
+    ["cases","open","inventory"].forEach(v => {
+      $("#view-" + v).classList.toggle("active", v === name);
+    });
+    $("#tabCases").classList.toggle("active", name === "cases" || name === "open");
+    $("#tabInventory").classList.toggle("active", name === "inventory");
+    if (name === "inventory") renderInventory();
+  }
+
+  $("#tabCases").addEventListener("click", () => switchView("cases"));
+  $("#tabInventory").addEventListener("click", () => switchView("inventory"));
+
+  $("#kindFilter").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    document.querySelectorAll("#kindFilter button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filterKind = btn.dataset.kind;
+    renderCaseGrid();
+  });
+  $("#sortSelect").addEventListener("change", (e) => {
+    sortMode = e.target.value;
+    renderCaseGrid();
+  });
+
+  // ==================================================================
+  // BASH ADDICTION — idle clicker (buildings + upgrades)
+  // ==================================================================
+  const CK_KEY = "cs2sim_clicker_v1";
+
+  const BUILDINGS = [
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:15,          cps:0.1,     color:"#9fb2c9" },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:100,         cps:1,       color:"#5e98d9" },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:1100,        cps:8,       color:"#4b69ff" },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:12000,       cps:47,      color:"#8847ff" },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:130000,      cps:260,     color:"#d32ce6" },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1400000,     cps:1400,    color:"#eb4b4b" },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:20000000,    cps:7800,    color:"#e4ae39" },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:330000000,   cps:44000,   color:"#ff8a3d" },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:5100000000,  cps:260000,  color:"#ff5555" },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:75000000000, cps:1600000, color:"#ffe066" }
+  ];
+
+  const CLICK_UPGRADES = [
+    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$1 per click.",                       cost:50,       type:"click-add",  value:1 },
+    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$2 per click. Very clicky.",          cost:500,      type:"click-add",  value:2 },
+    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x2. It's just faster.",    cost:5000,     type:"click-mult", value:2 },
+    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$10 per click.",                 cost:25000,    type:"click-add",  value:10 },
+    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x2.",                      cost:150000,   type:"click-mult", value:2 },
+    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$50 per click.",                      cost:800000,   type:"click-add",  value:50 },
+    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x3.",                      cost:5000000,  type:"click-mult", value:3 },
+    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x2.",                      cost:40000000, type:"click-mult", value:2 }
+  ];
+
+  const GLOBAL_UPGRADES = [
+    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All income x2.", cost:10000,       type:"global-mult", value:2 },
+    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All income x2.", cost:200000,      type:"global-mult", value:2 },
+    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All income x2.", cost:3000000,     type:"global-mult", value:2 },
+    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All income x2.", cost:60000000,    type:"global-mult", value:2 },
+    { id:"offshore-account",  name:"Offshore Account",             flavor:"All income x2.", cost:900000000,   type:"global-mult", value:2 },
+    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All income x3.", cost:20000000000, type:"global-mult", value:3 }
+  ];
+
+  const ALL_UPGRADES = CLICK_UPGRADES.concat(GLOBAL_UPGRADES);
+
+  let ckState = { owned:{}, upgrades:{}, lifetime:0, lastTick:Date.now() };
+  let buyAmount = 1;
+
+  function loadClickerState(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(CK_KEY));
+      if (raw) ckState = Object.assign({ owned:{}, upgrades:{}, lifetime:0, lastTick:Date.now() }, raw);
+    } catch(e){}
+    BUILDINGS.forEach(b => { if (!(b.id in ckState.owned)) ckState.owned[b.id] = 0; });
+  }
+  function saveClickerState(){
+    ckState.lastTick = Date.now();
+    try { localStorage.setItem(CK_KEY, JSON.stringify(ckState)); } catch(e){}
+  }
+
+  function fmtBig(n){
+    const sign = n < 0 ? "-" : "";
+    n = Math.abs(n);
+    if (n < 1000) return sign + "$" + n.toFixed(2);
+    const units = ["K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+    let u = -1, v = n;
+    while (v >= 1000 && u < units.length - 1){ v /= 1000; u++; }
+    return sign + "$" + v.toFixed(2) + units[u];
+  }
+
+  function buildingCost(b, n){ return Math.ceil(b.baseCost * Math.pow(1.15, n)); }
+  function buildingCostForAmount(b, amount){
+    const owned = ckState.owned[b.id] || 0;
+    let total = 0;
+    for (let i = 0; i < amount; i++) total += buildingCost(b, owned + i);
+    return total;
+  }
+  function maxAffordable(b){
+    const owned = ckState.owned[b.id] || 0;
+    const bal = getBalance();
+    let n = 0, cost = 0;
+    while (n < 10000){
+      const next = buildingCost(b, owned + n);
+      if (cost + next > bal) break;
+      cost += next; n++;
+    }
+    return { n, cost };
+  }
+
+  function currentCps(){
+    let base = 0;
+    BUILDINGS.forEach(b => { base += (ckState.owned[b.id] || 0) * b.cps; });
+    let mult = 1;
+    GLOBAL_UPGRADES.forEach(u => { if (ckState.upgrades[u.id]) mult *= u.value; });
+    return base * mult;
+  }
+  function currentClickValue(){
+    let add = 1, mult = 1;
+    CLICK_UPGRADES.forEach(u => {
+      if (!ckState.upgrades[u.id]) return;
+      if (u.type === "click-add") add += u.value;
+      if (u.type === "click-mult") mult *= u.value;
+    });
+    GLOBAL_UPGRADES.forEach(u => { if (ckState.upgrades[u.id]) mult *= u.value; });
+    return add * mult;
+  }
+
+  function buyBuilding(b, n, cost){
+    if (n < 1 || getBalance() < cost) return;
+    addBalance(-cost);
+    ckState.owned[b.id] = (ckState.owned[b.id] || 0) + n;
+    saveClickerState();
+    renderShop();
+    renderCkStats();
+  }
+  function buyUpgrade(u){
+    if (ckState.upgrades[u.id] || getBalance() < u.cost) return;
+    addBalance(-u.cost);
+    ckState.upgrades[u.id] = true;
+    saveClickerState();
+    renderUpgradesBar();
+    renderCkStats();
+  }
+
+  function renderShop(){
+    const list = $("#shopList");
+    if (!list) return;
+    list.innerHTML = "";
+    const bal = getBalance();
+    BUILDINGS.forEach((b, idx) => {
+      const owned = ckState.owned[b.id] || 0;
+      let buyN, cost;
+      if (buyAmount === "max"){
+        const m = maxAffordable(b);
+        buyN = Math.max(1, m.n);
+        cost = m.n > 0 ? m.cost : buildingCost(b, owned);
+      } else {
+        buyN = buyAmount;
+        cost = buildingCostForAmount(b, buyN);
+      }
+      const affordable = bal >= cost;
+      const row = document.createElement("div");
+      row.className = "ck-building" + (affordable ? "" : " unaffordable");
+      row.innerHTML =
+        '<div class="ck-building-badge" style="background:' + b.color + '">' + (idx + 1) + '</div>' +
+        '<div class="ck-building-info">' +
+          '<div class="bn">' + b.name + '</div>' +
+          '<div class="bf">' + b.flavor + '</div>' +
+          '<div class="bs">' + fmtBig(b.cps) + '/s each</div>' +
+        '</div>' +
+        '<div class="ck-building-buy">' +
+          '<div class="cost">' + fmtBig(cost) + '</div>' +
+          '<div class="owned">Owned: ' + owned + (buyN > 1 ? " (buy " + buyN + ")" : "") + '</div>' +
+        '</div>';
+      row.addEventListener("click", () => buyBuilding(b, buyN, cost));
+      list.appendChild(row);
+    });
+  }
+
+  function renderUpgradesBar(){
+    const bar = $("#ckUpgradesBar");
+    if (!bar) return;
+    bar.innerHTML = "";
+    const bal = getBalance();
+    const available = ALL_UPGRADES.filter(u => !ckState.upgrades[u.id]);
+    if (!available.length){
+      bar.innerHTML = '<div class="ck-upgrades-empty">All upgrades purchased. Impressive. Concerning.</div>';
+      return;
+    }
+    available.forEach(u => {
+      const affordable = bal >= u.cost;
+      const isGlobal = u.type === "global-mult";
+      const badge = u.type === "click-add" ? ("+$" + u.value) : ("×" + u.value);
+      const kindLabel = isGlobal ? "All income (buildings)" : "Click power";
+      const div = document.createElement("div");
+      div.className = "ck-upgrade-icon" + (affordable ? " affordable" : "") + (isGlobal ? " kind-global" : " kind-click");
+      div.innerHTML = '<span class="badge-val">' + badge + '</span>';
+      div.addEventListener("click", () => buyUpgrade(u));
+      div.addEventListener("mouseenter", () => showUpgradeTooltip(div, u, kindLabel));
+      div.addEventListener("mouseleave", hideUpgradeTooltip);
+      bar.appendChild(div);
+    });
+  }
+
+  function showUpgradeTooltip(iconEl, u, kindLabel){
+    const tip = $("#ckTooltip");
+    const shell = $(".clicker-shell");
+    tip.innerHTML =
+      '<div class="t-name">' + u.name + '</div>' +
+      '<div class="t-kind">' + kindLabel + '</div>' +
+      '<div class="t-desc">' + u.flavor + '</div>' +
+      '<div class="t-cost">Cost: ' + fmtBig(u.cost) + '</div>';
+    tip.classList.remove("hidden");
+    const iconRect = iconEl.getBoundingClientRect();
+    const shellRect = shell.getBoundingClientRect();
+    tip.style.top = (iconRect.bottom - shellRect.top + 8) + "px";
+    let left = (iconRect.left - shellRect.left + iconRect.width / 2);
+    tip.style.left = left + "px";
+    // clamp so it doesn't overflow the shell horizontally
+    requestAnimationFrame(() => {
+      const tipRect = tip.getBoundingClientRect();
+      if (tipRect.right > shellRect.right - 8){
+        tip.style.left = (left - (tipRect.right - (shellRect.right - 8))) + "px";
+      }
+      if (tipRect.left < shellRect.left + 8){
+        tip.style.left = (left + (shellRect.left + 8 - tipRect.left)) + "px";
+      }
+    });
+  }
+  function hideUpgradeTooltip(){
+    $("#ckTooltip").classList.add("hidden");
+  }
+
+  function renderCkStats(){
+    const b = getBalance();
+    $("#ckBalance").textContent = fmtBig(b);
+    $("#ckCps").textContent = fmtBig(currentCps()) + "/s";
+    $("#ckClickVal").textContent = fmtBig(currentClickValue());
+    $("#ckLifetime").textContent = fmtBig(ckState.lifetime);
+  }
+
+  // wallet modal / clicker wiring
+  const walletModal = $("#walletModal");
+  const clickerBtn = $("#clickerBtn");
+
+  loadClickerState();
+
+  // offline earnings
+  (function applyOfflineEarnings(){
+    const elapsed = Math.min((Date.now() - (ckState.lastTick || Date.now())) / 1000, 4 * 3600);
+    if (elapsed > 5){
+      const cps = currentCps();
+      const gain = cps * elapsed;
+      if (gain > 0.01){
+        addBalance(gain);
+        ckState.lifetime += gain;
+        saveClickerState();
+        window._ckOfflineToast = "While you were away: +" + fmtBig(gain);
+      }
+    }
+  })();
+
+  $("#walletBtn").addEventListener("click", () => {
+    walletModal.classList.remove("hidden");
+    renderCkStats();
+    renderShop();
+    renderUpgradesBar();
+    if (window._ckOfflineToast){
+      const toast = document.createElement("div");
+      toast.className = "ck-toast";
+      toast.textContent = window._ckOfflineToast;
+      $(".clicker-shell").appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+      window._ckOfflineToast = null;
+    }
+  });
+  $("#walletClose").addEventListener("click", () => { walletModal.classList.add("hidden"); saveClickerState(); });
+  walletModal.addEventListener("click", (e) => { if (e.target === walletModal){ walletModal.classList.add("hidden"); saveClickerState(); } });
+
+  const inspectModal = $("#inspectModal");
+  $("#inspectClose").addEventListener("click", () => inspectModal.classList.add("hidden"));
+  inspectModal.addEventListener("click", (e) => { if (e.target === inspectModal) inspectModal.classList.add("hidden"); });
+  $("#inspectSellBtn").addEventListener("click", () => {
+    if (inspectIdx == null) return;
+    sellItem(inspectIdx);
+    inspectModal.classList.add("hidden");
+  });
+
+  $("#buyAmountToggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    document.querySelectorAll("#buyAmountToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const amt = btn.dataset.amt;
+    buyAmount = (amt === "max") ? "max" : parseInt(amt, 10);
+    renderShop();
+  });
+
+  clickerBtn.addEventListener("click", (e) => {
+    const val = currentClickValue();
+    addBalance(val);
+    ckState.lifetime += val;
+    const pop = document.createElement("div");
+    pop.className = "click-pop";
+    pop.textContent = "+" + fmtBig(val);
+    const rect = clickerBtn.getBoundingClientRect();
+    pop.style.left = (e.clientX - rect.left - 10) + "px";
+    pop.style.top = (e.clientY - rect.top - 10) + "px";
+    clickerBtn.appendChild(pop);
+    setTimeout(() => pop.remove(), 700);
+    renderCkStats();
+  });
+
+  // passive income tick
+  let ckLastTickTime = performance.now();
+  setInterval(() => {
+    const now = performance.now();
+    const dt = (now - ckLastTickTime) / 1000;
+    ckLastTickTime = now;
+    const cps = currentCps();
+    if (cps > 0){
+      const gain = cps * dt;
+      addBalance(gain);
+      ckState.lifetime += gain;
+      if (!walletModal.classList.contains("hidden")) renderCkStats();
+    }
+  }, 250);
+  // slower re-render of shop/upgrades affordability while open
+  setInterval(() => {
+    if (!walletModal.classList.contains("hidden")){
+      renderShop();
+      renderUpgradesBar();
+    }
+  }, 1000);
+  setInterval(saveClickerState, 5000);
+  window.addEventListener("beforeunload", saveClickerState);
+
+  updateWalletUI();
+
+  Promise.all([
+    fetch("cases-data.json").then(r => r.json()),
+    fetch("prices-data.json").then(r => r.json()).catch(() => ({ cases:{}, items:{}, stickers:{} }))
+  ]).then(([data, prices]) => {
+    CASES = data;
+    PRICES = prices;
+    renderCaseGrid();
+  }).catch(err => { caseGrid.innerHTML = '<p style="color:#eb4b4b">Failed to load case data: ' + err + '</p>'; });
+})();
+</script>
+</body>
+</html>
