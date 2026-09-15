@@ -1116,36 +1116,36 @@
   const CK_KEY = "cs2sim_clicker_v1";
 
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:45,          cps:0.1,     color:"#9fb2c9" },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:300,         cps:1,       color:"#5e98d9" },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:3300,        cps:8,       color:"#4b69ff" },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:36000,       cps:47,      color:"#8847ff" },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:390000,      cps:260,     color:"#d32ce6" },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:4200000,     cps:1400,    color:"#eb4b4b" },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:60000000,    cps:7800,    color:"#e4ae39" },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:990000000,   cps:44000,   color:"#ff8a3d" },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:15300000000, cps:260000,  color:"#ff5555" },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:225000000000,cps:1600000, color:"#ffe066" }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.01,  color:"#9fb2c9" },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.04,  color:"#5e98d9" },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.15,  color:"#4b69ff" },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.55,  color:"#8847ff" },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:2,     color:"#d32ce6" },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:7,     color:"#eb4b4b" },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:24,    color:"#e4ae39" },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:80,    color:"#ff8a3d" },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:250,   color:"#ff5555" },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:700,   color:"#ffe066" }
   ];
 
   const CLICK_UPGRADES = [
-    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$1 per click.",                       cost:150,      type:"click-add",  value:1 },
-    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$2 per click. Very clicky.",          cost:1500,     type:"click-add",  value:2 },
-    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x2. It's just faster.",    cost:15000,    type:"click-mult", value:2 },
-    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$10 per click.",                 cost:75000,    type:"click-add",  value:10 },
-    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x2.",                      cost:450000,   type:"click-mult", value:2 },
-    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$50 per click.",                      cost:2400000,  type:"click-add",  value:50 },
-    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x3.",                      cost:15000000, type:"click-mult", value:3 },
-    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x2.",                      cost:120000000,type:"click-mult", value:2 }
+    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$0.02 per click.",                    cost:15,     type:"click-add",  value:0.02 },
+    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$0.05 per click. Very clicky.",       cost:60,     type:"click-add",  value:0.05 },
+    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x2. It's just faster.",    cost:220,    type:"click-mult", value:2 },
+    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$0.2 per click.",                cost:700,    type:"click-add",  value:0.2 },
+    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x2.",                      cost:2200,   type:"click-mult", value:2 },
+    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$1 per click.",                       cost:7000,   type:"click-add",  value:1 },
+    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x3.",                      cost:18000,  type:"click-mult", value:3 },
+    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x2.",                      cost:45000,  type:"click-mult", value:2 }
   ];
 
   const GLOBAL_UPGRADES = [
-    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All income x2.", cost:30000,       type:"global-mult", value:2 },
-    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All income x2.", cost:600000,      type:"global-mult", value:2 },
-    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All income x2.", cost:9000000,     type:"global-mult", value:2 },
-    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All income x2.", cost:180000000,   type:"global-mult", value:2 },
-    { id:"offshore-account",  name:"Offshore Account",             flavor:"All income x2.", cost:2700000000,  type:"global-mult", value:2 },
-    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All income x3.", cost:60000000000, type:"global-mult", value:3 }
+    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All income x2.", cost:500,     type:"global-mult", value:2 },
+    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All income x2.", cost:3000,    type:"global-mult", value:2 },
+    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All income x2.", cost:12000,   type:"global-mult", value:2 },
+    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All income x2.", cost:40000,   type:"global-mult", value:2 },
+    { id:"offshore-account",  name:"Offshore Account",             flavor:"All income x2.", cost:90000,   type:"global-mult", value:2 },
+    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All income x3.", cost:200000,  type:"global-mult", value:3 }
   ];
 
   const ALL_UPGRADES = CLICK_UPGRADES.concat(GLOBAL_UPGRADES);
@@ -1202,7 +1202,7 @@
     return base * mult;
   }
   function currentClickValue(){
-    let add = 1, mult = 1;
+    let add = 0.02, mult = 1;
     CLICK_UPGRADES.forEach(u => {
       if (!ckState.upgrades[u.id]) return;
       if (u.type === "click-add") add += u.value;
