@@ -48,12 +48,22 @@
   .brand{
     font-weight:700;font-size:1.1rem;letter-spacing:.04em;
     display:flex;align-items:center;gap:8px;
+    cursor:pointer;background:none;border:none;color:var(--ink);font-family:inherit;padding:0;
   }
+  .brand:hover{color:#c98bff;}
   .brand .tag{
     background:var(--gold);color:var(--gold-ink);font-size:.65rem;font-weight:700;
     padding:2px 6px;border-radius:3px;letter-spacing:.03em;
   }
-  .nav-tabs{display:flex;gap:6px;}
+  .nav-tabs{display:flex;align-items:center;gap:6px;}
+  .home-link{
+    display:flex;align-items:center;gap:6px;
+    background:var(--panel);border:1px solid var(--line);color:var(--ink-dim);
+    padding:8px 14px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:600;
+    text-decoration:none;transition:border-color .15s ease, color .15s ease;
+    margin-right:8px;
+  }
+  .home-link:hover{border-color:var(--gold);color:var(--ink);}
   .nav-tabs button{
     background:var(--panel);color:var(--ink-dim);border:1px solid var(--line);
     padding:8px 16px;border-radius:6px;font-family:inherit;font-size:.85rem;font-weight:600;
@@ -436,8 +446,9 @@
 </head>
 <body>
 <div class="topbar">
-  <div class="brand">BASH ADDICTION <span class="tag">SIM</span></div>
+  <button class="brand" id="brandHome">BASH ADDICTION <span class="tag">SIM</span></button>
   <div class="nav-tabs">
+    <a class="home-link" href="/">&larr; Back to site</a>
     <button id="tabCases" class="active">Cases</button>
     <button id="tabInventory">Inventory</button>
     <button id="walletBtn" class="wallet-btn"><span class="ic">$</span><span id="walletAmount">0.00</span></button>
@@ -560,6 +571,7 @@
   </div>
 
   <div id="view-inventory" class="view">
+    <button class="back-btn" id="backFromInventory">&larr; Cases</button>
     <h1>Inventory</h1>
     <p class="sub"><span id="invCount">0</span> items unboxed. Stored locally in your browser only.</p>
     <div class="inv-grid" id="invGrid"></div>
@@ -602,6 +614,7 @@
   let spinning = false;
   let filterKind = "all";
   let sortMode = "date-desc";
+  let inventoryBackTarget = "cases";
 
   function rarityOrderFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_ORDER : CASE_RARITY_ORDER; }
   function rarityWeightsFor(c){ return c.kind === "capsule" ? CAPSULE_RARITY_WEIGHTS : CASE_RARITY_WEIGHTS; }
@@ -867,8 +880,16 @@
     refreshOpenButton();
   });
 
-  $("#toInventoryBtn").addEventListener("click", () => switchView("inventory"));
+  $("#toInventoryBtn").addEventListener("click", () => {
+    inventoryBackTarget = "open";
+    switchView("inventory");
+  });
   $("#backToCases").addEventListener("click", () => switchView("cases"));
+  $("#backFromInventory").addEventListener("click", () => {
+    if (inventoryBackTarget === "open" && currentCase) switchView("open");
+    else switchView("cases");
+  });
+  $("#brandHome").addEventListener("click", () => switchView("cases"));
 
   function renderInventory(){
     let inv = [];
@@ -962,11 +983,20 @@
     });
     $("#tabCases").classList.toggle("active", name === "cases" || name === "open");
     $("#tabInventory").classList.toggle("active", name === "inventory");
-    if (name === "inventory") renderInventory();
+    if (name === "inventory"){
+      renderInventory();
+      const backBtn = $("#backFromInventory");
+      backBtn.textContent = (inventoryBackTarget === "open" && currentCase)
+        ? "← Back to " + currentCase.name
+        : "← Cases";
+    }
   }
 
   $("#tabCases").addEventListener("click", () => switchView("cases"));
-  $("#tabInventory").addEventListener("click", () => switchView("inventory"));
+  $("#tabInventory").addEventListener("click", () => {
+    inventoryBackTarget = "cases";
+    switchView("inventory");
+  });
 
   $("#kindFilter").addEventListener("click", (e) => {
     const btn = e.target.closest("button");
