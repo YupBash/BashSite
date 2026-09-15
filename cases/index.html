@@ -954,7 +954,6 @@
     wrap.appendChild(marker);
     wrap.appendChild(track);
 
-    const SLOT_W = 162; // card 150 + gap 12
     const TOTAL = 60;
     const WIN_INDEX = 48;
     const map = itemsByRarity(currentCase);
@@ -967,16 +966,20 @@
       card.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
       track.appendChild(card);
     }
-    return { wrap, track, WIN_INDEX, SLOT_W };
+    return { wrap, track, WIN_INDEX };
   }
 
   function spinReelRow(row){
-    const { wrap, track, WIN_INDEX, SLOT_W } = row;
-    // force layout so clientWidth is accurate now that the row is in the DOM
+    const { wrap, track, WIN_INDEX } = row;
+    // force layout so widths/offsets are accurate now that the row is in the DOM
     track.offsetHeight;
+    // measure the actual rendered slot width (card + gap) instead of assuming a fixed size,
+    // since multi-open mode renders smaller cards via CSS
+    const cards = track.children;
+    const slotW = (cards.length > 1) ? (cards[1].offsetLeft - cards[0].offsetLeft) : 162;
     const wrapWidth = wrap.clientWidth;
     const randomOffset = (Math.random() * 100) - 50; // land not always dead center
-    const targetX = -(WIN_INDEX * SLOT_W + SLOT_W/2 - wrapWidth/2 - randomOffset);
+    const targetX = -(WIN_INDEX * slotW + slotW/2 - wrapWidth/2 - randomOffset);
     requestAnimationFrame(() => {
       track.style.transition = "transform 6s cubic-bezier(.12,.75,.12,1)";
       track.style.transform = `translateX(${targetX}px)`;
