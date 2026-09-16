@@ -2184,38 +2184,27 @@
   // MAX_CPS - the rest only comes from also buying every global upgrade. Before this,
   // buildings alone already blew past the cap, making every upgrade pointless dead weight.
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.000006, color:"#9fb2c9", maxOwned:10 },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.000024, color:"#5e98d9", maxOwned:10 },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.00009,  color:"#4b69ff", maxOwned:10 },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.00033,  color:"#8847ff", maxOwned:10 },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.0012,   color:"#d32ce6", maxOwned:10 },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:0.0042,   color:"#eb4b4b", maxOwned:5 },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.0144,   color:"#e4ae39", maxOwned:5 },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:0.048,    color:"#ff8a3d", maxOwned:5 },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.15,     color:"#ff5555", maxOwned:5 },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.42,     color:"#ffe066", maxOwned:5 }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.00007,  color:"#9fb2c9", maxOwned:10 },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.0014,   color:"#4b69ff", maxOwned:10 },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.011,    color:"#d32ce6", maxOwned:10 },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.07,     color:"#e4ae39", maxOwned:5 },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.35,     color:"#ff5555", maxOwned:5 },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.45,     color:"#ffe066", maxOwned:5 }
   ];
 
-  // click-mult upgrades are much smaller multipliers now (was up to 96x combined with
-  // global upgrades) so the click-add upgrades stay meaningful instead of being drowned out
   const CLICK_UPGRADES = [
-    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$0.0004 per click.",              cost:15,     type:"click-add",  value:0.0004 },
-    { id:"mechanical-kb",  name:"Mechanical Keyboard",        flavor:"+$0.0009 per click. Very clicky.", cost:60,     type:"click-add",  value:0.0009 },
+    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$0.001 per click.",               cost:15,     type:"click-add",  value:0.001 },
     { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x1.4. It's just faster.", cost:220,    type:"click-mult", value:1.4 },
-    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$0.0035 per click.",              cost:700,    type:"click-add",  value:0.0035 },
-    { id:"energy-drink",   name:"Energy Drink IV Drip",       flavor:"Click value x1.4.",                cost:2200,   type:"click-mult", value:1.4 },
-    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$0.0175 per click.",              cost:7000,   type:"click-add",  value:0.0175 },
-    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x1.6.",                cost:18000,  type:"click-mult", value:1.6 },
-    { id:"vac-immunity",   name:"VAC Immunity Certificate",   flavor:"Click value x1.4.",                cost:45000,  type:"click-mult", value:1.4 }
+    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$0.01 per click.",                cost:700,    type:"click-add",  value:0.01 },
+    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$0.03 per click.",                cost:7000,   type:"click-add",  value:0.03 },
+    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x1.6.",                cost:18000,  type:"click-mult", value:1.6 }
   ];
 
   // global upgrades only affect passive income (cps) now, not click value - they used to
   // multiply both, compounding up to ~2300x and blowing straight through every cap
   const GLOBAL_UPGRADES = [
     { id:"faster-bots",       name:"Faster Bots",                  flavor:"All passive income x1.15.", cost:500,     type:"global-mult", value:1.15 },
-    { id:"better-algo",       name:"Better Trading Algorithm",     flavor:"All passive income x1.15.", cost:3000,    type:"global-mult", value:1.15 },
     { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All passive income x1.2.",  cost:12000,   type:"global-mult", value:1.2 },
-    { id:"tax-evasion",       name:"Creative Accounting",          flavor:"All passive income x1.2.",  cost:40000,   type:"global-mult", value:1.2 },
     { id:"offshore-account",  name:"Offshore Account",             flavor:"All passive income x1.25.", cost:90000,   type:"global-mult", value:1.25 },
     { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All passive income x1.3.",  cost:200000,  type:"global-mult", value:1.3 }
   ];
@@ -2286,7 +2275,7 @@
   function currentClickValue(){
     // global upgrades no longer apply here - click value is governed only by CLICK_UPGRADES,
     // so its own full-completion point lands at MAX_CLICK_VALUE instead of blowing past it
-    let add = 0.0004, mult = 1;
+    let add = 0.001, mult = 1;
     CLICK_UPGRADES.forEach(u => {
       if (!ckState.upgrades[u.id]) return;
       if (u.type === "click-add") add += u.value;
