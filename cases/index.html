@@ -2193,30 +2193,34 @@
   // cps values are tuned so buying every building alone gets you ~1/3 of the way to
   // MAX_CPS - the rest only comes from also buying every global upgrade. Before this,
   // buildings alone already blew past the cap, making every upgrade pointless dead weight.
+  // costs cut ~100x from the original tuning so a realistic play session (~6 clicks/sec
+  // average + buying buildings as you go) finishes the whole tree in about 2 hours,
+  // instead of multiple days. Income/caps are untouched, so the clicker still can't
+  // outpace gambling - it just no longer takes forever to actually reach the cap.
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.00007,  color:"#9fb2c9", maxOwned:10 },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.0014,   color:"#4b69ff", maxOwned:10 },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.011,    color:"#d32ce6", maxOwned:10 },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.07,     color:"#e4ae39", maxOwned:5 },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.35,     color:"#ff5555", maxOwned:5 },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.45,     color:"#ffe066", maxOwned:5 }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:0.02,    cps:0.00007,  color:"#9fb2c9", maxOwned:10 },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:0.3,     cps:0.0014,   color:"#4b69ff", maxOwned:10 },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:4.5,     cps:0.011,    color:"#d32ce6", maxOwned:10 },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:55,      cps:0.07,     color:"#e4ae39", maxOwned:5 },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:550,     cps:0.35,     color:"#ff5555", maxOwned:5 },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:1500,    cps:0.45,     color:"#ffe066", maxOwned:5 }
   ];
 
   const CLICK_UPGRADES = [
-    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$0.001 per click.",               cost:15,     type:"click-add",  value:0.001 },
-    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x1.4. It's just faster.", cost:220,    type:"click-mult", value:1.4 },
-    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$0.01 per click.",                cost:700,    type:"click-add",  value:0.01 },
-    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$0.03 per click.",                cost:7000,   type:"click-add",  value:0.03 },
-    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x1.6.",                cost:18000,  type:"click-mult", value:1.6 }
+    { id:"better-mouse",   name:"Better Mouse",               flavor:"+$0.001 per click.",               cost:0.15,   type:"click-add",  value:0.001 },
+    { id:"rgb-everything", name:"RGB Everything",             flavor:"Click value x1.4. It's just faster.", cost:2.2,    type:"click-mult", value:1.4 },
+    { id:"macro-script",   name:"“Totally Legit” Macro", flavor:"+$0.01 per click.",                cost:7,      type:"click-add",  value:0.01 },
+    { id:"golden-mouse",   name:"Golden Mouse",               flavor:"+$0.03 per click.",                cost:70,     type:"click-add",  value:0.03 },
+    { id:"copium-supply",  name:"Copium Supply",              flavor:"Click value x1.6.",                cost:180,    type:"click-mult", value:1.6 }
   ];
 
   // global upgrades only affect passive income (cps) now, not click value - they used to
   // multiply both, compounding up to ~2300x and blowing straight through every cap
   const GLOBAL_UPGRADES = [
-    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All passive income x1.15.", cost:500,     type:"global-mult", value:1.15 },
-    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All passive income x1.2.",  cost:12000,   type:"global-mult", value:1.2 },
-    { id:"offshore-account",  name:"Offshore Account",             flavor:"All passive income x1.25.", cost:90000,   type:"global-mult", value:1.25 },
-    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All passive income x1.3.",  cost:200000,  type:"global-mult", value:1.3 }
+    { id:"faster-bots",       name:"Faster Bots",                  flavor:"All passive income x1.15.", cost:5,       type:"global-mult", value:1.15 },
+    { id:"sponsored-ad",      name:"Sponsored by a Shady Site",    flavor:"All passive income x1.2.",  cost:120,     type:"global-mult", value:1.2 },
+    { id:"offshore-account",  name:"Offshore Account",             flavor:"All passive income x1.25.", cost:900,     type:"global-mult", value:1.25 },
+    { id:"whale-status",      name:"Achieve Whale Status",         flavor:"All passive income x1.3.",  cost:2000,    type:"global-mult", value:1.3 }
   ];
 
   const ALL_UPGRADES = CLICK_UPGRADES.concat(GLOBAL_UPGRADES);
