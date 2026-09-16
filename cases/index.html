@@ -2184,16 +2184,16 @@
   // MAX_CPS - the rest only comes from also buying every global upgrade. Before this,
   // buildings alone already blew past the cap, making every upgrade pointless dead weight.
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.000003, color:"#9fb2c9", maxOwned:10 },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.000012, color:"#5e98d9", maxOwned:10 },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.000045, color:"#4b69ff", maxOwned:10 },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.000165, color:"#8847ff", maxOwned:10 },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.0006,   color:"#d32ce6", maxOwned:10 },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:0.0021,   color:"#eb4b4b", maxOwned:5 },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.0072,   color:"#e4ae39", maxOwned:5 },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:0.024,    color:"#ff8a3d", maxOwned:5 },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.075,    color:"#ff5555", maxOwned:5 },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.21,     color:"#ffe066", maxOwned:5 }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.000006, color:"#9fb2c9", maxOwned:10 },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.000024, color:"#5e98d9", maxOwned:10 },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.00009,  color:"#4b69ff", maxOwned:10 },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.00033,  color:"#8847ff", maxOwned:10 },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.0012,   color:"#d32ce6", maxOwned:10 },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:0.0042,   color:"#eb4b4b", maxOwned:5 },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.0144,   color:"#e4ae39", maxOwned:5 },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:0.048,    color:"#ff8a3d", maxOwned:5 },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.15,     color:"#ff5555", maxOwned:5 },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.42,     color:"#ffe066", maxOwned:5 }
   ];
 
   // click-mult upgrades are much smaller multipliers now (was up to 96x combined with
@@ -2251,7 +2251,7 @@
     return sign + "$" + v.toFixed(2) + units[u];
   }
 
-  const MAX_CPS = 5;          // idle income hard cap - was 1000, cut 200x so the clicker can't outpace gambling
+  const MAX_CPS = 10;         // idle income hard cap - buildings scaled so full completion lands right at this
   const MAX_CLICK_VALUE = 0.10; // manual clicking was completely uncapped before (could hit ~$3000/click fully upgraded)
 
   function buildingCost(b, n){ return Math.ceil(b.baseCost * Math.pow(1.15, n)); }
