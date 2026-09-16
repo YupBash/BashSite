@@ -136,6 +136,7 @@
   .unlock-case-name{font-family:"Permanent Marker",cursive;font-size:1.7rem;text-shadow:0 3px 0 rgba(0,0,0,.4);}
   .case-image-wrap{display:flex;justify-content:center;padding:20px 0;}
   .case-image-wrap img{width:180px;height:135px;object-fit:contain;filter:drop-shadow(0 20px 24px rgba(0,0,0,.5));}
+  .key-note{text-align:center;color:var(--c-gold);font-size:.78rem;margin:-8px 0 18px;}
   .contains-label{color:var(--ink-dim);font-size:.8rem;margin-bottom:10px;}
   .contains-grid{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;
@@ -823,6 +824,7 @@
       <div class="unlock-case-name" id="openCaseName"></div>
     </div>
     <div class="case-image-wrap"><img id="openCaseImg" src="" alt=""></div>
+    <div class="key-note hidden" id="keyNote">🔑 Requires a $2.50 key to open, just like real CS2.</div>
     <div class="contains-label">Contains one of the following:</div>
     <div class="contains-grid" id="containsGrid"></div>
     <div class="open-amount-toggle" id="openAmountToggle">
@@ -1256,6 +1258,16 @@
     const p = PRICES.cases[c.id];
     return typeof p === "number" ? p : null;
   }
+  // real CS2 requires a separate $2.50 key to open a case - that key fee is most of
+  // Valve's actual house edge, and it was missing from this sim entirely (every case
+  // was priced as just the box, which made most of them a mathematically good bet).
+  const KEY_COST = 2.50;
+  function keyRequired(c){ return c.kind === "case" && !isDailyCase(c); }
+  function totalOpenCost(c){
+    const p = casePrice(c);
+    if (p == null) return null;
+    return p + (keyRequired(c) ? KEY_COST : 0);
+  }
   function itemWearPrices(name){
     return PRICES.items[name] || null;
   }
@@ -1360,15 +1372,33 @@
     return order[0];
   }
 
+  // uniform pick, unless every item in the pool carries a dropWeight (used by Big Cases,
+  // where the item pool IS the whole tier and needs its own internal odds - cheap finishes
+  // common, expensive ones rare - instead of every item being equally likely)
+  function pickFromPool(pool){
+    const hasWeights = pool.length && pool.every(it => typeof it.dropWeight === "number");
+    if (!hasWeights) return pool[Math.floor(Math.random() * pool.length)];
+    const total = pool.reduce((s, it) => s + it.dropWeight, 0);
+    let roll = Math.random() * total;
+    for (const it of pool){
+      if (roll < it.dropWeight) return it;
+      roll -= it.dropWeight;
+    }
+    return pool[pool.length - 1];
+  }
+
   function pickDrop(c){
     const map = itemsByRarity(c);
     let rarity = weightedPickRarity(c);
     let pool = map[rarity];
     if (!pool || !pool.length){
-      rarity = rarityOrderFor(c)[0];
+      // fall back to whichever tier actually has items, not just the first one in the
+      // list - a container (like Big Cases) can have every non-Extraordinary tier empty
+      const order = rarityOrderFor(c);
+      rarity = order.find(r => map[r] && map[r].length) || order[0];
       pool = map[rarity];
     }
-    const item = pool[Math.floor(Math.random() * pool.length)];
+    const item = pickFromPool(pool);
     if (c.kind === "capsule"){
       return { ...item, kind: "capsule" };
     }
@@ -1383,7 +1413,7 @@
 
   function getFilteredSortedCases(){
     let list = CASES.filter(c => c.kind !== "big" && (filterKind === "all" || c.kind === filterKind));
-    const priceOf = c => { const p = casePrice(c); return p == null ? 0 : p; };
+    const priceOf = c => { const p = totalOpenCost(c); return p == null ? 0 : p; };
     list = list.slice();
     switch (sortMode){
       case "price-desc": list.sort((a, b) => priceOf(b) - priceOf(a)); break;
@@ -1406,8 +1436,8 @@
     const div = document.createElement("div");
     div.className = "case-card";
     div.tabIndex = 0;
-    const price = casePrice(c);
-    const tag = price != null ? `<div class="price-tag">${fmtPrice(price)}</div>` : "";
+    const cost = totalOpenCost(c);
+    const tag = cost != null ? `<div class="price-tag">${fmtPrice(cost)}${keyRequired(c) ? ' <span title="Needs a $2.50 key to open">🔑</span>' : ""}</div>` : "";
     const kindTag = `<div class="kind-tag">${kindLabel(c)}</div>`;
     div.innerHTML = `${tag}<img src="${c.image}" alt="" loading="lazy"><div class="name">${c.name}</div>${kindTag}`;
     div.addEventListener("click", () => openCaseView(c));
@@ -1442,6 +1472,7 @@
     currentCase = c;
     $("#openCaseName").textContent = "Unlock " + c.name;
     $("#openCaseImg").src = c.image;
+    $("#keyNote").classList.toggle("hidden", !keyRequired(c));
     containsGrid.innerHTML = "";
     const map = itemsByRarity(c);
     rarityOrderFor(c).forEach(r => {
@@ -1479,8 +1510,8 @@
       openBtn.disabled = spinning || !claimable;
       return;
     }
-    const price = casePrice(currentCase);
-    const totalCost = price != null ? price * openAmount : null;
+    const unitCost = totalOpenCost(currentCase);
+    const totalCost = unitCost != null ? unitCost * openAmount : null;
     const label = openAmount === 1 ? "Open Container" : `Open ${openAmount} Containers`;
     const costLabel = totalCost != null ? ` <span class="cost">(${fmtPrice(totalCost)})</span>` : "";
     openBtn.innerHTML = label + costLabel;
@@ -1504,7 +1535,7 @@
     const map = itemsByRarity(currentCase);
     const allItems = rarityOrderFor(currentCase).flatMap(r => map[r] || []);
     for (let i = 0; i < TOTAL; i++){
-      const it = (i === WIN_INDEX) ? winningItem : allItems[Math.floor(Math.random()*allItems.length)];
+      const it = (i === WIN_INDEX) ? winningItem : pickFromPool(allItems);
       const card = document.createElement("div");
       card.className = "reel-card" + (isRare(it) ? " is-rare" : "");
       card.style.borderBottomColor = it.color || "#4b69ff";
@@ -1612,8 +1643,8 @@
   openBtn.addEventListener("click", () => {
     if (spinning || !currentCase) return;
     if (isDailyCase(currentCase) && !canClaimDaily()) return;
-    const price = isDailyCase(currentCase) ? null : casePrice(currentCase);
-    const totalCost = price != null ? price * openAmount : null;
+    const unitCost = totalOpenCost(currentCase);
+    const totalCost = unitCost != null ? unitCost * openAmount : null;
     if (totalCost != null && getBalance() < totalCost) return;
     if (totalCost != null) addBalance(-totalCost);
 
@@ -1968,12 +1999,12 @@
     sel.innerHTML = "";
     const list = CASES.filter(c => c.kind !== "capsule" && !isDailyCase(c))
       .slice()
-      .sort((a, b) => (casePrice(a) || 0) - (casePrice(b) || 0));
+      .sort((a, b) => (totalOpenCost(a) || 0) - (totalOpenCost(b) || 0));
     list.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.id;
-      const p = casePrice(c);
-      opt.textContent = c.name + (p != null ? ` (${fmtPrice(p)})` : "");
+      const p = totalOpenCost(c);
+      opt.textContent = c.name + (p != null ? ` (${fmtPrice(p)}${keyRequired(c) ? " incl. key" : ""})` : "");
       sel.appendChild(opt);
     });
     if (prevVal && list.some(c => c.id === prevVal)) sel.value = prevVal;
@@ -1990,10 +2021,10 @@
     const btn = $("#battleStartBtn");
     if (!btn) return;
     if (!c){ btn.textContent = "Start Battle"; btn.disabled = true; return; }
-    const price = casePrice(c);
-    const cost = price != null ? price * battleRounds : 0;
+    const unitCost = totalOpenCost(c);
+    const cost = unitCost != null ? unitCost * battleRounds : 0;
     btn.textContent = "Start Battle (" + fmtPrice(cost) + ")";
-    btn.disabled = spinning || (price != null && getBalance() < cost);
+    btn.disabled = spinning || (unitCost != null && getBalance() < cost);
   }
 
   $("#battleCaseSelect").addEventListener("change", updateBattleStartLabel);
@@ -2009,9 +2040,9 @@
   function runBattle(){
     const c = getSelectedBattleCase();
     if (!c || spinning) return;
-    const price = casePrice(c);
-    const cost = price != null ? price * battleRounds : 0;
-    if (price != null && getBalance() < cost) return;
+    const unitCost = totalOpenCost(c);
+    const cost = unitCost != null ? unitCost * battleRounds : 0;
+    if (unitCost != null && getBalance() < cost) return;
     if (cost > 0) addBalance(-cost);
 
     spinning = true;
@@ -2147,17 +2178,19 @@
   // ==================================================================
   const CK_KEY = "cs2sim_clicker_v1";
 
+  // cps values intentionally tiny - the clicker is a side trickle, not a way to get rich.
+  // Case gambling (with real stakes/odds) is meant to be the actual way to make real money.
   const BUILDINGS = [
-    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.01,  color:"#9fb2c9", maxOwned:10 },
-    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.04,  color:"#5e98d9", maxOwned:10 },
-    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.15,  color:"#4b69ff", maxOwned:10 },
-    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.55,  color:"#8847ff", maxOwned:10 },
-    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:2,     color:"#d32ce6", maxOwned:10 },
-    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:7,     color:"#eb4b4b", maxOwned:5 },
-    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:24,    color:"#e4ae39", maxOwned:5 },
-    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:80,    color:"#ff8a3d", maxOwned:5 },
-    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:250,   color:"#ff5555", maxOwned:5 },
-    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:700,   color:"#ffe066", maxOwned:5 }
+    { id:"mom-card",         name:"Mom's Credit Card",       flavor:"She'll never notice.",                    baseCost:2,       cps:0.00001, color:"#9fb2c9", maxOwned:10 },
+    { id:"part-time",        name:"Part-Time Job",           flavor:"Minimum wage, maximum dedication.",       baseCost:8,       cps:0.00004, color:"#5e98d9", maxOwned:10 },
+    { id:"trading-bot",      name:"Skin Trading Bot",        flavor:"Flips knives while you sleep.",           baseCost:30,      cps:0.00015, color:"#4b69ff", maxOwned:10 },
+    { id:"market-flip",      name:"Market Flipper",          flavor:"Buy low, sell to bots.",                  baseCost:120,     cps:0.00055, color:"#8847ff", maxOwned:10 },
+    { id:"case-farm",        name:"Case Farm",               flavor:"A warehouse. Just cases. So many cases.", baseCost:450,     cps:0.002,   color:"#d32ce6", maxOwned:10 },
+    { id:"twitch-donos",     name:"Twitch Donations",        flavor:"Strangers fund your addiction.",          baseCost:1600,    cps:0.007,   color:"#eb4b4b", maxOwned:5 },
+    { id:"gambling-sponsor", name:"Gambling Sponsorship",    flavor:"“It's skins, not gambling.”",   baseCost:5500,    cps:0.024,   color:"#e4ae39", maxOwned:5 },
+    { id:"loan-shark",       name:"Loan Shark",              flavor:"What's the worst that could happen.",     baseCost:18000,   cps:0.08,    color:"#ff8a3d", maxOwned:5 },
+    { id:"offshore-ring",    name:"Offshore Trading Ring",   flavor:"Definitely legal. Probably.",             baseCost:55000,   cps:0.25,    color:"#ff5555", maxOwned:5 },
+    { id:"whale-investor",   name:"Whale Investor",          flavor:"One guy. Unlimited funds. No questions.", baseCost:150000,  cps:0.7,     color:"#ffe066", maxOwned:5 }
   ];
 
   const CLICK_UPGRADES = [
@@ -2207,7 +2240,8 @@
     return sign + "$" + v.toFixed(2) + units[u];
   }
 
-  const MAX_CPS = 1000;
+  const MAX_CPS = 5;          // idle income hard cap - was 1000, cut 200x so the clicker can't outpace gambling
+  const MAX_CLICK_VALUE = 0.10; // manual clicking was completely uncapped before (could hit ~$3000/click fully upgraded)
 
   function buildingCost(b, n){ return Math.ceil(b.baseCost * Math.pow(1.15, n)); }
   function roomLeft(b){ return Math.max(0, (b.maxOwned || Infinity) - (ckState.owned[b.id] || 0)); }
@@ -2246,7 +2280,7 @@
       if (u.type === "click-mult") mult *= u.value;
     });
     GLOBAL_UPGRADES.forEach(u => { if (ckState.upgrades[u.id]) mult *= u.value; });
-    return add * mult;
+    return Math.min(add * mult, MAX_CLICK_VALUE);
   }
 
   function buyBuilding(b, n, cost){
@@ -2366,7 +2400,8 @@
     $("#ckBalance").textContent = fmtBig(b);
     const cps = currentCps();
     $("#ckCps").textContent = fmtBig(cps) + "/s" + (cps >= MAX_CPS ? " (MAX)" : "");
-    $("#ckClickVal").textContent = fmtBig(currentClickValue());
+    const clickVal = currentClickValue();
+    $("#ckClickVal").textContent = fmtBig(clickVal) + (clickVal >= MAX_CLICK_VALUE ? " (MAX)" : "");
     $("#ckLifetime").textContent = fmtBig(ckState.lifetime);
   }
 
