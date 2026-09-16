@@ -677,6 +677,14 @@
     transition:border-color .15s ease;
   }
   .share-btn:hover{border-color:var(--gold);}
+
+  .reset-btn{
+    position:fixed;left:10px;bottom:10px;z-index:40;
+    background:rgba(21,15,28,.85);border:1px solid var(--line);color:var(--ink-dim);
+    padding:5px 10px;border-radius:5px;font-family:inherit;font-size:.68rem;font-weight:600;
+    cursor:pointer;transition:border-color .15s ease, color .15s ease;
+  }
+  .reset-btn:hover{border-color:#eb4b4b;color:#eb4b4b;}
 </style>
 </head>
 <body>
@@ -777,6 +785,8 @@
     </div>
   </div>
 </div>
+
+<button class="reset-btn" id="resetBtn" title="Reset all progress">↺ Reset</button>
 
 <div class="wrap">
 
@@ -2516,6 +2526,15 @@
     updateSfxToggleUI();
   });
   updateSfxToggleUI();
+
+  $("#resetBtn").addEventListener("click", () => {
+    const ok = confirm("Reset all progress? This wipes your balance, inventory, clicker, achievements and daily streak. This can't be undone.");
+    if (!ok) return;
+    [INV_KEY, BAL_KEY, CK_KEY, STATS_KEY, ACH_KEY, DAILY_KEY].forEach(k => {
+      try { localStorage.removeItem(k); } catch(e){}
+    });
+    location.reload();
+  });
 
   // stats / achievements / daily case
   loadStats();
