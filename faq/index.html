@@ -198,6 +198,98 @@
     border-radius:2px;
   }
 
+  .faq-bomb-trigger{
+    display:inline-block;cursor:pointer;
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .faq-bomb-trigger:hover, .faq-bomb-trigger:focus-visible{
+    transform:scale(1.18) rotate(-8deg);
+    filter:drop-shadow(0 0 6px rgba(107,33,168,.75));
+    outline:none;
+  }
+
+  .ms-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(4,3,6,.72);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .ms-overlay.open{ opacity:1;visibility:visible;pointer-events:auto; }
+  .ms-box{
+    background:#140b1c;
+    border:1px solid rgba(184,140,255,.35);
+    border-radius:10px;
+    padding:16px;
+    width:min(92vw,300px);
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    transform:translateY(10px) scale(.97);
+    transition:transform .2s ease;
+  }
+  .ms-overlay.open .ms-box{ transform:translateY(0) scale(1); }
+  .ms-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .ms-title{
+    font-family:"Permanent Marker",cursive;
+    font-size:1rem;color:#fff;
+    display:flex;align-items:center;gap:6px;
+  }
+  .ms-close{
+    background:none;border:none;color:var(--ink);opacity:.7;
+    font-size:1.3rem;line-height:1;cursor:pointer;padding:2px 8px;
+  }
+  .ms-close:hover{ opacity:1;color:#c98bff; }
+  .ms-toolbar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;font-size:.82rem;color:#d8d2e4;
+  }
+  .ms-toolbar-btns{ display:flex;gap:6px; }
+  .ms-flag-toggle, .ms-reset{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:6px;padding:5px 9px;cursor:pointer;color:var(--ink);
+    font-family:inherit;font-size:.8rem;
+  }
+  .ms-flag-toggle:hover, .ms-reset:hover{ border-color:rgba(184,140,255,.5); }
+  .ms-flag-toggle.active{ background:var(--purple);border-color:var(--purple); }
+  .ms-status{ font-variant-numeric:tabular-nums; }
+
+  .ms-grid{
+    display:grid;
+    gap:3px;
+    background:rgba(255,255,255,.05);
+    padding:4px;border-radius:6px;
+  }
+  .ms-cell{
+    aspect-ratio:1/1;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.72rem;font-weight:700;
+    color:#fff;cursor:pointer;
+    padding:0;
+    font-family:"Chakra Petch",system-ui,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    transition:background .12s ease;
+  }
+  .ms-cell:hover{ background:rgba(255,255,255,.14); }
+  .ms-cell.revealed{ background:rgba(0,0,0,.35);cursor:default; }
+  .ms-cell.revealed:hover{ background:rgba(0,0,0,.35); }
+  .ms-cell.mine{ background:rgba(178,38,38,.55); }
+  .ms-cell.flagged{ background:rgba(107,33,168,.35); }
+  .ms-cell.n1{ color:#8ec9ff; }
+  .ms-cell.n2{ color:#8fe3a0; }
+  .ms-cell.n3{ color:#ff9f8e; }
+  .ms-cell.n4{ color:#c99bff; }
+  .ms-cell.n5{ color:#ffcf7a; }
+  .ms-cell.n6{ color:#7ae3e3; }
+  .ms-cell.n7{ color:#f4f1ec; }
+  .ms-cell.n8{ color:#a99fc2; }
+
   .spec-list{
     display:flex;flex-direction:column;gap:8px;
     list-style:none;margin:0;padding:0;
@@ -422,7 +514,7 @@
     <div class="faq-col left">
       <details class="faq-item">
         <summary>Who are you?<span class="faq-icon"></span></summary>
-        <div class="faq-answer">Some random dude, idk.</div>
+        <div class="faq-answer">Some random dude, idk. <span class="faq-bomb-trigger" id="bombTrigger" role="button" tabindex="0" aria-label="Open mini minesweeper" title="???">💣</span></div>
       </details>
       <details class="faq-item">
         <summary>Where can I follow you?<span class="faq-icon"></span></summary>
@@ -455,6 +547,23 @@
           </ul>
         </div>
       </details>
+    </div>
+  </div>
+
+  <div class="ms-overlay" id="msOverlay" role="dialog" aria-modal="true" aria-label="Mini minesweeper">
+    <div class="ms-box">
+      <div class="ms-header">
+        <div class="ms-title">💣 démineur</div>
+        <button type="button" class="ms-close" id="msClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="ms-toolbar">
+        <span class="ms-status" id="msStatus">10 💣</span>
+        <div class="ms-toolbar-btns">
+          <button type="button" class="ms-flag-toggle" id="msFlagToggle">🚩 flag</button>
+          <button type="button" class="ms-reset" id="msReset">↺ reset</button>
+        </div>
+      </div>
+      <div class="ms-grid" id="msGrid"></div>
     </div>
   </div>
 
@@ -584,6 +693,181 @@ sideMenu.addEventListener("click", (e) => {
     e.preventDefault();
     document.body.classList.remove("page-loaded");
     setTimeout(function(){ location.href = url.href; }, reduced ? 0 : 320);
+  });
+})();
+</script>
+<script>
+(function(){
+  var trigger = document.getElementById("bombTrigger");
+  var overlay = document.getElementById("msOverlay");
+  var closeBtn = document.getElementById("msClose");
+  var grid = document.getElementById("msGrid");
+  var statusEl = document.getElementById("msStatus");
+  var resetBtn = document.getElementById("msReset");
+  var flagToggle = document.getElementById("msFlagToggle");
+  if (!trigger || !overlay || !grid) return;
+
+  var COLS = 8, ROWS = 8, MINES = 10;
+  var cells = [];
+  var started = false;
+  var gameOver = false;
+  var flagMode = false;
+  var revealedCount = 0;
+  var built = false;
+
+  function idx(r, c){ return r * COLS + c; }
+
+  function forEachNeighbor(r, c, fn){
+    for (var dr = -1; dr <= 1; dr++){
+      for (var dc = -1; dc <= 1; dc++){
+        if (dr === 0 && dc === 0) continue;
+        var nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) fn(nr, nc);
+      }
+    }
+  }
+
+  function cellBtn(r, c){ return grid.children[idx(r, c)]; }
+
+  function newGame(){
+    gameOver = false;
+    started = false;
+    revealedCount = 0;
+    cells = [];
+    for (var i = 0; i < ROWS * COLS; i++){
+      cells.push({ mine:false, revealed:false, flagged:false, adj:0 });
+    }
+    statusEl.textContent = MINES + " 💣";
+    grid.innerHTML = "";
+    grid.style.gridTemplateColumns = "repeat(" + COLS + ",1fr)";
+    for (var r = 0; r < ROWS; r++){
+      for (var c = 0; c < COLS; c++){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ms-cell";
+        btn.dataset.r = r;
+        btn.dataset.c = c;
+        btn.addEventListener("click", onCellClick);
+        btn.addEventListener("contextmenu", onCellFlag);
+        grid.appendChild(btn);
+      }
+    }
+    built = true;
+  }
+
+  function placeMines(excludeR, excludeC){
+    var placed = 0;
+    while (placed < MINES){
+      var r = Math.floor(Math.random() * ROWS);
+      var c = Math.floor(Math.random() * COLS);
+      if (Math.abs(r - excludeR) <= 1 && Math.abs(c - excludeC) <= 1) continue;
+      var cell = cells[idx(r, c)];
+      if (cell.mine) continue;
+      cell.mine = true;
+      placed++;
+    }
+    for (var rr = 0; rr < ROWS; rr++){
+      for (var cc = 0; cc < COLS; cc++){
+        var cell2 = cells[idx(rr, cc)];
+        if (cell2.mine) continue;
+        var n = 0;
+        forEachNeighbor(rr, cc, function(nr, nc){ if (cells[idx(nr, nc)].mine) n++; });
+        cell2.adj = n;
+      }
+    }
+    started = true;
+  }
+
+  function reveal(r, c){
+    var cell = cells[idx(r, c)];
+    if (cell.revealed || cell.flagged) return;
+    cell.revealed = true;
+    revealedCount++;
+    var btn = cellBtn(r, c);
+    btn.classList.add("revealed");
+    if (cell.mine){
+      btn.classList.add("mine");
+      btn.textContent = "💣";
+      endGame(false);
+      return;
+    }
+    if (cell.adj > 0){
+      btn.textContent = cell.adj;
+      btn.classList.add("n" + cell.adj);
+    } else {
+      forEachNeighbor(r, c, function(nr, nc){ reveal(nr, nc); });
+    }
+  }
+
+  function toggleFlag(btn, cell){
+    cell.flagged = !cell.flagged;
+    btn.classList.toggle("flagged", cell.flagged);
+    btn.textContent = cell.flagged ? "🚩" : "";
+    var flaggedCount = 0;
+    for (var i = 0; i < cells.length; i++) if (cells[i].flagged) flaggedCount++;
+    if (!gameOver) statusEl.textContent = (MINES - flaggedCount) + " 💣";
+  }
+
+  function checkWin(){
+    if (revealedCount === ROWS * COLS - MINES) endGame(true);
+  }
+
+  function endGame(won){
+    gameOver = true;
+    for (var i = 0; i < cells.length; i++){
+      var cell = cells[i];
+      if (cell.mine){
+        var btn = grid.children[i];
+        if (!btn.classList.contains("revealed")){
+          btn.classList.add("revealed", "mine");
+          btn.textContent = "💣";
+        }
+      }
+    }
+    statusEl.textContent = won ? "gg 🎉" : "boom 💥";
+  }
+
+  function onCellClick(){
+    if (gameOver) return;
+    var r = +this.dataset.r, c = +this.dataset.c;
+    var cell = cells[idx(r, c)];
+    if (cell.flagged || cell.revealed) return;
+    if (flagMode){ toggleFlag(this, cell); return; }
+    if (!started) placeMines(r, c);
+    reveal(r, c);
+    checkWin();
+  }
+
+  function onCellFlag(e){
+    e.preventDefault();
+    if (gameOver) return;
+    var r = +this.dataset.r, c = +this.dataset.c;
+    var cell = cells[idx(r, c)];
+    if (cell.revealed) return;
+    toggleFlag(this, cell);
+  }
+
+  function openModal(){
+    if (!built) newGame();
+    overlay.classList.add("open");
+  }
+  function closeModal(){
+    overlay.classList.remove("open");
+  }
+
+  trigger.addEventListener("click", openModal);
+  trigger.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openModal(); }
+  });
+  closeBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", function(e){ if (e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+  });
+  resetBtn.addEventListener("click", newGame);
+  flagToggle.addEventListener("click", function(){
+    flagMode = !flagMode;
+    flagToggle.classList.toggle("active", flagMode);
   });
 })();
 </script>
