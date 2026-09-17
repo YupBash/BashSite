@@ -670,6 +670,67 @@
   .battle-totals{display:flex;justify-content:center;gap:30px;margin-top:14px;}
   .battle-totals .bt-val{font-size:1.1rem;font-weight:700;}
 
+  /* mines view */
+  .mines-setup{
+    display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;
+  }
+  .mines-field label{display:block;font-size:.72rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .mines-field input{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 12px;border-radius:6px;font-family:inherit;font-size:.9rem;width:110px;
+  }
+  .mines-field input:focus{outline:none;border-color:var(--gold);}
+  .mines-bet-presets{display:flex;gap:6px;}
+  .mines-bet-presets button{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    padding:9px 14px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .mines-bet-presets button:hover{color:var(--ink);border-color:var(--gold);}
+  .mines-start-btn{
+    background:var(--gold);color:var(--gold-ink);border:none;border-radius:6px;
+    padding:11px 26px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;
+  }
+  .mines-start-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .mines-status{
+    display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 18px;margin-bottom:20px;
+  }
+  .mines-status-item{font-size:.72rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;}
+  .mines-status-item strong{display:block;font-size:1.05rem;color:var(--ink);margin-top:2px;font-family:"Chakra Petch",sans-serif;text-transform:none;letter-spacing:0;}
+  .mines-status-item.money strong{color:#8ee08e;}
+  .mines-cashout-btn{
+    margin-left:auto;background:#8ee08e;color:#0c1f0c;border:none;border-radius:6px;
+    padding:11px 26px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;
+  }
+  .mines-cashout-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .mines-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    max-width:280px;margin:0 auto 24px;
+  }
+  .mines-cell{
+    aspect-ratio:1/1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;
+    transition:border-color .15s ease, transform .12s ease, background .15s ease;
+  }
+  .mines-cell:hover:not(.revealed):not(.disabled){border-color:var(--gold);transform:translateY(-2px);}
+  .mines-cell.disabled{cursor:not-allowed;}
+  .mines-cell.safe{background:rgba(142,224,142,.15);border-color:#8ee08e;}
+  .mines-cell.bomb{background:rgba(235,75,75,.18);border-color:#eb4b4b;}
+
+  .mines-result{
+    text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:24px;margin-top:8px;
+  }
+  .mines-result-title{font-family:"Permanent Marker",cursive;font-size:1.4rem;margin-bottom:6px;}
+  .mines-result-title.win{color:#8ee08e;}
+  .mines-result-title.lose{color:#eb4b4b;}
+  .mines-result-sub{color:var(--ink-dim);font-size:.9rem;margin-bottom:16px;}
+
   /* share/export button */
   .share-btn{
     background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;
@@ -696,6 +757,7 @@
     <button id="tabCases" class="active">Cases</button>
     <button id="tabBattle">Battle</button>
     <button id="tabTradeup">Trade-Up</button>
+    <button id="tabMines">Mines</button>
     <button id="tabInventory">Inventory</button>
     <button id="achToggle" class="ach-toggle" title="Achievements" aria-label="Achievements">🏆</button>
     <button id="sfxToggle" class="sfx-toggle" title="Toggle sound" aria-label="Toggle sound">🔊</button>
@@ -944,6 +1006,40 @@
         <button id="battleAgainBtn" class="primary">Battle Again</button>
         <button id="battleToInventoryBtn">View Inventory</button>
       </div>
+    </div>
+  </div>
+
+  <div id="view-mines" class="view">
+    <h1>Mines</h1>
+    <p class="sub">4 boxes, 2 bombs. Every safe pick raises your multiplier — cash out before you find one.</p>
+
+    <div class="mines-setup" id="minesSetup">
+      <div class="mines-field">
+        <label>Bet</label>
+        <input type="number" id="minesBetInput" min="0.10" step="0.10" value="1.00">
+      </div>
+      <div class="mines-bet-presets">
+        <button type="button" data-bet="1">$1</button>
+        <button type="button" data-bet="5">$5</button>
+        <button type="button" data-bet="25">$25</button>
+        <button type="button" data-bet="max">Max</button>
+      </div>
+      <button class="mines-start-btn" id="minesStartBtn">Place Bet</button>
+    </div>
+
+    <div class="mines-status hidden" id="minesStatusBar">
+      <div class="mines-status-item">Bet<strong id="minesStatusBet">$0.00</strong></div>
+      <div class="mines-status-item">Multiplier<strong id="minesStatusMult">1.00x</strong></div>
+      <div class="mines-status-item money">Payout<strong id="minesStatusPayout">$0.00</strong></div>
+      <button class="mines-cashout-btn" id="minesCashoutBtn" disabled>Cash Out</button>
+    </div>
+
+    <div class="mines-grid" id="minesGrid"></div>
+
+    <div class="mines-result hidden" id="minesResult">
+      <div class="mines-result-title" id="minesResultTitle"></div>
+      <div class="mines-result-sub" id="minesResultSub"></div>
+      <button class="mines-start-btn" id="minesPlayAgainBtn">Play Again</button>
     </div>
   </div>
 
@@ -1349,6 +1445,7 @@
     const amt = document.getElementById("walletAmount");
     if (amt) amt.textContent = fmtCompact(b);
     if (currentCase) refreshOpenButton();
+    if (typeof updateMinesStartLabel === "function") updateMinesStartLabel();
   }
 
   const $ = (sel) => document.querySelector(sel);
@@ -2143,14 +2240,192 @@
     switchView("inventory");
   });
 
+  // --- Mines: 4 boxes, 2 bombs, cash out anytime. Payout is the fair
+  // sequential-reveal multiplier times a 5% house edge (same idea as the
+  // real thing - the edge lives in the multiplier, not in rigged picks).
+  const MINES_SIZE = 4;
+  const MINES_BOMBS = 2;
+  const MINES_EDGE = 0.95;
+  let minesActive = false;
+  let minesBet = 0;
+  let minesBoard = []; // {bomb, revealed}
+  let minesSafeFound = 0;
+
+  function minesFairMultiplier(safeCount){
+    let m = 1;
+    for (let i = 0; i < safeCount; i++){
+      m *= (MINES_SIZE - i) / (MINES_SIZE - i - MINES_BOMBS);
+    }
+    return m;
+  }
+  function minesPayoutMultiplier(safeCount){
+    return minesFairMultiplier(safeCount) * MINES_EDGE;
+  }
+
+  function minesReadBet(){
+    const input = $("#minesBetInput");
+    let v = parseFloat(input.value);
+    if (isNaN(v) || v <= 0) v = 0;
+    return Math.round(v * 100) / 100;
+  }
+
+  function renderMinesIdleGrid(){
+    const grid = $("#minesGrid");
+    grid.innerHTML = "";
+    for (let i = 0; i < MINES_SIZE; i++){
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "mines-cell disabled";
+      cell.textContent = "";
+      grid.appendChild(cell);
+    }
+  }
+
+  function updateMinesStatusBar(){
+    $("#minesStatusBet").textContent = fmtPrice(minesBet);
+    if (minesSafeFound === 0){
+      $("#minesStatusMult").textContent = "—";
+      $("#minesStatusPayout").textContent = "—";
+    } else {
+      const mult = minesPayoutMultiplier(minesSafeFound);
+      $("#minesStatusMult").textContent = mult.toFixed(2) + "x";
+      $("#minesStatusPayout").textContent = fmtPrice(minesBet * mult);
+    }
+    $("#minesCashoutBtn").disabled = !minesActive || minesSafeFound === 0;
+  }
+
+  function startMinesRound(){
+    const bet = minesReadBet();
+    if (bet <= 0 || bet > getBalance() + 0.005 || minesActive) return;
+    minesBet = bet;
+    addBalance(-bet);
+    minesActive = true;
+    minesSafeFound = 0;
+    const bombIdx = new Set();
+    while (bombIdx.size < MINES_BOMBS){
+      bombIdx.add(Math.floor(Math.random() * MINES_SIZE));
+    }
+    minesBoard = Array.from({ length: MINES_SIZE }, (_, i) => ({ bomb: bombIdx.has(i), revealed: false }));
+
+    $("#minesResult").classList.add("hidden");
+    $("#minesSetup").classList.add("hidden");
+    $("#minesStatusBar").classList.remove("hidden");
+    updateMinesStatusBar();
+
+    const grid = $("#minesGrid");
+    grid.innerHTML = "";
+    minesBoard.forEach((cellState, i) => {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "mines-cell";
+      cell.dataset.i = i;
+      cell.addEventListener("click", () => onMinesCellClick(i));
+      grid.appendChild(cell);
+    });
+  }
+
+  function onMinesCellClick(i){
+    if (!minesActive) return;
+    const cellState = minesBoard[i];
+    if (cellState.revealed) return;
+    cellState.revealed = true;
+    const cellEl = $("#minesGrid").children[i];
+    if (cellState.bomb){
+      cellEl.classList.add("bomb");
+      cellEl.textContent = "💣";
+      endMinesRound(false);
+      return;
+    }
+    cellEl.classList.add("safe");
+    cellEl.textContent = "$";
+    minesSafeFound++;
+    updateMinesStatusBar();
+    if (minesSafeFound >= MINES_SIZE - MINES_BOMBS){
+      endMinesRound(true);
+    }
+  }
+
+  function cashOutMines(){
+    if (!minesActive || minesSafeFound === 0) return;
+    endMinesRound(true);
+  }
+
+  function endMinesRound(won){
+    minesActive = false;
+    const mult = minesPayoutMultiplier(minesSafeFound);
+    const payout = won ? minesBet * mult : 0;
+    minesBoard.forEach((cellState, i) => {
+      const cellEl = $("#minesGrid").children[i];
+      if (!cellState.revealed){
+        cellEl.classList.add("disabled");
+        if (cellState.bomb){
+          cellEl.classList.add("bomb");
+          cellEl.textContent = "💣";
+        } else {
+          cellEl.classList.add("safe");
+          cellEl.textContent = "$";
+        }
+      } else {
+        cellEl.classList.add("disabled");
+      }
+    });
+    if (won) addBalance(payout);
+    $("#minesCashoutBtn").disabled = true;
+
+    const titleEl = $("#minesResultTitle");
+    const subEl = $("#minesResultSub");
+    if (won){
+      titleEl.textContent = "Cashed out " + fmtPrice(payout);
+      titleEl.className = "mines-result-title win";
+      subEl.textContent = mult.toFixed(2) + "x on a " + fmtPrice(minesBet) + " bet.";
+      showToast("Mines: +" + fmtPrice(payout - minesBet));
+    } else {
+      titleEl.textContent = "Boom";
+      titleEl.className = "mines-result-title lose";
+      subEl.textContent = "Hit a bomb — lost " + fmtPrice(minesBet) + ".";
+    }
+    $("#minesResult").classList.remove("hidden");
+  }
+
+  function resetMinesSetup(){
+    minesActive = false;
+    $("#minesResult").classList.add("hidden");
+    $("#minesStatusBar").classList.add("hidden");
+    $("#minesSetup").classList.remove("hidden");
+    renderMinesIdleGrid();
+    updateMinesStartLabel();
+  }
+
+  function updateMinesStartLabel(){
+    const btn = $("#minesStartBtn");
+    if (!btn) return;
+    const bet = minesReadBet();
+    btn.disabled = minesActive || bet <= 0 || bet > getBalance() + 0.005;
+  }
+
+  $("#minesBetInput").addEventListener("input", updateMinesStartLabel);
+  $("#minesStartBtn").addEventListener("click", startMinesRound);
+  $("#minesCashoutBtn").addEventListener("click", cashOutMines);
+  $("#minesPlayAgainBtn").addEventListener("click", resetMinesSetup);
+  document.querySelectorAll(".mines-bet-presets button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const raw = btn.dataset.bet;
+      const bet = raw === "max" ? getBalance() : parseFloat(raw);
+      $("#minesBetInput").value = (Math.max(0, bet)).toFixed(2);
+      updateMinesStartLabel();
+    });
+  });
+  renderMinesIdleGrid();
+
   function switchView(name){
-    ["cases","open","inventory","battle","tradeup"].forEach(v => {
+    ["cases","open","inventory","battle","tradeup","mines"].forEach(v => {
       $("#view-" + v).classList.toggle("active", v === name);
     });
     $("#tabCases").classList.toggle("active", name === "cases" || name === "open");
     $("#tabInventory").classList.toggle("active", name === "inventory");
     $("#tabBattle").classList.toggle("active", name === "battle");
     $("#tabTradeup").classList.toggle("active", name === "tradeup");
+    $("#tabMines").classList.toggle("active", name === "mines");
     if (name === "inventory"){
       renderInventory();
       const backBtn = $("#backFromInventory");
@@ -2169,6 +2444,7 @@
   });
   $("#tabBattle").addEventListener("click", () => switchView("battle"));
   $("#tabTradeup").addEventListener("click", () => switchView("tradeup"));
+  $("#tabMines").addEventListener("click", () => switchView("mines"));
 
   $("#kindFilter").addEventListener("click", (e) => {
     const btn = e.target.closest("button");
