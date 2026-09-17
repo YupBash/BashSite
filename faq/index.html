@@ -223,7 +223,7 @@
     border:1px solid rgba(184,140,255,.35);
     border-radius:10px;
     padding:16px;
-    width:min(92vw,300px);
+    width:min(94vw,340px);
     box-shadow:0 20px 60px rgba(0,0,0,.6);
     transform:translateY(10px) scale(.97);
     transition:transform .2s ease;
@@ -244,18 +244,23 @@
   }
   .ms-close:hover{ opacity:1;color:#c98bff; }
   .ms-toolbar{
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;flex-direction:column;gap:8px;
     margin-bottom:10px;font-size:.82rem;color:#d8d2e4;
   }
-  .ms-toolbar-btns{ display:flex;gap:6px; }
-  .ms-flag-toggle, .ms-reset{
+  .ms-toolbar-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  .ms-toolbar-row:last-child .ms-flag-toggle,
+  .ms-toolbar-row:last-child .ms-reset{ flex:1; }
+  .ms-size-select, .ms-flag-toggle, .ms-reset{
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
     border-radius:6px;padding:5px 9px;cursor:pointer;color:var(--ink);
     font-family:inherit;font-size:.8rem;
   }
-  .ms-flag-toggle:hover, .ms-reset:hover{ border-color:rgba(184,140,255,.5); }
+  .ms-size-select{ color-scheme:dark; }
+  .ms-flag-toggle:hover, .ms-reset:hover, .ms-size-select:hover{ border-color:rgba(184,140,255,.5); }
   .ms-flag-toggle.active{ background:var(--purple);border-color:var(--purple); }
-  .ms-status{ font-variant-numeric:tabular-nums; }
+  .ms-status{ font-variant-numeric:tabular-nums;white-space:nowrap; }
 
   .ms-grid{
     display:grid;
@@ -557,8 +562,16 @@
         <button type="button" class="ms-close" id="msClose" aria-label="Close">&times;</button>
       </div>
       <div class="ms-toolbar">
-        <span class="ms-status" id="msStatus">10 💣</span>
-        <div class="ms-toolbar-btns">
+        <div class="ms-toolbar-row">
+          <select class="ms-size-select" id="msSize" aria-label="Grid size">
+            <option value="6:6">6×6 · 6</option>
+            <option value="8:10" selected>8×8 · 10</option>
+            <option value="10:16">10×10 · 16</option>
+            <option value="12:24">12×12 · 24</option>
+          </select>
+          <span class="ms-status" id="msStatus">10 💣</span>
+        </div>
+        <div class="ms-toolbar-row">
           <button type="button" class="ms-flag-toggle" id="msFlagToggle">🚩 flag</button>
           <button type="button" class="ms-reset" id="msReset">↺ reset</button>
         </div>
@@ -705,6 +718,7 @@ sideMenu.addEventListener("click", (e) => {
   var statusEl = document.getElementById("msStatus");
   var resetBtn = document.getElementById("msReset");
   var flagToggle = document.getElementById("msFlagToggle");
+  var sizeSelect = document.getElementById("msSize");
   if (!trigger || !overlay || !grid) return;
 
   var COLS = 8, ROWS = 8, MINES = 10;
@@ -869,6 +883,16 @@ sideMenu.addEventListener("click", (e) => {
     flagMode = !flagMode;
     flagToggle.classList.toggle("active", flagMode);
   });
+  if (sizeSelect){
+    sizeSelect.addEventListener("change", function(){
+      var parts = sizeSelect.value.split(":");
+      var n = parseInt(parts[0], 10);
+      ROWS = n;
+      COLS = n;
+      MINES = parseInt(parts[1], 10);
+      newGame();
+    });
+  }
 })();
 </script>
 <script>
