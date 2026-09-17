@@ -739,10 +739,10 @@
   }
   .share-btn:hover{border-color:var(--gold);}
 
-  .ck-top-actions{display:flex;align-items:center;gap:8px;}
+  .ck-footer{flex-shrink:0;padding:10px 20px;border-top:1px solid var(--line);}
   .reset-btn{
     background:none;border:1px solid var(--line);color:var(--ink-dim);
-    padding:8px 16px;border-radius:6px;font-family:inherit;font-size:.8rem;font-weight:600;
+    padding:6px 14px;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:600;
     cursor:pointer;transition:border-color .15s ease, color .15s ease;
   }
   .reset-btn:hover{border-color:#eb4b4b;color:#eb4b4b;}
@@ -769,10 +769,7 @@
   <div class="clicker-shell">
     <div class="ck-top">
       <h2>BASH Addiction</h2>
-      <div class="ck-top-actions">
-        <button class="reset-btn" id="resetBtn" title="Reset all progress">↺ Reset</button>
-        <button class="modal-close" id="walletClose">Close</button>
-      </div>
+      <button class="modal-close" id="walletClose">Close</button>
     </div>
     <div class="ck-stats">
       <div class="ck-stat money">Balance<strong id="ckBalance">$0.00</strong></div>
@@ -805,6 +802,9 @@
         </div>
         <div class="ck-shop-list" id="shopList"></div>
       </div>
+    </div>
+    <div class="ck-footer">
+      <button class="reset-btn" id="resetBtn" title="Reset all progress">↺ Reset</button>
     </div>
   </div>
 </div>
