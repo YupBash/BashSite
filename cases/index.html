@@ -547,7 +547,7 @@
     background:#eb4b4b;box-shadow:0 0 4px rgba(235,75,75,.8);
   }
 
-  /* global toasts (achievements, offline earnings outside the wallet modal) */
+  /* global toasts (achievements unlocked, etc.) */
   .global-toasts{
     position:fixed;top:16px;left:50%;transform:translateX(-50%);
     z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;
@@ -2424,35 +2424,14 @@
   const clickerBtn = $("#clickerBtn");
 
   loadClickerState();
-
-  // offline earnings
-  (function applyOfflineEarnings(){
-    const elapsed = Math.min((Date.now() - (ckState.lastTick || Date.now())) / 1000, 4 * 3600);
-    if (elapsed > 5){
-      const cps = currentCps();
-      const gain = cps * elapsed;
-      if (gain > 0.01){
-        addBalance(gain);
-        ckState.lifetime += gain;
-        saveClickerState();
-        window._ckOfflineToast = "While you were away: +" + fmtBig(gain);
-      }
-    }
-  })();
+  // no offline earnings on purpose: income should only accrue while the site is actually
+  // open and the tick loop below is running, not retroactively for time the tab was closed
 
   $("#walletBtn").addEventListener("click", () => {
     walletModal.classList.remove("hidden");
     renderCkStats();
     renderShop();
     renderUpgradesBar();
-    if (window._ckOfflineToast){
-      const toast = document.createElement("div");
-      toast.className = "ck-toast";
-      toast.textContent = window._ckOfflineToast;
-      $(".clicker-shell").appendChild(toast);
-      setTimeout(() => toast.remove(), 4000);
-      window._ckOfflineToast = null;
-    }
   });
   $("#walletClose").addEventListener("click", () => { walletModal.classList.add("hidden"); saveClickerState(); });
   walletModal.addEventListener("click", (e) => { if (e.target === walletModal){ walletModal.classList.add("hidden"); saveClickerState(); } });
