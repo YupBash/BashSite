@@ -1180,7 +1180,9 @@
     itemsSold: 0,
     battlesWon: 0,
     battlesPlayed: 0,
-    tradeUpsDone: 0
+    tradeUpsDone: 0,
+    minesPlayed: 0,
+    minesWon: 0
   };
   function loadStats(){
     try {
@@ -1213,7 +1215,9 @@
     { id:"rock-bottom",  icon:"📉", name:"Rock Bottom",       desc:"Sell 100 items.",                           check: s => s.itemsSold >= 100 },
     { id:"warlord",      icon:"⚔️", name:"Warlord",           desc:"Win 10 case battles.",                     check: s => s.battlesWon >= 10 },
     { id:"upgrade-complete", icon:"⬆️", name:"Upgrade Complete", desc:"Complete your first trade-up contract.", check: s => s.tradeUpsDone >= 1 },
-    { id:"loyal-customer", icon:"🔥", name:"Loyal Customer",  desc:"Reach a 7-day daily case streak.",          check: (s, d) => (d ? d.streak : 0) >= 7 }
+    { id:"loyal-customer", icon:"🔥", name:"Loyal Customer",  desc:"Reach a 7-day daily case streak.",          check: (s, d) => (d ? d.streak : 0) >= 7 },
+    { id:"calculated-risk", icon:"💣", name:"Calculated Risk", desc:"Cash out your first Mines round.",          check: s => s.minesWon >= 1 },
+    { id:"bomb-proof",    icon:"🧨", name:"Bomb Proof",       desc:"Win 25 Mines rounds.",                      check: s => s.minesWon >= 25 }
   ];
 
   function checkAchievements(){
@@ -2371,6 +2375,11 @@
     });
     if (won) addBalance(payout);
     $("#minesCashoutBtn").disabled = true;
+
+    stats.minesPlayed++;
+    if (won) stats.minesWon++;
+    saveStats();
+    checkAchievements();
 
     const titleEl = $("#minesResultTitle");
     const subEl = $("#minesResultSub");
