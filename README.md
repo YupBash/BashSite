@@ -25,9 +25,13 @@ Ce fichier est la **mémoire centrale** du projet : à lire en premier avant tou
 ├── assets/
 │   ├── css/tokens.css    Variables (couleurs, marques, easing) + grain — chargé par TOUTES les pages
 │   ├── css/base.css      Mise en page commune des pages vitrine + effets design v2
+│   ├── css/videos.css    Accueil : sortie du hero au scroll, carrousel 3D « Latest videos », outro
 │   ├── js/site.js        JS commun vitrine : hauteur d'écran, menu, transitions, néon, parallax, reveal
+│   ├── js/videos.js      Accueil : scroll (GSAP ScrollTrigger), cartes vidéo depuis videos.json
+│   ├── videos/           videos.json (liste des vidéos) + miniatures <id>.jpg
 │   ├── favicon-anim.js   Favicon animé (frames PNG en base64)
 │   ├── *.webp / *.png    Personnages, fond de menu, icônes, image OpenGraph
+├── tools/add-video.py    Ajoute une vidéo TikTok à la section « Latest videos »
 ├── site.webmanifest      PWA (thème #3a0e5c, fond #08070a)
 ├── sitemap.xml, robots.txt
 └── CNAME
@@ -50,7 +54,10 @@ Ce fichier est la **mémoire centrale** du projet : à lire en premier avant tou
 | Thème | Sombre / violet — variables dans `assets/css/tokens.css` (`--bg`, `--purple`, `--neon`, `--brand-*`…) |
 | Effets visuels | 100 % CSS/JS maison (grain SVG en `data:` URI, aucune image ni lib ajoutée) |
 
-Aucun nouveau connecteur externe n'a été ajouté pendant la refonte : la CSP n'a pas eu à changer.
+| Animations au scroll | **GSAP 3.12.5 + ScrollTrigger** (cdnjs, avec hash SRI) — accueil uniquement |
+| Proxy d'images | **wsrv.nl** — sert les images Steam avec CORS pour l'image de partage (Case Simulator uniquement) |
+
+CSP par page : l'accueil autorise en plus `https://cdnjs.cloudflare.com` (scripts), le Case Simulator `https://wsrv.nl` (images).
 
 ## Case Simulator (`/cases/`)
 
@@ -81,6 +88,22 @@ Tous les effets sont coupés si `prefers-reduced-motion`. **Aucune librairie ext
 - `.neon-letter`, `.sr-only` (texte lu par les lecteurs d'écran derrière le néon) — `base.css`
 - `.stage::after` (brume), `.character::before` (aura), `body::before` (grain, `tokens.css`)
 - Case Simulator : `.wallet-btn.bump-up` / `.bump-down` + fonction `bumpWallet()` (appelée par `updateWalletUI`)
+
+## Accueil : section « Latest videos » (2026-10-23)
+
+L'accueil défile désormais : **hero** (sticky, « BASH » grossit et se dissout, le perso glisse et s'estompe — variable CSS `--hp` 0→1) → **carrousel 3D** des vidéos qui tourne avec le scroll (section sticky, GSAP) → **outro** (boutons TikTok / Instagram / Discord).
+Sans GSAP (CDN bloqué) ou en « réduire les animations » : les vidéos s'affichent en simple grille.
+
+**Ajouter une vidéo** (lien complet `…/video/123…`) :
+```bash
+python3 tools/add-video.py https://www.tiktok.com/@yupbash/video/1234567890
+git add -A && git commit -m "Add video" && git push
+```
+Le script récupère titre + miniature (oEmbed TikTok), garde les 8 plus récentes et supprime les vidéos provisoires (`"placeholder": true`).
+
+## Case Simulator : drop légendaire & partage (2026-10-23)
+- **Drop légendaire** (`showLegendary`, `legendTier`) : ★ couteaux/gants = version complète (or), Covert = version courte (rouge). Flash, secousse, rayons, particules canvas, son `playLegendary`. Une seule fois par ouverture multiple (meilleur drop).
+- **Partage** (`buildShareCanvas`, `shareItemImage`) : image story 1080×1920 avec le vrai skin (via wsrv.nl, repli sur un médaillon), float, prix, URL. Mobile → feuille de partage native ; ordinateur → téléchargement PNG.
 
 ## Déploiement
 
