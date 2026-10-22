@@ -1,0 +1,12 @@
+/* BASH — design tokens shared by every page (vitrine + case simulator). */
+:root{
+    --bg:#08070a;
+    --ink:#f4f1ec;
+    --purple:#6b21a8;
+    --purple-deep:#3a0e5c;
+    --purple-glow:rgba(107,33,168,0.55);
+    --line:#2a2430;
+    --menu-bg:#22072f;
+    --menu-bg-2:#340c47;
+    --menu-text:#e9f7f9;
+  }
