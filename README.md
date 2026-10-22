@@ -64,4 +64,23 @@ Les anciennes sauvegardes sont compatibles : les valeurs par défaut sont fusion
 
 ## Historique des corrections / Sécurité
 
-_(à compléter — Phase 2)_
+### 2026-10-22 — Audit de sécurité (Phase 2)
+
+Pas de serveur ni de PHP → aucune injection SQL ou faille serveur possible. Les risques sont côté navigateur.
+
+**1. XSS via `innerHTML` (Case Simulator) — corrigé**
+- *Faille* : les noms, images, usures et caisses d'origine des items (issus de `cases-data.json` et de la sauvegarde `localStorage`) étaient insérés tels quels dans `innerHTML`. Une sauvegarde ou un JSON piégé (ex. nom = `<img src=x onerror=...>`) exécutait du JavaScript.
+- *Correction* : fonction `esc()` dans `cases/index.html` (à côté de `rareBadgeHtml`), appliquée à toutes les données d'items insérées en HTML. **Règle : toute donnée non codée en dur passe par `esc()` ou `textContent`.**
+- *Vérifié* : payload injecté dans `cs2sim_inventory` → exécuté avant, affiché comme texte après.
+
+**2. Content-Security-Policy + Referrer-Policy — ajoutés sur toutes les pages**
+GitHub Pages ne permet pas d'en-têtes HTTP personnalisés → balises `<meta>` juste après `<meta charset>` :
+```
+default-src 'self'; script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.steamstatic.com;
+connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
+```
+⚠️ **Tout nouveau connecteur externe (CDN, police, API) doit être ajouté à cette CSP sur chaque page**, sinon il sera bloqué. `'unsafe-inline'` reste nécessaire tant que les scripts sont inline.
+
+**Points connus, non traités** : `frame-ancestors` (anti-clickjacking) impossible en `<meta>` sur GitHub Pages ; le solde du jeu est modifiable via la console (sans enjeu : aucun serveur, aucune vraie monnaie).

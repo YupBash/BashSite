@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.steamstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BASH Addiction — Case Simulator</title>
 <meta name="description" content="A CS2 case-opening simulator with real market prices and an idle clicker. Just for fun.">
@@ -1461,6 +1463,10 @@
   const openBtn = $("#openBtn");
 
   function isRare(it){ return it.rarity === "Extraordinary"; }
+  // Escape untrusted text (case data, localStorage saves) before inserting it as HTML.
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+  }
   function rareBadgeHtml(it){ return isRare(it) ? '<div class="rare-badge">★</div>' : ""; }
 
   function itemsByRarity(c){
@@ -1551,7 +1557,7 @@
     const cost = totalOpenCost(c);
     const tag = cost != null ? `<div class="price-tag">${fmtPrice(cost)}${keyRequired(c) ? ' <span title="Needs a $2.50 key to open">🔑</span>' : ""}</div>` : "";
     const kindTag = `<div class="kind-tag">${kindLabel(c)}</div>`;
-    div.innerHTML = `${tag}<img src="${c.image}" alt="" loading="lazy"><div class="name">${c.name}</div>${kindTag}`;
+    div.innerHTML = `${tag}<img src="${esc(c.image)}" alt="" loading="lazy"><div class="name">${esc(c.name)}</div>${kindTag}`;
     div.addEventListener("click", () => openCaseView(c));
     div.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCaseView(c); } });
     return div;
@@ -1594,7 +1600,7 @@
         div.className = "mini-item" + (isRare(it) ? " is-rare" : "");
         div.style.borderBottomColor = it.color || "#4b69ff";
         const priceLabel = poolItemPriceLabel(it, c.kind);
-        div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+        div.innerHTML = `${rareBadgeHtml(it)}<img src="${esc(it.image)}" alt="" loading="lazy"><div class="n">${esc(it.name)}</div>` +
           (priceLabel ? `<div class="price">${priceLabel}</div>` : "");
         containsGrid.appendChild(div);
       });
@@ -1651,7 +1657,7 @@
       const card = document.createElement("div");
       card.className = "reel-card" + (isRare(it) ? " is-rare" : "");
       card.style.borderBottomColor = it.color || "#4b69ff";
-      card.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>`;
+      card.innerHTML = `${rareBadgeHtml(it)}<img src="${esc(it.image)}" alt="" loading="lazy"><div class="n">${esc(it.name)}</div>`;
       track.appendChild(card);
     }
     return { wrap, track, WIN_INDEX };
@@ -1741,7 +1747,7 @@
       const div = document.createElement("div");
       div.className = "batch-item" + (isRare(it) ? " is-rare" : "");
       div.style.borderBottomColor = it.color || "#4b69ff";
-      div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>` +
+      div.innerHTML = `${rareBadgeHtml(it)}<img src="${esc(it.image)}" alt="" loading="lazy"><div class="n">${esc(it.name)}</div>` +
         (price != null ? `<div class="price">${fmtPrice(price)}</div>` : "");
       grid.appendChild(div);
     });
@@ -1871,8 +1877,8 @@
       div.className = "inv-item" + (isRare(it) ? " is-rare" : "");
       div.style.borderBottomColor = it.color || "#4b69ff";
       const price = dropPrice(it);
-      const wearLine = it.kind === "capsule" ? "" : `<div class="w">${it.wear}</div>`;
-      div.innerHTML = `${rareBadgeHtml(it)}<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}` +
+      const wearLine = it.kind === "capsule" ? "" : `<div class="w">${esc(it.wear)}</div>`;
+      div.innerHTML = `${rareBadgeHtml(it)}<img src="${esc(it.image)}" alt="" loading="lazy"><div class="n">${esc(it.name)}</div>${wearLine}` +
         (price != null ? `<div class="price">${fmtPrice(price)}</div><button class="inv-sell" data-idx="${idx}">Sell for ${fmtPrice(price)}</button>` : "");
       div.addEventListener("click", (e) => {
         if (e.target.closest(".inv-sell")) return;
@@ -1913,7 +1919,7 @@
       statsHtml += `<div class="stat">Paint Seed<strong>${it.seed}</strong></div>`;
     }
     if (it.caseName){
-      statsHtml += `<div class="stat">From<strong>${it.caseName}</strong></div>`;
+      statsHtml += `<div class="stat">From<strong>${esc(it.caseName)}</strong></div>`;
     }
     $("#inspectStats").innerHTML = statsHtml;
 
@@ -1995,9 +2001,9 @@
         const div = document.createElement("div");
         div.className = "tradeup-item" + (selected ? " selected" : "") + ((!eligible || blocked) ? " disabled" : "");
         div.style.borderBottomColor = it.color || "#4b69ff";
-        const wearLine = it.kind === "capsule" ? "" : `<div class="w">${it.wear || ""}</div>`;
+        const wearLine = it.kind === "capsule" ? "" : `<div class="w">${esc(it.wear || "")}</div>`;
         div.innerHTML = (selected ? '<div class="tradeup-check">✓</div>' : "") +
-          `<img src="${it.image}" alt="" loading="lazy"><div class="n">${it.name}</div>${wearLine}`;
+          `<img src="${esc(it.image)}" alt="" loading="lazy"><div class="n">${esc(it.name)}</div>${wearLine}`;
         if (eligible && !blocked){
           div.addEventListener("click", () => {
             const pos = tradeupSelected.indexOf(idx);
@@ -2928,7 +2934,7 @@
     PRICES = prices;
     renderBigCaseGrid();
     renderCaseGrid();
-  }).catch(err => { caseGrid.innerHTML = '<p style="color:#eb4b4b">Failed to load case data: ' + err + '</p>'; });
+  }).catch(err => { caseGrid.innerHTML = '<p style="color:#eb4b4b">Failed to load case data: ' + esc(err) + '</p>'; });
 })();
 </script>
 </body>
