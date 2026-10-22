@@ -46,8 +46,11 @@ Ce fichier est la **mémoire centrale** du projet : à lire en premier avant tou
 |---|---|
 | Polices | Google Fonts : **Chakra Petch** (400–700), **Permanent Marker** |
 | Images des skins | CDN Steam (`community.akamai.steamstatic.com`) |
-| JS | Vanilla, aucune librairie |
-| Thème | Sombre / violet (`#08070a`, `#3a0e5c`) |
+| JS | Vanilla, aucune librairie (`assets/js/site.js` + scripts inline) |
+| Thème | Sombre / violet — variables dans `assets/css/tokens.css` (`--bg`, `--purple`, `--neon`, `--brand-*`…) |
+| Effets visuels | 100 % CSS/JS maison (grain SVG en `data:` URI, aucune image ni lib ajoutée) |
+
+Aucun nouveau connecteur externe n'a été ajouté pendant la refonte : la CSP n'a pas eu à changer.
 
 ## Case Simulator (`/cases/`)
 
@@ -62,6 +65,7 @@ Les anciennes sauvegardes sont compatibles : les valeurs par défaut sont fusion
 Identité conservée (noir/violet, personnage, Permanent Marker + Chakra Petch). Sauvegarde de l'ancien design : tag et branche **`design-v1`**.
 
 Hooks HTML à connaître :
+
 | Attribut | Effet (site.js + base.css) |
 |---|---|
 | `data-neon` | Le texte s'allume lettre par lettre façon néon, grésillement périodique, glitch au survol |
@@ -73,10 +77,28 @@ Tous les effets sont coupés si `prefers-reduced-motion`. **Aucune librairie ext
 
 **Revenir à l'ancien design** : `git revert <commits design v2>` ou redéployer la branche `design-v1`.
 
+### Nouvelles classes / sélecteurs
+- `.neon-letter`, `.sr-only` (texte lu par les lecteurs d'écran derrière le néon) — `base.css`
+- `.stage::after` (brume), `.character::before` (aura), `body::before` (grain, `tokens.css`)
+- Case Simulator : `.wallet-btn.bump-up` / `.bump-down` + fonction `bumpWallet()` (appelée par `updateWalletUI`)
+
 ## Déploiement
 
-1. Modifier les fichiers, tester localement : `python3 -m http.server 8000` puis http://localhost:8000 (nécessaire pour que `fetch()` des JSON fonctionne).
-2. `git push origin main` → GitHub Pages publie automatiquement.
+1. **Tester en local** (obligatoire pour que les `fetch()` JSON fonctionnent) :
+   ```bash
+   cd BashSite && python3 -m http.server 8000   # puis http://localhost:8000
+   ```
+2. **Vérifier** : ordinateur + mobile (outils dev du navigateur), console sans erreur ni violation CSP, menu, une ouverture de caisse.
+3. **Publier** : `git push origin main` → GitHub Pages met le site à jour en 1–2 min sur https://yupbash.vip.
+4. **Annuler** : `git revert <commit>` puis push (jamais de `push --force` sur `main` sans sauvegarde).
+
+Authentification Git sur ce Mac : `gh auth login` (déjà fait, compte YupBash).
+
+### Ajouter une nouvelle page vitrine
+1. Copier `socials/index.html` dans `nouvelle-page/index.html` (garder les `<meta>` CSP/referrer en tête).
+2. Garder les liens `tokens.css`, `base.css` et `site.js` ; mettre le style propre à la page dans son `<style>`.
+3. Ajouter le lien dans le menu latéral des 3 pages (`index`, `faq`, `socials`) et l'URL dans `sitemap.xml`.
+4. Toute ressource externe → l'ajouter à la CSP de **chaque** page.
 
 ## Règles de collaboration
 
@@ -105,3 +127,9 @@ connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
 ⚠️ **Tout nouveau connecteur externe (CDN, police, API) doit être ajouté à cette CSP sur chaque page**, sinon il sera bloqué. `'unsafe-inline'` reste nécessaire tant que les scripts sont inline.
 
 **Points connus, non traités** : `frame-ancestors` (anti-clickjacking) impossible en `<meta>` sur GitHub Pages ; le solde du jeu est modifiable via la console (sans enjeu : aucun serveur, aucune vraie monnaie).
+
+### 2026-10-22 — Revue finale (Phase 4)
+- Intégration vérifiée : la CSP n'a rien bloqué après la refonte (0 violation sur les 5 pages), les 15 liens et ressources internes répondent 200, le jeu fonctionne (ouverture de caisse, inventaire, solde).
+- **Corrigé** : après un retour arrière du navigateur, la page pouvait rester invisible (fondu de sortie restauré depuis le cache) → `site.js` ré-affiche la page sur `pageshow`.
+- **Corrigé** : le mot « BASH » découpé en lettres pour le néon restait lisible par les lecteurs d'écran grâce à un texte `.sr-only`.
+- Vérifié : menu au clavier (Entrée / Échap), mode « réduire les animations » (tout est figé et visible).

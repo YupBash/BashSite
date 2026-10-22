@@ -127,8 +127,11 @@
   /* --- neon wordmark: letters light up one by one (CSS does the animation) --- */
   document.querySelectorAll("[data-neon]").forEach(function(el){
     var text = el.textContent;
-    el.setAttribute("aria-label", text);
     el.textContent = "";
+    var label = document.createElement("span");
+    label.className = "sr-only";
+    label.textContent = text;
+    el.appendChild(label);
     Array.prototype.forEach.call(text, function(ch, i){
       var s = document.createElement("span");
       s.className = "neon-letter";

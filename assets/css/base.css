@@ -185,6 +185,12 @@
   to{ transform:translate3d(3%,-2%,0) scale(1.08); }
 }
 
+/* Text for screen readers only (e.g. the word behind the split neon letters). */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
 /* Neon wordmark: letters flicker on one by one, then an occasional buzz. */
 .neon-letter{
   display:inline-block;
