@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.steamstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.steamstatic.com https://wsrv.nl; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BASH Addiction — Case Simulator</title>
@@ -779,6 +779,62 @@
     .wallet-btn.bump-up, .wallet-btn.bump-down{animation:none;}
     .case-card, .case-card img{transition:none;}
   }
+
+  /* ===== Legendary drop overlay ===== */
+  .legend-overlay{
+    position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:24px;text-align:center;cursor:pointer;overflow:hidden;
+    background:radial-gradient(ellipse at center, rgba(20,8,32,.9), rgba(5,3,8,.97) 70%);
+    animation:legendIn .35s ease both;
+  }
+  .legend-overlay.closing{animation:legendOut .3s ease both;}
+  @keyframes legendIn{ from{ opacity:0; } }
+  @keyframes legendOut{ to{ opacity:0; } }
+  .legend-flash{position:absolute;inset:0;background:var(--legend-color);mix-blend-mode:screen;pointer-events:none;animation:legendFlash .7s ease-out both;}
+  @keyframes legendFlash{ 0%{ opacity:.95; } 100%{ opacity:0; } }
+  .legend-rays{
+    position:absolute;left:50%;top:44%;width:180vmax;height:180vmax;margin:-90vmax 0 0 -90vmax;pointer-events:none;opacity:.5;
+    background:repeating-conic-gradient(from 0deg, var(--legend-color) 0deg 6deg, transparent 6deg 22deg);
+    -webkit-mask-image:radial-gradient(circle, #000 0, transparent 45%);mask-image:radial-gradient(circle, #000 0, transparent 45%);
+    animation:legendSpin 14s linear infinite;
+  }
+  .legend-overlay.tier-1 .legend-rays{opacity:.28;}
+  @keyframes legendSpin{ to{ transform:rotate(360deg); } }
+  .legend-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  .legend-kicker{position:relative;font-weight:700;letter-spacing:.35em;font-size:.8rem;color:var(--legend-color);
+    text-shadow:0 0 12px var(--legend-color);animation:legendRise .5s .25s var(--ease-out) backwards;}
+  .legend-title{position:relative;font-family:"Permanent Marker",cursive;font-size:clamp(2.4rem,9vw,5.5rem);line-height:1;margin:0;color:#fff;
+    text-shadow:0 0 18px var(--legend-color), 0 0 48px var(--legend-color), 0 6px 0 rgba(0,0,0,.5);
+    animation:legendSlam .6s .15s cubic-bezier(.2,1.6,.4,1) backwards;}
+  @keyframes legendSlam{ from{ opacity:0; transform:scale(2.6) rotate(-6deg); } }
+  .legend-item{position:relative;width:min(70vw,380px);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+    animation:legendPop .8s .35s cubic-bezier(.2,1.4,.4,1) backwards;}
+  .legend-item::before{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(closest-side, var(--legend-color), transparent);
+    opacity:.55;filter:blur(24px);animation:auraBreath 2.4s ease-in-out infinite;}
+  .legend-item img{position:relative;max-width:100%;max-height:100%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.7));animation:legendFloat 3s ease-in-out 1.2s infinite;}
+  @keyframes legendPop{ from{ opacity:0; transform:scale(.2) rotate(-25deg); } }
+  @keyframes legendFloat{ 50%{ transform:translateY(-10px) rotate(1.5deg); } }
+  @keyframes auraBreath{ 0%,100%{ opacity:.4; transform:scale(.94); } 50%{ opacity:.75; transform:scale(1.06); } }
+  @keyframes legendRise{ from{ opacity:0; transform:translateY(14px); } }
+  .legend-name{position:relative;font-size:clamp(1.05rem,3.6vw,1.5rem);font-weight:700;animation:legendRise .5s .7s var(--ease-out) backwards;}
+  .legend-meta{position:relative;color:var(--ink-dim);font-size:.9rem;animation:legendRise .5s .8s var(--ease-out) backwards;}
+  .legend-meta strong{color:#8ee08e;font-size:1.15rem;}
+  .legend-actions{position:relative;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;animation:legendRise .5s .95s var(--ease-out) backwards;}
+  .legend-actions button{font-family:inherit;font-weight:700;font-size:.9rem;padding:11px 20px;border-radius:8px;cursor:pointer;
+    border:1px solid var(--legend-color);background:rgba(255,255,255,.04);color:var(--ink);transition:background .15s ease, transform .15s ease;}
+  .legend-actions button.primary{background:var(--legend-color);color:#120a18;border-color:transparent;}
+  .legend-actions button:hover{transform:translateY(-2px);}
+  .legend-hint{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:0;right:0;color:var(--ink-dim);font-size:.75rem;opacity:.7;}
+  body.legend-shake > *:not(.legend-overlay){animation:legendShake .5s cubic-bezier(.36,.07,.19,.97) both;}
+  @keyframes legendShake{
+    10%,90%{ transform:translate(-2px,1px); } 20%,80%{ transform:translate(4px,-2px); }
+    30%,50%,70%{ transform:translate(-7px,3px); } 40%,60%{ transform:translate(7px,-3px); }
+  }
+  .share-btn.busy{opacity:.6;pointer-events:none;}
+  @media (prefers-reduced-motion: reduce){
+    .legend-overlay *, .legend-overlay, body.legend-shake > *{animation:none !important;}
+    .legend-flash, .legend-canvas{display:none;}
+  }
 </style>
 </head>
 <body>
@@ -1159,6 +1215,19 @@
         tone(ctx, { freq: f, start: 0.1 + i * 0.09, dur: 0.16, type: "sine", peak: 0.16 });
       });
     }
+  }
+
+  // Big moment sound: low boom, rising sweep, then a chord (tier 2 = ★, tier 1 = Covert).
+  function playLegendary(tier){
+    if (sfxMuted) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    tone(ctx, { freq: 90, freqEnd: 40, dur: 0.6, type: "sine", peak: 0.35 });
+    tone(ctx, { freq: 300, freqEnd: tier === 2 ? 1400 : 900, dur: 0.45, type: "sawtooth", peak: 0.05 });
+    const chord = tier === 2 ? [523.25, 659.25, 783.99, 1046.5, 1318.5] : [440, 554.37, 659.25];
+    chord.forEach((f, i) => {
+      tone(ctx, { freq: f, start: 0.35 + i * 0.07, dur: 1.1, type: "triangle", peak: 0.09 });
+    });
   }
 
   function playClickCoin(){
@@ -1856,6 +1925,8 @@
           } else {
             showBatchResult(drops);
           }
+          const best = drops.reduce((a, d) => legendTier(d) > legendTier(a) ? d : a, drops[0]);
+          if (legendTier(best) > 0) showLegendary(best);
         }
       };
       row.track.addEventListener("transitionend", onEnd);
@@ -2896,77 +2967,235 @@
     return lines.length;
   }
 
-  // Steam's CDN doesn't send CORS headers on item images, so they can never be drawn onto
-  // an exportable canvas (it would "taint" the canvas and toDataURL would throw) - draw a
-  // stylized medallion in the item's rarity color instead of a real screenshot of the skin.
-  function shareItemImage(item){
-    const w = 700, h = 500;
+  // Steam's CDN doesn't send CORS headers, so its images would taint the canvas. We load them
+  // through wsrv.nl (public image proxy that adds CORS) and fall back to a rarity medallion
+  // if that fails or is slow.
+  function loadImage(src, cors){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      if (cors) img.crossOrigin = "anonymous";
+      const timer = setTimeout(() => reject(new Error("timeout")), 5000);
+      img.onload = () => { clearTimeout(timer); resolve(img); };
+      img.onerror = () => { clearTimeout(timer); reject(new Error("load failed")); };
+      img.src = src;
+    });
+  }
+  function proxiedImageUrl(src){
+    return "https://wsrv.nl/?url=" + encodeURIComponent(src) + "&w=900&output=png";
+  }
+
+  async function buildShareCanvas(item){
+    const w = 1080, h = 1920;
     const canvas = document.createElement("canvas");
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext("2d");
     const color = item.color || "#4b69ff";
+    const tier = legendTier(item);
+    try { await Promise.all([document.fonts.load("120px 'Permanent Marker'"), document.fonts.load("700 40px 'Chakra Petch'")]); } catch(e){}
+    const [skin, character] = await Promise.all([
+      item.image ? loadImage(proxiedImageUrl(item.image), true).catch(() => null) : null,
+      loadImage("/assets/character.webp", false).catch(() => null)
+    ]);
 
+    // background
     const bg = ctx.createLinearGradient(0, 0, 0, h);
-    bg.addColorStop(0, "#1c1426");
-    bg.addColorStop(1, "#08070a");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, w, h);
-
-    const glow = ctx.createRadialGradient(w/2, 185, 20, w/2, 185, 260);
-    glow.addColorStop(0, color + "55");
-    glow.addColorStop(1, color + "00");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-
-    ctx.beginPath();
-    ctx.arc(w/2, 185, 105, 0, Math.PI * 2);
-    ctx.fillStyle = color + "22";
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = color;
-    ctx.stroke();
-    ctx.fillStyle = color;
-    ctx.font = "700 84px 'Chakra Petch', sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(isRare(item) ? "★" : "◆", w/2, 192);
-    ctx.textBaseline = "alphabetic";
-
-    ctx.fillStyle = "#f4f1ec";
-    ctx.font = "700 30px 'Chakra Petch', sans-serif";
-    const nameLines = wrapCanvasText(ctx, item.name, w/2, 355, 620, 36);
-    const afterName = 355 + (nameLines - 1) * 18 + 45;
-
-    ctx.fillStyle = color;
-    ctx.font = "700 16px 'Chakra Petch', sans-serif";
-    ctx.fillText((isRare(item) ? "★ RARE SPECIAL ITEM" : item.rarity || "") + (item.wear ? " · " + item.wear : ""), w/2, afterName);
-
-    const price = dropPrice(item);
-    if (price != null){
-      ctx.fillStyle = "#8ee08e";
-      ctx.font = "700 26px 'Chakra Petch', sans-serif";
-      ctx.fillText(fmtPrice(price), w/2, afterName + 40);
+    bg.addColorStop(0, "#1a0b2a"); bg.addColorStop(.55, "#0d0812"); bg.addColorStop(1, "#08070a");
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+    if (tier > 0){
+      ctx.save(); ctx.translate(w/2, 820); ctx.globalAlpha = tier === 2 ? .16 : .09; ctx.fillStyle = color;
+      for (let i = 0; i < 24; i++){ ctx.rotate(Math.PI * 2 / 24); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-40, -1400); ctx.lineTo(40, -1400); ctx.fill(); }
+      ctx.restore();
+    }
+    const glow = ctx.createRadialGradient(w/2, 820, 40, w/2, 820, 560);
+    glow.addColorStop(0, color + "88"); glow.addColorStop(1, color + "00");
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
+    if (character){
+      ctx.globalAlpha = .22;
+      const ch = 900, cw = character.width * ch / character.height;
+      ctx.drawImage(character, w - cw * .78, h - ch - 40, cw, ch);
+      ctx.globalAlpha = 1;
     }
 
-    ctx.fillStyle = "#9a90ab";
-    ctx.font = "600 13px 'Chakra Petch', sans-serif";
-    ctx.fillText("BASH ADDICTION — yupbash.vip/cases", w/2, h - 24);
+    // header
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ffffff";
+    ctx.shadowColor = "#8b3fd1"; ctx.shadowBlur = 40;
+    ctx.font = "120px 'Permanent Marker', cursive";
+    ctx.fillText("BASH", w/2, 230);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#c98bff";
+    ctx.font = "700 34px 'Chakra Petch', sans-serif";
+    ctx.fillText("A D D I C T I O N", w/2, 290);
+    if (tier > 0){
+      ctx.fillStyle = color;
+      ctx.shadowColor = color; ctx.shadowBlur = 30;
+      ctx.font = "92px 'Permanent Marker', cursive";
+      ctx.fillText(tier === 2 ? "LEGENDARY DROP" : "COVERT DROP", w/2, 470);
+      ctx.shadowBlur = 0;
+    }
 
-    const a = document.createElement("a");
-    a.download = "bash-addiction-drop.png";
-    a.href = canvas.toDataURL("image/png");
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // item
+    if (skin){
+      const max = 820, sc = Math.min(max / skin.width, 560 / skin.height);
+      ctx.shadowColor = "rgba(0,0,0,.7)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 30;
+      ctx.drawImage(skin, w/2 - skin.width * sc / 2, 820 - skin.height * sc / 2, skin.width * sc, skin.height * sc);
+      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    } else {
+      ctx.beginPath(); ctx.arc(w/2, 820, 220, 0, Math.PI * 2);
+      ctx.fillStyle = color + "22"; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = color; ctx.stroke();
+      ctx.fillStyle = color; ctx.font = "700 180px 'Chakra Petch', sans-serif"; ctx.textBaseline = "middle";
+      ctx.fillText(isRare(item) ? "★" : "◆", w/2, 830); ctx.textBaseline = "alphabetic";
+    }
+
+    // text
+    ctx.fillStyle = "#f4f1ec";
+    ctx.font = "700 64px 'Chakra Petch', sans-serif";
+    const nameLines = wrapCanvasText(ctx, item.name, w/2, 1250, 940, 76);
+    let y = 1250 + (nameLines - 1) * 76 + 80;
+    ctx.fillStyle = color;
+    ctx.font = "700 40px 'Chakra Petch', sans-serif";
+    ctx.fillText((isRare(item) ? "★ RARE SPECIAL ITEM" : item.rarity || "") + (item.wear ? "  ·  " + item.wear : ""), w/2, y);
+    if (typeof item.float === "number"){
+      y += 60; ctx.fillStyle = "#9a90ab"; ctx.font = "600 34px 'Chakra Petch', sans-serif";
+      ctx.fillText("Float " + item.float.toFixed(6), w/2, y);
+    }
+    const price = dropPrice(item);
+    if (price != null){
+      y += 110; ctx.fillStyle = "#8ee08e"; ctx.font = "700 84px 'Chakra Petch', sans-serif";
+      ctx.fillText(fmtPrice(price), w/2, y);
+    }
+    ctx.fillStyle = "#c98bff";
+    ctx.font = "700 40px 'Chakra Petch', sans-serif";
+    ctx.fillText("yupbash.vip/cases", w/2, h - 110);
+    return canvas;
+  }
+
+  // Share sheet on phones (straight to TikTok / Instagram stories), download elsewhere.
+  async function shareItemImage(item, btn){
+    if (btn) btn.classList.add("busy");
+    try {
+      const canvas = await buildShareCanvas(item);
+      const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+      if (!blob) throw new Error("toBlob failed");
+      const file = new File([blob], "bash-addiction-drop.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })){
+        try { await navigator.share({ files: [file], title: "BASH Addiction", text: "Look what I pulled on yupbash.vip/cases" }); }
+        catch(e){ if (e.name !== "AbortError") throw e; }
+      } else {
+        const a = document.createElement("a");
+        a.download = file.name;
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }
+    } catch(e){
+      console.error("Share failed:", e);
+    } finally {
+      if (btn) btn.classList.remove("busy");
+    }
+  }
+
+  // ===== Legendary drop: 2 = knife/glove (★), 1 = Covert, 0 = nothing special =====
+  function legendTier(it){
+    if (!it) return 0;
+    if (isRare(it)) return 2;
+    return it.rarity === "Covert" ? 1 : 0;
+  }
+
+  function burstParticles(canvas, color, count){
+    const ctx = canvas.getContext("2d");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = canvas.clientWidth * dpr; canvas.height = canvas.clientHeight * dpr;
+    ctx.scale(dpr, dpr);
+    const cx = canvas.clientWidth / 2, cy = canvas.clientHeight * .44;
+    const colors = [color, "#c98bff", "#ffffff", "#e4ae39"];
+    const parts = Array.from({ length: count }, () => {
+      const a = Math.random() * Math.PI * 2, v = 4 + Math.random() * 11;
+      return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 3, r: 2 + Math.random() * 4,
+               c: colors[Math.floor(Math.random() * colors.length)], life: 1, spin: Math.random() * 6 };
+    });
+    let frame;
+    const tick = () => {
+      ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+      let alive = 0;
+      parts.forEach(p => {
+        if (p.life <= 0) return;
+        alive++;
+        p.vy += .18; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.life -= .009; p.spin += .2;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.c;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.spin);
+        ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+        ctx.restore();
+      });
+      if (alive && canvas.isConnected) frame = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(frame);
+  }
+
+  function showLegendary(item){
+    const tier = legendTier(item);
+    const color = tier === 2 ? "#e4ae39" : (item.color || "#eb4b4b");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const price = dropPrice(item);
+
+    const ov = document.createElement("div");
+    ov.className = "legend-overlay tier-" + tier;
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-label", tier === 2 ? "Legendary drop" : "Covert drop");
+    ov.style.setProperty("--legend-color", color);
+    ov.innerHTML =
+      '<div class="legend-rays"></div><canvas class="legend-canvas"></canvas><div class="legend-flash"></div>' +
+      '<div class="legend-kicker">' + (tier === 2 ? "★ ★ ★" : "◆ ◆ ◆") + '</div>' +
+      '<h2 class="legend-title">' + (tier === 2 ? "LEGENDARY DROP" : "COVERT DROP") + '</h2>' +
+      '<div class="legend-item"><img alt=""></div>' +
+      '<div class="legend-name"></div>' +
+      '<div class="legend-meta"></div>' +
+      '<div class="legend-actions"><button class="primary share-btn" data-act="share">📷 Share drop</button><button data-act="close">Continue</button></div>' +
+      '<div class="legend-hint">Click anywhere to continue</div>';
+    ov.querySelector(".legend-item img").src = item.image;
+    ov.querySelector(".legend-name").textContent = item.name;
+    const meta = ov.querySelector(".legend-meta");
+    meta.textContent = (item.wear ? item.wear + " · " : "");
+    if (price != null){ const st = document.createElement("strong"); st.textContent = fmtPrice(price); meta.appendChild(st); }
+    document.body.appendChild(ov);
+
+    let stopParticles = null;
+    if (!reduced){
+      document.body.classList.add("legend-shake");
+      setTimeout(() => document.body.classList.remove("legend-shake"), 520);
+      stopParticles = burstParticles(ov.querySelector(".legend-canvas"), color, tier === 2 ? 180 : 90);
+    }
+    playLegendary(tier);
+
+    let closed = false;
+    const close = () => {
+      if (closed) return; closed = true;
+      document.removeEventListener("keydown", onKey);
+      if (stopParticles) stopParticles();
+      ov.classList.add("closing");
+      setTimeout(() => ov.remove(), reduced ? 0 : 300);
+    };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", (e) => {
+      const act = e.target.closest("[data-act]");
+      if (act && act.dataset.act === "share"){ shareItemImage(item, act); return; }
+      close();
+    });
+    ov.querySelector('[data-act="close"]').focus({ preventScroll: true });
   }
 
   $("#resultShareBtn").addEventListener("click", () => {
     const item = window.__lastResultItem;
-    if (item) shareItemImage(item);
+    if (item) shareItemImage(item, $("#resultShareBtn"));
   });
   $("#inspectShareBtn").addEventListener("click", () => {
     const item = window.__lastInspectItem;
-    if (item) shareItemImage(item);
+    if (item) shareItemImage(item, $("#inspectShareBtn"));
   });
 
   Promise.all([
