@@ -749,6 +749,36 @@
     cursor:pointer;transition:border-color .15s ease, color .15s ease;
   }
   .reset-btn:hover{border-color:#eb4b4b;color:#eb4b4b;}
+
+  /* ===== Design v2 — shared identity + micro-interactions ===== */
+  .brand{font-family:"Permanent Marker",cursive;font-weight:400;font-size:1.25rem;letter-spacing:.02em;
+    text-shadow:0 0 10px rgba(139,63,209,.55);transition:color .15s ease, text-shadow .2s ease;}
+  .brand:hover{text-shadow:0 0 14px rgba(201,139,255,.9), 0 0 32px rgba(139,63,209,.6);}
+  .brand .tag{font-family:"Chakra Petch",system-ui,sans-serif;}
+  .case-card{transition:border-color .15s ease, transform .2s var(--ease-out), box-shadow .2s ease;}
+  .case-card img{transition:transform .25s var(--ease-out), filter .25s ease;}
+  .case-card:hover, .case-card:focus-visible{box-shadow:0 12px 34px -14px rgba(139,63,209,.75), 0 0 0 1px rgba(201,139,255,.25) inset;}
+  .case-card:hover img, .case-card:focus-visible img{transform:translateY(-4px) scale(1.06);filter:drop-shadow(0 10px 14px rgba(139,63,209,.45));}
+  .nav-tabs button:active, .open-btn:not(:disabled):active, .case-card:active{transform:scale(.97);}
+  .wallet-btn.bump-up{animation:walletUp .6s ease;}
+  .wallet-btn.bump-down{animation:walletDown .6s ease;}
+  @keyframes walletUp{ 30%{ transform:scale(1.08); box-shadow:0 0 0 2px rgba(142,224,142,.7), 0 0 18px rgba(142,224,142,.45); } }
+  @keyframes walletDown{ 30%{ transform:scale(.95); box-shadow:0 0 0 2px rgba(235,75,75,.7), 0 0 18px rgba(235,75,75,.4); } }
+  @media (max-width:640px){
+    .brand{font-size:1.05rem;}
+    /* Scrollable tabs: fade the right edge so it's obvious there's more. */
+    .nav-tabs{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:24px;}
+  }
+  @media (max-width:480px){
+    .case-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .case-card{padding:12px 8px;}
+    .case-card img{height:70px;}
+    .case-card .name{font-size:.75rem;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wallet-btn.bump-up, .wallet-btn.bump-down{animation:none;}
+    .case-card, .case-card img{transition:none;}
+  }
 </style>
 </head>
 <body>
@@ -1448,10 +1478,22 @@
     updateWalletUI();
   }
   function addBalance(delta){ setBalance(getBalance() + delta); }
+  // Flash the wallet green/red on noticeable balance changes (ignores clicker ticks under $1).
+  let lastWalletValue = null;
+  function bumpWallet(b){
+    const btn = document.getElementById("walletBtn");
+    const prev = lastWalletValue;
+    lastWalletValue = b;
+    if (!btn || prev === null || Math.abs(b - prev) < 1) return;
+    btn.classList.remove("bump-up", "bump-down");
+    void btn.offsetWidth;
+    btn.classList.add(b > prev ? "bump-up" : "bump-down");
+  }
   function updateWalletUI(){
     const b = getBalance();
     const amt = document.getElementById("walletAmount");
     if (amt) amt.textContent = fmtCompact(b);
+    bumpWallet(b);
     if (currentCase) refreshOpenButton();
     if (typeof updateMinesStartLabel === "function") updateMinesStartLabel();
   }

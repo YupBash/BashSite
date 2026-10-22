@@ -173,10 +173,18 @@
       z-index:2;
     }
     .wordmark-tag{
-      left:14px;
+      left:16px;top:auto;
+      bottom:calc(var(--vh, 1vh) * 13 + env(safe-area-inset-bottom,0px));
+      animation:tagFloatMobile 4.5s ease-in-out infinite;
+    }
+    @keyframes tagFloatMobile{
+      0%, 100%{ transform:translateY(0); }
+      50%{ transform:translateY(-10px); }
     }
     .wordmark-tag-text{
-      font-size:clamp(2.2rem,10vw,4rem);
+      font-size:clamp(4.2rem,26vw,7.5rem);
+      filter:blur(.6px);
+      text-shadow:0 0 4px rgba(215,185,240,.75), 0 0 12px rgba(170,100,225,.6), 0 0 26px rgba(139,63,209,.45), 0 6px 30px rgba(0,0,0,.95);
     }
     .floor-glow{
       display:none;
@@ -221,11 +229,11 @@
 
   <div class="wordmark-tag">
     <div class="wordmark-tag-bar">
-      <span class="wordmark-tag-text">BASH</span>
+      <span class="wordmark-tag-text" data-neon>BASH</span>
     </div>
   </div>
 
-  <div class="character" aria-hidden="true">
+  <div class="character" aria-hidden="true" data-parallax>
     <img src="/assets/character.webp" alt="">
   </div>
 

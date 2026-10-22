@@ -60,7 +60,16 @@
     filter:drop-shadow(0 0 30px rgba(139,63,209,.45));
     margin:0;
     transform:rotate(-2deg);
+    animation:codeGlitch 3.8s steps(1,end) 1s infinite;
   }
+  @keyframes codeGlitch{
+    0%,86%,100%{ translate:0 0; text-shadow:0 6px 0 rgba(0,0,0,.4); }
+    88%{ translate:-4px 1px; text-shadow:-5px 0 rgba(254,44,85,.75), 5px 0 rgba(37,244,238,.75); }
+    90%{ translate:3px -2px; text-shadow:4px 0 rgba(254,44,85,.75), -4px 0 rgba(37,244,238,.75); }
+    92%{ translate:0 0; text-shadow:0 6px 0 rgba(0,0,0,.4); }
+    94%{ translate:2px 0; text-shadow:-3px 0 rgba(254,44,85,.6), 3px 0 rgba(37,244,238,.6); }
+  }
+  @media (prefers-reduced-motion: reduce){ .code{ animation:none; } }
   .msg{
     font-family:"Permanent Marker",cursive;
     font-size:clamp(1.1rem,2.4vw,1.6rem);

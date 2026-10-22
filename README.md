@@ -23,6 +23,9 @@ Ce fichier est la **mémoire centrale** du projet : à lire en premier avant tou
 │   ├── cases-data.json   Caisses CS:GO + contenu (images servies par le CDN Steam)
 │   └── prices-data.json  Prix des caisses / skins
 ├── assets/
+│   ├── css/tokens.css    Variables (couleurs, marques, easing) + grain — chargé par TOUTES les pages
+│   ├── css/base.css      Mise en page commune des pages vitrine + effets design v2
+│   ├── js/site.js        JS commun vitrine : hauteur d'écran, menu, transitions, néon, parallax, reveal
 │   ├── favicon-anim.js   Favicon animé (frames PNG en base64)
 │   ├── *.webp / *.png    Personnages, fond de menu, icônes, image OpenGraph
 ├── site.webmanifest      PWA (thème #3a0e5c, fond #08070a)
@@ -31,7 +34,9 @@ Ce fichier est la **mémoire centrale** du projet : à lire en premier avant tou
 ```
 
 ### Conventions de code
-- **Chaque page est autonome** : CSS dans un `<style>` et JS dans des `<script>` inline. Pas de fichier CSS/JS partagé (hors `favicon-anim.js`) → le header, le menu latéral et les liens sociaux sont **dupliqués** dans `index`, `faq`, `socials`.
+- **Commun** dans `assets/css` + `assets/js/site.js` ; **spécifique** dans le `<style>`/`<script>` inline de chaque page (chargé après, donc prioritaire).
+- Le **HTML** du menu latéral et des icônes sociales reste écrit dans chaque page (`index`, `faq`, `socials`) : le modifier aux 3 endroits.
+- Le Case Simulator ne charge que `tokens.css` (il a sa propre mise en page).
 - Pas de build, pas de npm, pas de framework.
 - Données structurées SEO en `application/ld+json` sur chaque page.
 
@@ -51,6 +56,22 @@ Systèmes transverses : solde, inventaire, stats, succès (achievements + toasts
 
 Clés `localStorage` (constantes en haut du script) : `BAL_KEY`, `INV_KEY`, `STATS_KEY`, `ACH_KEY`, `DAILY_KEY`, `CK_KEY`, `SFX_KEY`. Les pages principales utilisent `bashMenuIntroSeen`.
 Les anciennes sauvegardes sont compatibles : les valeurs par défaut sont fusionnées via `Object.assign`.
+
+## Design v2 (Phase 3 — 2026-10-22)
+
+Identité conservée (noir/violet, personnage, Permanent Marker + Chakra Petch). Sauvegarde de l'ancien design : tag et branche **`design-v1`**.
+
+Hooks HTML à connaître :
+| Attribut | Effet (site.js + base.css) |
+|---|---|
+| `data-neon` | Le texte s'allume lettre par lettre façon néon, grésillement périodique, glitch au survol |
+| `data-parallax` | L'image enfant suit légèrement la souris (souris uniquement) |
+| `data-reveal` | Les enfants apparaissent en cascade au chargement |
+
+Autres effets : grain (tokens.css), brume violette (`.stage::after`), aura du personnage, menu en cascade, icônes sociales aux couleurs des marques, `<details>` animés, glitch du 404, wallet qui flashe vert/rouge (cases), cartes de caisses lumineuses, 2 colonnes et onglets à bord fondu sur mobile.
+Tous les effets sont coupés si `prefers-reduced-motion`. **Aucune librairie externe ajoutée.**
+
+**Revenir à l'ancien design** : `git revert <commits design v2>` ou redéployer la branche `design-v1`.
 
 ## Déploiement
 
