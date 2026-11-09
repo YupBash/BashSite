@@ -37,9 +37,9 @@ def nearest_brand(rgb):
 class FeedbackTest(SiteTestCase):
     def test_hover_shows_lock_brackets_with_label(self):
         page = self.open("/")
-        page.evaluate("document.querySelector('#gamble a.gel').scrollIntoView({ block: 'center', behavior: 'instant' })")
+        page.evaluate("document.querySelector('#gamble a.play-btn').scrollIntoView({ block: 'center', behavior: 'instant' })")
         page.wait_for_timeout(300)
-        gel = page.locator("#gamble a.gel").bounding_box()
+        gel = page.locator("#gamble a.play-btn").bounding_box()
         page.mouse.move(gel["x"] + gel["width"] / 2, gel["y"] + gel["height"] / 2, steps=6)
         page.wait_for_timeout(900)
         lock = page.evaluate("""() => { const l = document.querySelector('.mercure-lock'); if (!l) return null;
@@ -51,7 +51,7 @@ class FeedbackTest(SiteTestCase):
         self.assertGreaterEqual(lock["x"] + lock["w"], gel["x"] + gel["width"] + 4)
         self.assertLessEqual(lock["y"], gel["y"] - 4)
         self.assertGreaterEqual(lock["y"] + lock["h"], gel["y"] + gel["height"] + 4)
-        self.assertIn("open a case", lock["label"].lower())
+        self.assertIn("play", lock["label"].lower())
         page.mouse.move(760, 760, steps=6)
         page.wait_for_timeout(900)
         self.assertLess(page.evaluate("+getComputedStyle(document.querySelector('.mercure-lock')).opacity"), 0.1)

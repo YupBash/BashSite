@@ -170,8 +170,6 @@ html.menu-open .menu-list li:nth-child(3){animation-delay:.1s}
 html.menu-open .menu-list li:nth-child(4){animation-delay:.15s}
 html.menu-open .menu-list li:nth-child(5){animation-delay:.2s}
 @keyframes ncMenuIn{from{opacity:0;transform:translateX(-30px)}}
-.menu-cases{display:inline-block;margin-top:clamp(18px,4vh,40px);font-family:var(--nc-font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--nc-hud);text-decoration:none}
-.menu-cases:hover{color:var(--nc-accent)}
 
 /* ---------- toast ---------- */
 .toast{

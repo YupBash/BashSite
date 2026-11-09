@@ -71,11 +71,20 @@ class GambleOutroTest(SiteTestCase):
         page = self.open("/")
         self.assertEqual(page.text_content("#gambleTitle").strip(), "BASH ADDICTION")
         self.assertEqual(page.text_content("#gamble .gamble-sub").strip(), "fake money, real addiction.")
-        link = page.locator("#gamble a.gel")
+        # Just a play button (YupBash): no gel pill, the name stays for screen readers.
+        self.assertEqual(page.locator("#gamble .gel").count(), 0)
+        link = page.locator("#gamble a.play-btn")
         self.assertEqual(link.get_attribute("href"), "/cases/")
-        text = " ".join(link.text_content().split())
-        self.assertIn("Open a case", text)
-        self.assertIn(">>>", text)
+        self.assertEqual(page.get_by_role("link", name="Open a case").count(), 1)
+        self.assertEqual(link.locator("svg.play-tri").count(), 1)
+        self.assertEqual(link.text_content().strip(), "")
+        self.assertTrue(link.is_visible())
+
+    def test_menu_has_no_case_simulator_link(self):
+        page = self.open("/")
+        page.click("#menuBtn")
+        self.assertEqual(page.locator('#menu a[href="/cases/"], #menu .menu-cases').count(), 0)
+        self.assertNotIn("Case simulator", page.text_content("#menu"))
 
     def test_outro_drop_stays_off_the_title(self):
         for mobile in (False, True):

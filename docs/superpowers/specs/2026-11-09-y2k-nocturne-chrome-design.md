@@ -131,7 +131,7 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 
 ### 05 · CLICK TO GAMBLE
 - Chrome : les gouttes fusionnent en un **jeton de casino** (disque à bord cranté) qui tourne lentement.
-- Texte : « BASH ADDICTION — fake money, real addiction. » + bouton « Open a case >>> » → `/cases/`.
+- Texte : « BASH ADDICTION — fake money, real addiction. » + un simple **bouton play** (cercle fin silver bleu, triangle en contour qui se remplit au survol, anneau qui pulse ; nom accessible « Open a case ») → `/cases/` — demandé par YupBash après la mise en ligne, qui a aussi fait retirer le lien « Case simulator » du menu.
 
 ### Fin
 - « Don't miss the next one. » + les 3 réseaux + signature **« BASH · 2024–2026 »** en Permanent Marker.

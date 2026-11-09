@@ -188,6 +188,21 @@ html.vids-3d .vid-card.is-front{filter:none}
   font-size:clamp(2.6rem,8vw,7.4rem);line-height:.86;letter-spacing:-.02em;
   filter:drop-shadow(0 0 22px rgba(139,92,246,.35)) drop-shadow(0 6px 0 rgba(0,0,0,.55))}
 .gamble-sub{margin:14px 0 28px;font-style:italic;font-weight:600;font-size:clamp(17px,1.65vw,26px)}
+/* Play button to the case simulator: a thin silver-blue ring, an outlined triangle that fills on hover, a slow pulse. */
+.play-btn{position:relative;display:inline-grid;place-items:center;width:clamp(78px,7vw,104px);aspect-ratio:1;border-radius:50%;
+  border:1.5px solid var(--nc-accent);background:radial-gradient(circle at 35% 30%,rgba(207,226,255,.18),rgba(10,6,22,.6) 62%);
+  box-shadow:0 0 0 6px rgba(207,226,255,.05),0 0 30px -8px var(--nc-accent-glow);transition:box-shadow .3s,background .3s}
+.play-btn::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(207,226,255,.3);pointer-events:none;
+  animation:ncRing 2.6s ease-out infinite}
+@keyframes ncRing{0%{transform:scale(.88);opacity:.85}100%{transform:scale(1.32);opacity:0}}
+.play-tri{width:38%;height:38%;margin-left:9%;overflow:visible}
+.play-tri path{fill:transparent;stroke:var(--nc-accent);stroke-width:2.2;stroke-linejoin:round;vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 6px var(--nc-accent-glow));transition:fill .3s}
+.play-btn:hover,.play-btn:focus-visible{background:radial-gradient(circle at 35% 30%,rgba(207,226,255,.28),rgba(20,10,44,.7) 62%);
+  box-shadow:0 0 0 9px rgba(207,226,255,.08),0 0 46px -6px var(--nc-accent-glow)}
+.play-btn:hover .play-tri path,.play-btn:focus-visible .play-tri path{fill:var(--nc-accent)}
+.play-btn:focus-visible{outline:none}
+@media (prefers-reduced-motion:reduce){.play-btn::before{animation:none;opacity:0}}
 
 /* ============ OUTRO ============ */
 .outro{

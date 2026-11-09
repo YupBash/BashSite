@@ -33,7 +33,7 @@ class FoundationTest(SiteTestCase):
         gamble = text("#gamble")
         self.assertIn("BASH ADDICTION", gamble)
         self.assertIn("fake money, real addiction.", gamble)
-        self.assertIn("Open a case", text('#gamble a[href="/cases/"]'))
+        self.assertEqual(page.get_attribute('#gamble a[href="/cases/"]', "aria-label"), "Open a case")
 
     def test_csp_meta_unchanged(self):
         page = self.open("/")

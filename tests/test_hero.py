@@ -5,10 +5,10 @@ import unittest
 from tests.harness import SiteTestCase
 
 # The hero has no buttons any more (YupBash, phase 3 checkpoint): the magnet is checked on the gamble button.
-MAGNET = "#gamble a.gel"
-TO_MAGNET = "document.querySelector('#gamble a.gel').scrollIntoView({ block: 'center', behavior: 'instant' })"
+MAGNET = "#gamble a.play-btn"
+TO_MAGNET = "document.querySelector('#gamble a.play-btn').scrollIntoView({ block: 'center', behavior: 'instant' })"
 MESSAGES = ["Stop that.", "Bro, stop.", "Alright, Don't do that.", "Hey!"]
-TX = "() => { const m = getComputedStyle(document.querySelector('#gamble a.gel')).transform; " \
+TX = "() => { const m = getComputedStyle(document.querySelector('#gamble a.play-btn')).transform; " \
      "return m === 'none' ? 0 : new DOMMatrix(m).m41; }"
 
 
