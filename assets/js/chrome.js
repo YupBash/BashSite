@@ -152,7 +152,7 @@
     var W = 0, H = 0, cssW = 1, cssH = 1, dirty = true;
     var from = "home", to = "home", mixT = 0, intro = 1, targets = [];
     var target = { x: .62, y: .42 }, smooth = { x: .62, y: .42 }, lastPointer = -1e9;
-    var t0 = performance.now(), last = t0, frames = 0, fps = 0, acc = 0, cnt = 0;
+    var t0 = performance.now(), last = t0, frames = 0, fps = 0, acc = 0, cnt = 0, slowRun = 0;
     var running = false, paused = false, raf = 0, lost = false;
     var blobBuf = new Float32Array(20);
 
@@ -193,7 +193,8 @@
     }
 
     function render(now, fromLoop) {
-      var dt = Math.max(0, Math.min(64, now - last));
+      var raw = Math.max(0, now - last);   // real frame interval (slow-device detection)
+      var dt = Math.min(64, raw);          // clamped interval (smooth animation)
       last = now;
       resize();
       var aspect = cssW / cssH;
@@ -243,6 +244,9 @@
 
       if (fromLoop) {
         acc += dt; cnt++;
+        // Very slow device (software rendering, weak GPU): drop to the lowest resolution right away.
+        slowRun = raw > 80 ? slowRun + 1 : 0;
+        if (slowRun >= 3 && scale > minScale) { scale = minScale; acc = 0; cnt = 0; slowRun = 0; }
         if (cnt >= 40) {
           var avg = acc / cnt;
           fps = Math.round(1000 / Math.max(avg, 1));

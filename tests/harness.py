@@ -59,13 +59,19 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
+class _Server(http.server.ThreadingHTTPServer):
+    # The default listen backlog (5) makes Windows refuse some of Chromium's parallel connections.
+    request_queue_size = 128
+    daemon_threads = True
+
+
 class SiteTestCase(unittest.TestCase):
     """Base class: one server + browser per test class, one context per page."""
 
     @classmethod
     def setUpClass(cls):
         handler = functools.partial(_QuietHandler, directory=str(REPO))
-        cls._server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        cls._server = _Server(("127.0.0.1", 0), handler)
         threading.Thread(target=cls._server.serve_forever, daemon=True).start()
         cls.base = "http://127.0.0.1:%d" % cls._server.server_address[1]
         cls._pw = sync_playwright().start()

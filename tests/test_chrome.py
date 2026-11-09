@@ -92,6 +92,16 @@ class ChromeTest(SiteTestCase):
         self.assertGreaterEqual(scale, 0.34)
         self.assertLessEqual(scale, 0.95)
 
+    def test_slow_frames_drop_to_min_scale(self):
+        # Every animation frame is made to take 120 ms: the sculpture must drop to its lowest
+        # resolution within a few frames instead of waiting for the 40-frame average.
+        slow = """(function block() { requestAnimationFrame(function () {
+            const end = performance.now() + 120; while (performance.now() < end) {} block(); }); })();"""
+        page = self.open("/", init_script=slow)
+        self.ctl(page)
+        page.wait_for_timeout(1500)
+        self.assertEqual(page.evaluate("window.__ctl.stats().scale"), 0.34)
+
     def test_idempotent_per_canvas(self):
         page = self.open("/")
         self.ctl(page)

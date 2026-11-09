@@ -41,6 +41,17 @@ main{position:relative;z-index:2}
 .character img{display:block;height:100%;width:auto;user-select:none;-webkit-user-drag:none;
   filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 34px rgba(124,58,237,.35))}
 
+.character.poke img{animation:ncPoke .6s ease}
+@keyframes ncPoke{0%,100%{transform:none}25%{transform:rotate(-3deg) scale(1.04)}50%{transform:rotate(2deg) scale(1.02)}75%{transform:rotate(-1deg) scale(1.01)}}
+.character-bubble{
+  position:absolute;top:22%;right:calc(100% - 20px);z-index:6;white-space:nowrap;pointer-events:none;
+  padding:8px 14px;border:1px solid var(--nc-accent);border-radius:4px;background:rgba(10,6,22,.92);color:var(--nc-ink);
+  font-family:var(--nc-font-mono);font-size:12px;letter-spacing:.06em;box-shadow:0 0 18px -6px var(--nc-accent-glow);
+  opacity:0;transform:translateX(6px);transition:opacity .25s,transform .25s;
+}
+.character-bubble.show{opacity:1;transform:none}
+.character-bubble::after{content:"";position:absolute;top:14px;left:100%;border:6px solid transparent;border-left-color:var(--nc-accent)}
+
 /* ============ 02 · LATEST VIDEOS ============ */
 .sec-videos{align-items:center}
 .vids{width:100%;max-width:1100px}
