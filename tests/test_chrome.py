@@ -46,7 +46,7 @@ class ChromeTest(SiteTestCase):
         page = self.open("/")
         self.ctl(page)
         page.evaluate("window.__ctl.setState('gamble')")
-        self.assertGreater(self.sample(page, 0.675, 0.45)[3], 200)
+        self.assertGreater(self.sample(page, 0.75, 0.45)[3], 200)
 
     def test_blend_midpoint_differs(self):
         # Reduced motion freezes time, so only the geometry can change the samples.
