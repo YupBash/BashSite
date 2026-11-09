@@ -106,7 +106,8 @@
     var P = { x: -100, y: -100 }, seen = false, hiddenByTouch = false;
     var tails = [0, 1, 2, 3].map(function () { return { x: P.x, y: P.y }; });
     var hoverEl = null, focusEl = null, wrap = 0, rect = { x: 0, y: 0, w: 0, h: 0 }, reachFrom = "head";
-    var press = 0, pressed = 0, rip = { x: 0, y: 0, t: 1 };
+    var press = 0, pressed = 0, rip = { x: 0, y: 0, start: -1e9 };
+    function ripT() { return Math.min(1, (performance.now() - rip.start) / 450); }
     var last = performance.now(), raf = 0, running = false;
 
     function onMove(e) {
@@ -122,7 +123,7 @@
     function onDown(e) {
       if (e.pointerType === "touch") { hiddenByTouch = true; hoverEl = null; return; }
       pressed = 1;
-      if (!reduced) { rip.x = P.x; rip.y = P.y; rip.t = 0; }
+      if (!reduced) { rip.x = P.x; rip.y = P.y; rip.start = performance.now(); }
     }
     function onUp() { pressed = 0; }
     function onFocusIn(e) {
@@ -175,7 +176,7 @@
       var goal = active ? 1 : 0;
       wrap = reduced ? goal : wrap + (goal - wrap) * k(.13, dt);
       press += (pressed - press) * k(.35, dt);
-      if (rip.t < 1) rip.t = Math.min(1, rip.t + dt / 450);
+      var rt = ripT();
 
       function X(x) { return x * cd; }
       function Y(y) { return CH - y * cd; }
@@ -191,7 +192,7 @@
       gl.uniform1f(U.uWrap, wrap);
       gl.uniform2f(U.uReach, reachFrom === "center" ? X(cx) : X(P.x), reachFrom === "center" ? Y(cy) : Y(P.y));
       gl.uniform1f(U.uPress, press);
-      gl.uniform2f(U.uRip, X(rip.x), Y(rip.y)); gl.uniform1f(U.uRipT, rip.t);
+      gl.uniform2f(U.uRip, X(rip.x), Y(rip.y)); gl.uniform1f(U.uRipT, rt);
 
       gl.scissor(0, 0, CW, CH); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
       var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
@@ -201,7 +202,7 @@
         tails.forEach(function (t) { grow(t.x - 40, t.y - 40, t.x + 40, t.y + 40); });
       }
       if (wrap > .01) grow(rect.x - 30, rect.y - 30, rect.x + rect.w + 30, rect.y + rect.h + 30);
-      if (rip.t < 1) grow(rip.x - 60, rip.y - 60, rip.x + 60, rip.y + 60);
+      if (rt < 1) grow(rip.x - 60, rip.y - 60, rip.x + 60, rip.y + 60);
       if (x1 > x0) {
         gl.scissor(Math.max(0, Math.floor(x0 * cd)), Math.max(0, Math.floor(CH - y1 * cd)), Math.ceil((x1 - x0) * cd), Math.ceil((y1 - y0) * cd));
         gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -218,7 +219,7 @@
 
     instance = {
       state: function () {
-        return { visible: headVisible(), wrap: wrap, target: currentTarget(), ripple: rip.t };
+        return { visible: headVisible(), wrap: wrap, target: currentTarget(), ripple: ripT() };
       },
       destroy: function () {
         stop();
