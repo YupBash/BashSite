@@ -1,158 +1,200 @@
-# BASH — yupbash.vip
+<div align="center">
 
-Site personnel / vitrine de **BASH** (YupBash) avec un mini-jeu « Case Simulator » façon CS:GO.
-Ce fichier est la **mémoire centrale** du projet : à lire en premier avant toute modification.
+<img src="assets/og-image.jpg" alt="BASH — yupbash.vip" width="100%">
 
-## Contexte
+# `::` BASH
 
-- **Domaine** : https://yupbash.vip (fichier `CNAME`)
-- **Hébergement** : GitHub Pages (dépôt `YupBash/BashSite`, branche `main`) — déploiement automatique à chaque push.
-- **Type** : site **100 % statique** (HTML + CSS + JS vanilla). **Aucun back-end, aucun PHP, aucune base de données.**
-- **Persistance** : uniquement `localStorage` côté navigateur (rien n'est envoyé à un serveur).
+**Créateur de contenu. Accro au gambling (le faux, promis).**
+TikTok · Instagram · Discord — et un site qui ressemble à ce qui se passe dans ma tête.
 
-## Architecture
+[**yupbash.vip**](https://yupbash.vip) &nbsp;·&nbsp; [TikTok](https://www.tiktok.com/@yupbash) &nbsp;·&nbsp; [Instagram](https://www.instagram.com/yupbash) &nbsp;·&nbsp; [Discord](https://discordapp.com/users/852685497108267019)
+
+![Static](https://img.shields.io/badge/site-100%25%20statique-1a0d3d?style=flat-square)
+![WebGL](https://img.shields.io/badge/chrome-WebGL%20fait%20main-8a5cff?style=flat-square)
+![No build](https://img.shields.io/badge/build-aucun-cfe2ff?style=flat-square&labelColor=1a0d3d)
+![Tests](https://img.shields.io/badge/tests-Playwright-2b1452?style=flat-square)
+
+</div>
+
+---
+
+## Qui est BASH ?
+
+Moi, c'est **BASH** (aka *yupbash*) : 21 ans, Belge, *some random dude, idk.*
+Je fais du contenu sur TikTok et Instagram, je traîne sur Discord, et j'ai un léger problème avec l'ouverture de caisses CS2.
+Ce site, c'est ma carte de visite : mes réseaux, mes dernières vidéos, mon setup, et un simulateur de caisses pour se ruiner avec de **l'argent 100 % faux**.
+
+---
+
+## Le site : design v3 « Nocturne Chrome »
+
+Une ambiance **Y2K futuriste** : du noir, du violet profond, une touche de **silver bleu** (`#cfe2ff`), du **chrome liquide en 3D** qui réagit à la souris et au scroll, et une interface façon **HUD** (fines lignes, coordonnées, horloge en direct). Tout est fait main : pas de template, pas de framework.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/readme/start.jpg" alt="Écran START"></td>
+<td width="50%"><img src="docs/readme/home.jpg" alt="Accueil"></td>
+</tr>
+<tr>
+<td><b>:: ▷START</b> — à la première visite, une intro de 2 s avec un son <i>entièrement synthétisé</i> (ou en silence).</td>
+<td><b>01 · Home</b> — <code>::BASH</code> en lettres chromées, le perso, et une sculpture de chrome liquide qui suit la souris.</td>
+</tr>
+<tr>
+<td><img src="docs/readme/videos.jpg" alt="Latest videos"></td>
+<td><img src="docs/readme/about.jpg" alt="About & setup"></td>
+</tr>
+<tr>
+<td><b>02 · Latest videos</b> — la sculpture devient un anneau, et les vidéos tournent dessus comme un carrousel au rythme du scroll.</td>
+<td><b>03 · About & setup</b> — fiche perso, fiche technique qui se « décode », FAQ… et un démineur caché derrière le 💣.</td>
+</tr>
+<tr>
+<td><img src="docs/readme/socials.jpg" alt="Socials & contact"></td>
+<td><img src="docs/readme/gamble.jpg" alt="Click to gamble"></td>
+</tr>
+<tr>
+<td><b>04 · Socials & contact</b> — trois bulles de chrome, une par réseau, reflet aux couleurs de la marque au survol, e-mail copiable.</td>
+<td><b>05 · Click to gamble</b> — le chrome se transforme en jeton de casino. <i>Fake money, real addiction.</i></td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="36%"><img src="docs/readme/mobile-home.jpg" alt="Accueil sur téléphone"></td>
+<td width="36%"><img src="docs/readme/mobile-videos.jpg" alt="Vidéos sur téléphone"></td>
+<td>
+
+### Sur téléphone
+
+- Même expérience, pensée pour le pouce.
+- La sculpture suit **l'inclinaison du téléphone** (gyroscope).
+- Un fondu sous la barre HUD garde le haut de l'écran propre.
+- Fluide même sur des téléphones modestes : la 3D adapte sa résolution en direct.
+
+</td>
+</tr>
+</table>
+
+### BASH ADDICTION — le simulateur de caisses (`/cases/`)
+
+<img src="docs/readme/cases.jpg" alt="BASH ADDICTION — Case Simulator" width="100%">
+
+Ouvre des caisses CS2 avec les **vraies probabilités**, garde tes skins, fais des **trade-ups**, affronte un bot en **case battle**, tente ta chance aux **Mines**, et fais tourner un **clicker** pour te refaire. Drop légendaire animé, partage en format story, succès, récompense quotidienne.
+Tout est sauvegardé **dans ton navigateur uniquement** : aucune vraie monnaie, aucun compte, aucun serveur.
+
+---
+
+## Les petits détails qui font tout
+
+| | |
+|---|---|
+| 🫧 **Curseur « Mercure »** | Une goutte de chrome liquide remplace la souris, avec une traînée en comète. Sur un bouton, des crochets de verrouillage HUD l'encadrent avec son nom. |
+| 🔊 **Sons maison** | Tic au survol, « bloop » au clic, souffle entre les sections, intro de démarrage : tout est généré en direct avec la Web Audio API, sans aucun fichier audio. Coupé par défaut, bouton `SFX` dans le HUD. |
+| 🌌 **Fond vivant** | Le fond change d'ambiance à chaque section, en douceur, au fil du scroll. |
+| 🧲 **Boutons magnétiques** | Les boutons principaux attirent légèrement le curseur. |
+| 👆 **Easter eggs** | Clique 5 fois sur le perso. Trouve le 💣 dans la FAQ. Ouvre la console. |
+| ♿ **Accessible** | Navigable au clavier, focus visible, contrastes vérifiés, « réduire les animations » respecté, tout le texte reste dans le HTML (lisible par Google). |
+| 🛟 **Plans B** | Sans WebGL : image fixe de la sculpture. Sans GSAP : grille simple. Sans `localStorage` : tout marche quand même. |
+
+---
+
+## Sous le capot
+
+- **100 % statique** sur GitHub Pages : HTML, CSS et JavaScript vanilla. **Pas de build, pas de npm, pas de framework.**
+- **Chrome liquide** : un shader **WebGL écrit à la main** (raymarching de gouttes fusionnées, anneau, jeton de casino), avec un environnement de studio procédural. La résolution s'adapte en direct à la puissance de l'appareil.
+- **Scroll** : défilement lissé maison et GSAP ScrollTrigger (cdnjs, avec hash SRI) pour le carrousel.
+- **Sécurité** : une Content-Security-Policy sur chaque page, aucune donnée envoyée nulle part, et les titres venant de fichiers de données sont insérés en texte (jamais en HTML).
+- **Tests** : plus d'une centaine de tests automatiques (Python + Playwright) dans un vrai navigateur. Ils vérifient les textes exacts, le WebGL, le clavier, les contrastes, le poids de la page, les liens et les plans B.
+
+### Arborescence
 
 ```
 /
-├── index.html            Accueil (personnage, liens sociaux, menu latéral)
-├── 404.html              Page d'erreur personnalisée
-├── faq/index.html        FAQ (+ easter egg : démineur caché derrière l'emoji 💣)
-├── socials/index.html    Boutons Discord / TikTok / Instagram
-├── cases/
-│   ├── index.html        Case Simulator (≈2 900 lignes, tout le jeu est dans ce fichier)
-│   ├── cases-data.json   Caisses CS:GO + contenu (images servies par le CDN Steam)
-│   └── prices-data.json  Prix des caisses / skins
+├── index.html              Accueil : toutes les sections (écran START, Home, Videos, About, Socials, Gamble, fin)
+├── 404.html                Page d'erreur (« 404 » en chrome)
+├── socials/, faq/          Anciennes pages → redirigent vers /#socials et /#about
+├── cases/                  BASH ADDICTION, le simulateur de caisses (index.html + données JSON)
 ├── assets/
-│   ├── css/tokens.css    Variables (couleurs, marques, easing) + grain — chargé par TOUTES les pages
-│   ├── css/base.css      Mise en page commune des pages vitrine + effets design v2
-│   ├── css/videos.css    Accueil : sortie du hero au scroll, carrousel 3D « Latest videos », outro
-│   ├── js/site.js        JS commun vitrine : hauteur d'écran, menu, transitions, néon, parallax, reveal
-│   ├── js/videos.js      Accueil : scroll (GSAP ScrollTrigger), cartes vidéo depuis videos.json
-│   ├── videos/           videos.json (liste des vidéos) + miniatures <id>.jpg
-│   ├── favicon-anim.js   Favicon animé (frames PNG en base64)
-│   ├── *.webp / *.png    Personnages, fond de menu, icônes, image OpenGraph
-├── tools/add-video.py    Ajoute une vidéo TikTok à la section « Latest videos »
-├── site.webmanifest      PWA (thème #3a0e5c, fond #08070a)
-├── sitemap.xml, robots.txt
-└── CNAME
+│   ├── css/tokens.css      Couleurs, polices, easing (variables --nc-*)
+│   ├── css/base.css        Socle commun : HUD, menu, boutons, écran START, curseur, fond
+│   ├── css/home.css        Les sections de l'accueil
+│   ├── css/cases.css       Le thème Nocturne Chrome du simulateur
+│   ├── js/site.js          BashSite : stockage sûr, HUD en direct, menu, écran START + intro
+│   ├── js/chrome.js        BashChrome : la sculpture WebGL et ses états par section
+│   ├── js/mercure.js       BashMercure : le curseur goutte de chrome + crochets de verrouillage
+│   ├── js/home.js          BashHome : parcours au scroll, carrousel vidéo, fiche, contact, inclinaison
+│   ├── js/audio.js         BashAudio : les sons synthétisés
+│   ├── js/minesweeper.js   BashMines : le démineur caché
+│   ├── videos/videos.json  Les vidéos de la section « Latest videos »
+│   └── chrome-fallback.webp, og-image.jpg, character.webp, faq-character.webp, icônes…
+├── tools/                  add-video.py, render-assets.py, og.html (non publiés)
+├── tests/                  Les tests automatiques (non publiés)
+└── docs/                   Spec, plan de travail, captures du README (non publiés)
 ```
 
-### Conventions de code
-- **Commun** dans `assets/css` + `assets/js/site.js` ; **spécifique** dans le `<style>`/`<script>` inline de chaque page (chargé après, donc prioritaire).
-- Le **HTML** du menu latéral et des icônes sociales reste écrit dans chaque page (`index`, `faq`, `socials`) : le modifier aux 3 endroits.
-- Le Case Simulator ne charge que `tokens.css` (il a sa propre mise en page).
-- Pas de build, pas de npm, pas de framework.
-- Données structurées SEO en `application/ld+json` sur chaque page.
+### Les états du chrome
 
-## Technologies & connecteurs
+La sculpture change de forme à chaque section, avec un fondu continu au fil du scroll :
 
-| Élément | Détail |
+| Section | Forme |
 |---|---|
-| Polices | Google Fonts : **Chakra Petch** (400–700), **Permanent Marker** |
-| Images des skins | CDN Steam (`community.akamai.steamstatic.com`) |
-| JS | Vanilla, aucune librairie (`assets/js/site.js` + scripts inline) |
-| Thème | Sombre / violet — variables dans `assets/css/tokens.css` (`--bg`, `--purple`, `--neon`, `--brand-*`…) |
-| Effets visuels | 100 % CSS/JS maison (grain SVG en `data:` URI, aucune image ni lib ajoutée) |
+| Home | gouttes fusionnées + anneau en orbite, un « bras » qui suit la souris |
+| Latest videos | les gouttes fondent, l'anneau s'agrandit et devient la piste du carrousel |
+| About & setup | petites gouttes rangées dans les marges |
+| Socials & contact | trois bulles séparées, une au-dessus de chaque bouton |
+| Click to gamble | un jeton de casino qui tourne |
+| Fin | une dernière goutte au-dessus du titre |
 
-| Animations au scroll | **GSAP 3.12.5 + ScrollTrigger** (cdnjs, avec hash SRI) — accueil uniquement |
-| Proxy d'images | **wsrv.nl** — sert les images Steam avec CORS pour l'image de partage (Case Simulator uniquement) |
+---
 
-CSP par page : l'accueil autorise en plus `https://cdnjs.cloudflare.com` (scripts), le Case Simulator `https://wsrv.nl` (images).
+## Travailler sur le site
 
-## Case Simulator (`/cases/`)
-
-Onglets : **Cases**, **Battle**, **Trade-Up**, **Mines**, **Inventory** + un **clicker/wallet** (modal, avec bâtiments) et un bouton Reset dans son footer.
-Systèmes transverses : solde, inventaire, stats, succès (achievements + toasts), récompense quotidienne (streak), effets sonores.
-
-Clés `localStorage` (constantes en haut du script) : `BAL_KEY`, `INV_KEY`, `STATS_KEY`, `ACH_KEY`, `DAILY_KEY`, `CK_KEY`, `SFX_KEY`. Les pages principales utilisent `bashMenuIntroSeen`.
-Les anciennes sauvegardes sont compatibles : les valeurs par défaut sont fusionnées via `Object.assign`.
-
-## Design v2 (Phase 3 — 2026-10-22)
-
-Identité conservée (noir/violet, personnage, Permanent Marker + Chakra Petch). Sauvegarde de l'ancien design : tag et branche **`design-v1`**.
-
-Hooks HTML à connaître :
-
-| Attribut | Effet (site.js + base.css) |
-|---|---|
-| `data-neon` | Le texte s'allume lettre par lettre façon néon, grésillement périodique, glitch au survol |
-| `data-parallax` | L'image enfant suit légèrement la souris (souris uniquement) |
-| `data-reveal` | Les enfants apparaissent en cascade au chargement |
-
-Autres effets : grain (tokens.css), brume violette (`.stage::after`), aura du personnage, menu en cascade, icônes sociales aux couleurs des marques, `<details>` animés, glitch du 404, wallet qui flashe vert/rouge (cases), cartes de caisses lumineuses, 2 colonnes et onglets à bord fondu sur mobile.
-Tous les effets sont coupés si `prefers-reduced-motion`. **Aucune librairie externe ajoutée.**
-
-**Revenir à l'ancien design** : `git revert <commits design v2>` ou redéployer la branche `design-v1`.
-
-### Nouvelles classes / sélecteurs
-- `.neon-letter`, `.sr-only` (texte lu par les lecteurs d'écran derrière le néon) — `base.css`
-- `.stage::after` (brume), `.character::before` (aura), `body::before` (grain, `tokens.css`)
-- Case Simulator : `.wallet-btn.bump-up` / `.bump-down` + fonction `bumpWallet()` (appelée par `updateWalletUI`)
-
-## Accueil : section « Latest videos » (2026-10-23)
-
-L'accueil défile désormais : **hero** (sticky, « BASH » grossit et se dissout, le perso glisse et s'estompe — variable CSS `--hp` 0→1) → **carrousel 3D** des vidéos qui tourne avec le scroll (section sticky, GSAP) → **outro** (boutons TikTok / Instagram / Discord).
-Sans GSAP (CDN bloqué) ou en « réduire les animations » : les vidéos s'affichent en simple grille.
-
-**Ajouter une vidéo** (lien complet `…/video/123…`) :
+**Lancer en local** (obligatoire pour les fichiers JSON) :
 ```bash
-python3 tools/add-video.py https://www.tiktok.com/@yupbash/video/1234567890
-git add -A && git commit -m "Add video" && git push
+python -m http.server 8000      # puis http://localhost:8000
 ```
-Le script récupère titre + miniature (oEmbed TikTok), garde les 8 plus récentes et supprime les vidéos provisoires (`"placeholder": true`).
+Pour revoir l'écran START, utilise une fenêtre de navigation privée : il ne s'affiche qu'à la première visite.
 
-## Case Simulator : drop légendaire & partage (2026-10-23)
-- **Drop légendaire** (`showLegendary`, `legendTier`) : ★ couteaux/gants = version complète (or), Covert = version courte (rouge). Flash, secousse, rayons, particules canvas, son `playLegendary`. Une seule fois par ouverture multiple (meilleur drop).
-- **Partage** (`buildShareCanvas`, `shareItemImage`) : image story 1080×1920 avec le vrai skin (via wsrv.nl, repli sur un médaillon), float, prix, URL. Mobile → feuille de partage native ; ordinateur → téléchargement PNG.
-
-## Déploiement
-
-1. **Tester en local** (obligatoire pour que les `fetch()` JSON fonctionnent) :
-   ```bash
-   cd BashSite && python3 -m http.server 8000   # puis http://localhost:8000
-   ```
-2. **Vérifier** : ordinateur + mobile (outils dev du navigateur), console sans erreur ni violation CSP, menu, une ouverture de caisse.
-3. **Publier** : `git push origin main` → GitHub Pages met le site à jour en 1–2 min sur https://yupbash.vip.
-4. **Annuler** : `git revert <commit>` puis push (jamais de `push --force` sur `main` sans sauvegarde).
-
-Authentification Git sur ce Mac : `gh auth login` (déjà fait, compte YupBash).
-
-### Ajouter une nouvelle page vitrine
-1. Copier `socials/index.html` dans `nouvelle-page/index.html` (garder les `<meta>` CSP/referrer en tête).
-2. Garder les liens `tokens.css`, `base.css` et `site.js` ; mettre le style propre à la page dans son `<style>`.
-3. Ajouter le lien dans le menu latéral des 3 pages (`index`, `faq`, `socials`) et l'URL dans `sitemap.xml`.
-4. Toute ressource externe → l'ajouter à la CSP de **chaque** page.
-
-## Règles de collaboration
-
-- Les commits sont signés **uniquement par YupBash** (`mortiez.be@gmail.com`), sans ligne `Co-Authored-By`.
-- Valider chaque phase avant de passer à la suivante.
-
-## Historique des corrections / Sécurité
-
-### 2026-10-22 — Audit de sécurité (Phase 2)
-
-Pas de serveur ni de PHP → aucune injection SQL ou faille serveur possible. Les risques sont côté navigateur.
-
-**1. XSS via `innerHTML` (Case Simulator) — corrigé**
-- *Faille* : les noms, images, usures et caisses d'origine des items (issus de `cases-data.json` et de la sauvegarde `localStorage`) étaient insérés tels quels dans `innerHTML`. Une sauvegarde ou un JSON piégé (ex. nom = `<img src=x onerror=...>`) exécutait du JavaScript.
-- *Correction* : fonction `esc()` dans `cases/index.html` (à côté de `rareBadgeHtml`), appliquée à toutes les données d'items insérées en HTML. **Règle : toute donnée non codée en dur passe par `esc()` ou `textContent`.**
-- *Vérifié* : payload injecté dans `cs2sim_inventory` → exécuté avant, affiché comme texte après.
-
-**2. Content-Security-Policy + Referrer-Policy — ajoutés sur toutes les pages**
-GitHub Pages ne permet pas d'en-têtes HTTP personnalisés → balises `<meta>` juste après `<meta charset>` :
+**Ajouter une vidéo TikTok** (elle remplace une carte « NO SIGNAL ») :
+```bash
+python tools/add-video.py https://www.tiktok.com/@yupbash/video/1234567890
 ```
-default-src 'self'; script-src 'self' 'unsafe-inline';
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.steamstatic.com;
-connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'
+Le script récupère le titre et la miniature, et garde une copie locale de la miniature (les images hébergées chez TikTok seraient bloquées par la CSP).
+
+**Régénérer l'image de partage et l'image de secours du chrome** :
+```bash
+python tools/render-assets.py
 ```
-⚠️ **Tout nouveau connecteur externe (CDN, police, API) doit être ajouté à cette CSP sur chaque page**, sinon il sera bloqué. `'unsafe-inline'` reste nécessaire tant que les scripts sont inline.
 
-**Points connus, non traités** : `frame-ancestors` (anti-clickjacking) impossible en `<meta>` sur GitHub Pages ; le solde du jeu est modifiable via la console (sans enjeu : aucun serveur, aucune vraie monnaie).
+**Lancer les tests** (Python 3 + `pip install playwright` + `playwright install chromium`) :
+```bash
+python -m unittest discover -s tests -v
+```
 
-### 2026-10-22 — Revue finale (Phase 4)
-- Intégration vérifiée : la CSP n'a rien bloqué après la refonte (0 violation sur les 5 pages), les 15 liens et ressources internes répondent 200, le jeu fonctionne (ouverture de caisse, inventaire, solde).
-- **Corrigé** : après un retour arrière du navigateur, la page pouvait rester invisible (fondu de sortie restauré depuis le cache) → `site.js` ré-affiche la page sur `pageshow`.
-- **Corrigé** : le mot « BASH » découpé en lettres pour le néon restait lisible par les lecteurs d'écran grâce à un texte `.sr-only`.
-- Vérifié : menu au clavier (Entrée / Échap), mode « réduire les animations » (tout est figé et visible).
+**Mémoire du navigateur** (`localStorage`, rien n'est envoyé) :
+
+| Clé | Rôle |
+|---|---|
+| `bash_v3_entered` | `"1"` après l'écran START (il ne revient plus) |
+| `bash_v3_sfx` | `"on"` / `"off"` : sons activés |
+| `bash_v3_tilt` | `"granted"` / `"denied"` : autorisation du gyroscope (iPhone) |
+| `cs2sim_*` | sauvegarde du simulateur (solde, inventaire, stats, succès…) |
+
+**Publier** : un push sur `main` met le site à jour en 1 à 2 minutes sur https://yupbash.vip (GitHub Pages).
+**Revenir en arrière** : les anciens designs sont gardés dans les tags `design-v1` et `design-v2` (`git revert` du merge, ou redéployer un tag).
+
+### Règles du projet
+
+- Toute ressource externe (CDN, police, API) doit être ajoutée à la **CSP de chaque page**, sinon elle est bloquée.
+- Toute donnée qui n'est pas écrite en dur s'insère avec `textContent` (ou `esc()` dans le simulateur), jamais en HTML brut.
+- Les commits sont signés **YupBash** uniquement, sans ligne `Co-Authored-By`.
+
+### Sécurité (historique)
+
+- **2026-10 — Audit** : XSS via `innerHTML` corrigée dans le simulateur (`esc()`), CSP et Referrer-Policy ajoutées sur toutes les pages. Points connus : `frame-ancestors` est impossible en `<meta>` sur GitHub Pages, et le solde du jeu est modifiable en console (sans enjeu : aucune vraie monnaie).
+- **2026-11 — Design v3** : la CSP n'a pas changé (aucune nouvelle ressource externe), les titres de vidéos sont insérés en texte, et les liens TikTok des vidéos sont vérifiés.
+
+---
+
+<div align="center">
+<sub>Design & code : <b>BASH · 2024–2026</b> &nbsp;·&nbsp; fake money, real addiction.</sub>
+</div>
