@@ -126,9 +126,98 @@
     else waiting.push(fn);
   }
 
+  /* ---------- PRESS START gate (first visit only) and the boot intro ---------- */
+  var BOOT = ["BASH.SYS v3.0 — booting…", "chrome: liquid ✓", "vibes: questionable ✓", "gambling addiction: detected ✓", "welcome.."];
+  function startGate() {
+    var gate = $("gate");
+    if (!gate) return false;
+    if (store.get("bash_v3_entered") === "1") { gate.parentNode.removeChild(gate); return false; }
+    var rest = Array.prototype.filter.call(document.body.children, function (el) {
+      return el !== gate && el.tagName !== "SCRIPT" && !el.hasAttribute("inert");
+    });
+    rest.forEach(function (el) { el.setAttribute("inert", ""); });
+    html.classList.add("gate-on");
+    var enterBtn = $("enterBtn"), silentBtn = $("enterSilent"), lines = $("bootLines");
+    var started = false;
+    if (enterBtn) enterBtn.focus();
+    // Compile the chrome shader now, hidden behind the gate (sculpture at size 0), so the intro never stalls.
+    setTimeout(function () { if (!started && window.BashHome && window.BashHome.introChrome) window.BashHome.introChrome(0); }, 0);
+
+    function onKey(e) { if (e.key === "Escape" && !started) { e.preventDefault(); go(false); } }
+    document.addEventListener("keydown", onKey);
+    if (enterBtn) enterBtn.addEventListener("click", function () { go(true); });
+    if (silentBtn) silentBtn.addEventListener("click", function () { go(false); });
+
+    function go(sound) {
+      if (started) return;
+      started = true;
+      document.removeEventListener("keydown", onKey);
+      var A = window.BashAudio;
+      if (A) {
+        if (sound) { A.unlock(); A.setEnabled(true); } else A.setEnabled(false);
+      }
+      if (sound && window.BashHome && window.BashHome.requestTilt) {
+        try { window.BashHome.requestTilt(); } catch (err) { /* tilt is optional */ }
+      }
+      intro(sound);
+    }
+
+    function intro(sound) {
+      var timers = [], raf = 0, done = false;
+      function play(name) { if (sound && window.BashAudio) window.BashAudio.play(name); }
+      function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+      function chromeIntro(k) { if (window.BashHome && window.BashHome.introChrome) window.BashHome.introChrome(k); }
+      function skip() { finish(); }
+      function finish() {
+        if (done) return;
+        done = true;
+        timers.forEach(clearTimeout);
+        cancelAnimationFrame(raf);
+        document.removeEventListener("pointerdown", skip, true);
+        document.removeEventListener("keydown", skip, true);
+        if (lines) lines.textContent = BOOT.join("\n");
+        store.set("bash_v3_entered", "1");
+        rest.forEach(function (el) { el.removeAttribute("inert"); });
+        html.classList.remove("gate-on");
+        html.classList.add("was-entered");
+        if (gate.parentNode) gate.parentNode.removeChild(gate);
+        chromeIntro(1);
+        fireEntered(sound);
+      }
+      if (reduced) { finish(); return; }
+      gate.classList.add("booting");
+      play("boot-rise");
+      BOOT.forEach(function (line, i) {
+        at(300 + i * 200, function () {
+          if (lines) lines.textContent = BOOT.slice(0, i + 1).join("\n");
+          play("boot-tick");
+        });
+      });
+      at(1300, function () {
+        gate.classList.add("dropping");
+        play("boot-drop");
+        var t0 = performance.now();
+        chromeIntro(0);
+        (function grow(now) {   // the chrome drop falls in: 0 → 1 with a small overshoot (ease-out-back)
+          var t = Math.min(1, (now - t0) / 400), c = 1.70158, u = t - 1;
+          chromeIntro(1 + (c + 1) * u * u * u + c * u * u);
+          if (t < 1) raf = requestAnimationFrame(grow);
+        })(t0);
+      });
+      at(1700, function () { gate.classList.add("leaving"); play("boot-bass"); });
+      at(2000, finish);
+      setTimeout(function () {   // a click or a key during the intro skips it
+        if (done) return;
+        document.addEventListener("pointerdown", skip, true);
+        document.addEventListener("keydown", skip, true);
+      }, 0);
+    }
+    return true;
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     if (window.BashMercure) window.BashMercure.init();
-    if (!$("gate")) fireEntered(store.get("bash_v3_sfx") === "on");
+    if (!startGate()) fireEntered(store.get("bash_v3_sfx") === "on");
   });
 
   console.log("%cBASH", "font-family:Anybody,system-ui,sans-serif;font-style:italic;font-weight:900;font-size:46px;color:#cfe2ff;text-shadow:0 0 14px rgba(140,185,255,.8)");

@@ -27,7 +27,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BASH">
 <script src="/assets/favicon-anim.js" defer></script>
+<script>try{if(localStorage.getItem("bash_v3_entered")==="1")document.documentElement.classList.add("was-entered")}catch(e){}</script>
 <script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/audio.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="/assets/js/chrome.js" defer></script>
@@ -112,6 +114,16 @@
 </script>
 </head>
 <body>
+<div id="gate" class="gate" role="dialog" aria-modal="true" aria-label="Enter BASH">
+  <span class="gate-c a" aria-hidden="true"></span><span class="gate-c b" aria-hidden="true"></span>
+  <span class="gate-c c" aria-hidden="true"></span><span class="gate-c d" aria-hidden="true"></span>
+  <div class="gate-inner">
+    <p class="gate-tab">welcome..</p>
+    <button id="enterBtn" class="gel gate-enter" type="button"><span>ENTER ▸</span></button>
+    <button id="enterSilent" class="gate-silent" type="button">enter silently</button>
+    <pre id="bootLines" class="gate-boot" aria-live="polite"></pre>
+  </div>
+</div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="g-ice" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".4" stop-color="#cfe0ff"/><stop offset=".52" stop-color="#3b5591"/><stop offset=".62" stop-color="#d6e5ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>

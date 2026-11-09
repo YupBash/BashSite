@@ -199,6 +199,28 @@ html.menu-open .menu-list li:nth-child(5){animation-delay:.2s}
   .hud-site,.hud-live,.hud-clock,.hud-coords,.hud-fps,.hud-vert,.hud-ruler,.hud-bottom .hud-line{display:none}
   .hud-bottom{justify-content:space-between}
 }
+/* ---------- PRESS START gate + boot intro (first visit only; .was-entered hides it before any paint) ---------- */
+.gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;background:#06040b;transition:background .4s,opacity .3s}
+.was-entered .gate{display:none}
+.gate-c{position:absolute;width:28px;height:28px;border:0 solid var(--nc-accent);opacity:.85;transform:scale(.35);transition:transform .4s var(--nc-ease)}
+.gate-c.a{left:18px;top:18px;border-top-width:1.5px;border-left-width:1.5px;transform-origin:0 0}
+.gate-c.b{right:18px;top:18px;border-top-width:1.5px;border-right-width:1.5px;transform-origin:100% 0}
+.gate-c.c{left:18px;bottom:18px;border-bottom-width:1.5px;border-left-width:1.5px;transform-origin:0 100%}
+.gate-c.d{right:18px;bottom:18px;border-bottom-width:1.5px;border-right-width:1.5px;transform-origin:100% 100%}
+.gate.booting .gate-c{transform:scale(1.6)}
+.gate-inner{display:flex;flex-direction:column;align-items:center;gap:34px;text-align:center}
+.gate-tab{margin:0;padding:7px 26px 8px;border:1.5px solid var(--nc-accent);border-radius:4px 14px 4px 14px;background:var(--nc-tabfill);
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:130%;font-weight:500;font-size:clamp(15px,1.6vw,22px)}
+.gate-enter{font-size:clamp(16px,1.6vw,20px);animation:ncPulse 2.2s ease-in-out infinite}
+@keyframes ncPulse{0%,100%{box-shadow:0 0 0 0 rgba(207,226,255,0),0 12px 40px -12px var(--nc-accent-glow)}50%{box-shadow:0 0 0 8px rgba(207,226,255,.08),0 12px 50px -8px var(--nc-accent-glow)}}
+.gate-silent{padding:6px 10px;border:0;background:none;color:var(--nc-hud);cursor:pointer;
+  font:500 10.5px/1 var(--nc-font-mono);letter-spacing:.18em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
+.gate-silent:hover{color:var(--nc-accent)}
+.gate-boot{min-height:7.6em;min-width:17em;margin:0;font:500 11px/1.5 var(--nc-font-mono);letter-spacing:.06em;color:var(--nc-accent);text-align:left;white-space:pre;
+  text-shadow:0 0 8px var(--nc-accent-glow)}
+.gate.booting .gate-enter,.gate.booting .gate-silent,.gate.booting .gate-tab{opacity:0;pointer-events:none;transition:opacity .25s}
+.gate.dropping{background:rgba(6,4,11,.35)}
+.gate.leaving{opacity:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }

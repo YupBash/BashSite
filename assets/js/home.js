@@ -16,6 +16,11 @@
     if (home.chrome) home.chrome.setState("home");
     journey.sync(true);
   }
+  /* Boot intro (site.js): the chrome sculpture drops in, k from 0 to 1. */
+  home.introChrome = function (k) {
+    initChrome();
+    if (home.chrome) home.chrome.setIntro(k);
+  };
 
   /* ---------- Socials: one chrome bubble above each button, in order Discord, TikTok, Instagram ---------- */
   function socialTargets() {
