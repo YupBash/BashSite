@@ -213,16 +213,26 @@ html.menu-open .menu-list li:nth-child(5){animation-delay:.2s}
 .gate-c.d{right:18px;bottom:18px;border-bottom-width:1.5px;border-right-width:1.5px;transform-origin:100% 100%}
 .gate.booting .gate-c{transform:scale(1.6)}
 .gate-inner{display:flex;flex-direction:column;align-items:center;gap:34px;text-align:center}
-.gate-tab{margin:0;padding:7px 26px 8px;border:1.5px solid var(--nc-accent);border-radius:4px 14px 4px 14px;background:var(--nc-tabfill);
-  font-family:var(--nc-font-display);font-style:italic;font-stretch:130%;font-weight:500;font-size:clamp(15px,1.6vw,22px)}
-.gate-enter{font-size:clamp(16px,1.6vw,20px);animation:ncPulse 2.2s ease-in-out infinite}
-@keyframes ncPulse{0%,100%{box-shadow:0 0 0 0 rgba(207,226,255,0),0 12px 40px -12px var(--nc-accent-glow)}50%{box-shadow:0 0 0 8px rgba(207,226,255,.08),0 12px 50px -8px var(--nc-accent-glow)}}
+/* ":: ▷START" — wordmark-style button: chrome dots, an outlined play triangle that breathes, START in chrome type. */
+.gate-start{display:inline-flex;align-items:center;gap:.14em;padding:.12em .2em;border:0;background:none;color:var(--nc-ink);cursor:pointer;
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;font-size:clamp(46px,7.4vw,104px);line-height:.9;letter-spacing:-.02em;
+  filter:drop-shadow(0 0 24px rgba(139,92,246,.35)) drop-shadow(0 5px 0 rgba(0,0,0,.55))}
+.gate-colons{flex:none;width:.2em;height:.27em;margin-right:.06em;fill:url(#g-ice);transform:skewX(-14deg);filter:drop-shadow(0 0 8px var(--nc-accent-glow))}
+.gate-play{flex:none;width:.52em;height:.6em;overflow:visible;transform:skewX(-8deg);transition:transform .35s var(--nc-ease)}
+.gate-play path{fill:transparent;stroke:var(--nc-accent);stroke-width:2.2;stroke-linejoin:round;vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 6px var(--nc-accent-glow));transition:fill .3s;animation:ncBreathe 2.4s ease-in-out infinite}
+@keyframes ncBreathe{50%{opacity:.35}}
+.gate-start-word{display:block;padding-right:.06em}
+.gate-start:hover .gate-play,.gate-start:focus-visible .gate-play{transform:skewX(-8deg) translateX(.08em)}
+.gate-start:hover .gate-play path{fill:var(--nc-accent);animation:none}
+.gate-start:focus-visible .gate-play path{animation:none}
+.gate-start:focus-visible{outline:none}
 .gate-silent{padding:6px 10px;border:0;background:none;color:var(--nc-hud);cursor:pointer;
   font:500 10.5px/1 var(--nc-font-mono);letter-spacing:.18em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
 .gate-silent:hover{color:var(--nc-accent)}
 .gate-boot{min-height:7.6em;min-width:17em;margin:0;font:500 11px/1.5 var(--nc-font-mono);letter-spacing:.06em;color:var(--nc-accent);text-align:left;white-space:pre;
   text-shadow:0 0 8px var(--nc-accent-glow)}
-.gate.booting .gate-enter,.gate.booting .gate-silent,.gate.booting .gate-tab{opacity:0;pointer-events:none;transition:opacity .25s}
+.gate.booting .gate-start,.gate.booting .gate-silent{opacity:0;pointer-events:none;transition:opacity .25s}
 .gate.dropping{background:rgba(6,4,11,.35)}
 .gate.leaving{opacity:0}
 @media (prefers-reduced-motion:reduce){

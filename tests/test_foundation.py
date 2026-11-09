@@ -28,8 +28,6 @@ class FoundationTest(SiteTestCase):
     def test_copy_is_exact(self):
         page = self.open("/")
         text = lambda sel: page.eval_on_selector(sel, "el => el.textContent.trim()")
-        self.assertEqual(text(".tagline"), "I can't get myself out of gambling.")
-        self.assertEqual(text(".meta"), "Content creator — TikTok / Instagram / Discord")
         self.assertEqual(text("#outro .outro-title"), "Don't miss the next one.")
         self.assertEqual(text("#outro .signature"), "BASH · 2024–2026")
         gamble = text("#gamble")

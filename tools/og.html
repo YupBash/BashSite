@@ -14,13 +14,11 @@
   .og::after{content:"";position:absolute;left:0;right:0;top:72%;height:1px;background:linear-gradient(90deg,transparent,rgba(207,226,255,.35),transparent)}
   .sculpt{position:absolute;right:150px;top:-40px;width:620px;height:620px;object-fit:contain}
   .char{position:absolute;right:40px;bottom:0;height:600px;filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 34px rgba(124,58,237,.35))}
-  .copy{position:absolute;left:70px;top:150px}
-  .tab{display:inline-block;padding:7px 26px 8px;border:1.5px solid var(--nc-accent);border-radius:4px 14px 4px 14px;background:var(--nc-tabfill);
-    font-family:var(--nc-font-display);font-style:italic;font-stretch:130%;font-weight:500;font-size:24px;color:var(--nc-ink)}
-  .word{margin:14px 0 0 -6px;font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;font-size:200px;line-height:.8;letter-spacing:-.02em;
+  .copy{position:absolute;left:70px;top:205px}
+  .colons{width:.2em;height:.27em;margin:.07em .09em 0 0;fill:#dfe9ff;transform:skewX(-14deg);vertical-align:top;filter:drop-shadow(0 0 9px rgba(140,185,255,.5))}
+  .word{display:flex;align-items:flex-start;margin:0 0 0 -6px;font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;font-size:200px;line-height:.8;letter-spacing:-.02em;
     filter:drop-shadow(0 0 28px rgba(139,92,246,.4)) drop-shadow(0 7px 0 rgba(0,0,0,.55))}
-  .tag{margin:26px 0 0;font-family:"Chakra Petch",sans-serif;font-style:italic;font-weight:600;font-size:28px;color:var(--nc-ink)}
-  .site{margin:10px 0 0;font:600 15px/1 var(--nc-font-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--nc-hud)}
+  .site{margin:30px 0 0;font:600 15px/1 var(--nc-font-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--nc-hud)}
   .c{position:absolute;width:26px;height:26px;border:0 solid var(--nc-accent);opacity:.8}
   .c.a{left:20px;top:20px;border-top-width:2px;border-left-width:2px}.c.b{right:20px;top:20px;border-top-width:2px;border-right-width:2px}
   .c.d{left:20px;bottom:20px;border-bottom-width:2px;border-left-width:2px}.c.e{right:20px;bottom:20px;border-bottom-width:2px;border-right-width:2px}
@@ -31,9 +29,7 @@
   <img class="sculpt" src="/assets/chrome-fallback.webp" alt="">
   <img class="char" src="/assets/character.webp" alt="">
   <div class="copy">
-    <span class="tab">welcome..</span>
-    <div class="word chrome-text">BASH</div>
-    <p class="tag">I can't get myself out of gambling.</p>
+    <div class="word"><svg class="colons" viewBox="0 0 20 27" aria-hidden="true"><circle cx="4" cy="5" r="3.6"/><circle cx="15" cy="5" r="3.6"/><circle cx="4" cy="20" r="3.6"/><circle cx="15" cy="20" r="3.6"/></svg><span class="chrome-text">BASH</span></div>
     <p class="site">::yupbash.vip</p>
   </div>
   <span class="c a"></span><span class="c b"></span><span class="c d"></span><span class="c e"></span>

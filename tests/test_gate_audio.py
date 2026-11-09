@@ -23,6 +23,15 @@ class GateTest(SiteTestCase):
         page.wait_for_function("() => document.activeElement && document.activeElement.id === 'enterBtn'", timeout=2000)
         self.assertTrue(page.evaluate("document.getElementById('main').hasAttribute('inert')"))
 
+    def test_start_button_is_minimal(self):
+        page = self.open("/", entered=False)
+        self.assertEqual(" ".join(page.text_content("#enterBtn").split()), "START")
+        self.assertEqual(page.locator("#enterBtn svg.gate-play").count(), 1)
+        self.assertEqual(page.locator("#enterBtn svg.gate-colons").count(), 1)
+        self.assertFalse(page.evaluate("document.getElementById('enterBtn').classList.contains('gel')"))
+        self.assertEqual(page.locator("#gate .gate-tab").count(), 0)
+        self.assertNotIn("welcome..", page.text_content("#gate"))
+
     def test_enter_with_sound(self):
         page = self.open("/", entered=False, init_script=RECORD)
         page.click("#enterBtn")

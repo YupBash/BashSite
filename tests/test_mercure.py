@@ -21,11 +21,13 @@ class MercureTest(SiteTestCase):
     def test_hover_wraps_then_unwraps(self):
         page = self.open("/")
         page.evaluate(INIT)
-        box = page.locator("#home .gel").bounding_box()
+        page.evaluate("document.querySelector('#gamble a.gel').scrollIntoView({ block: 'center', behavior: 'instant' })")
+        page.wait_for_timeout(300)
+        box = page.locator("#gamble a.gel").bounding_box()
         page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=8)
         page.wait_for_timeout(700)
         self.assertGreater(page.evaluate(STATE)["wrap"], 0.9)
-        self.assertTrue(page.evaluate("window.__m.state().target === document.querySelector('#home .gel')"))
+        self.assertTrue(page.evaluate("window.__m.state().target === document.querySelector('#gamble a.gel')"))
         page.mouse.move(760, 760, steps=8)
         page.wait_for_timeout(900)
         self.assertLess(page.evaluate(STATE)["wrap"], 0.1)
@@ -45,9 +47,9 @@ class MercureTest(SiteTestCase):
         page.evaluate(INIT)
         for _ in range(12):
             page.keyboard.press("Tab")
-            if page.evaluate("document.activeElement === document.querySelector('#home .gel')"):
+            if page.evaluate("document.activeElement === document.getElementById('menuBtn')"):
                 break
-        self.assertTrue(page.evaluate("document.activeElement === document.querySelector('#home .gel')"))
+        self.assertTrue(page.evaluate("document.activeElement === document.getElementById('menuBtn')"))
         self.assertTrue(page.evaluate("window.__m.state().target === document.activeElement"))
 
     def test_touch_hides_droplet(self):

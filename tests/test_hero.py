@@ -4,8 +4,11 @@ import unittest
 
 from tests.harness import SiteTestCase
 
+# The hero has no buttons any more (YupBash, phase 3 checkpoint): the magnet is checked on the gamble button.
+MAGNET = "#gamble a.gel"
+TO_MAGNET = "document.querySelector('#gamble a.gel').scrollIntoView({ block: 'center', behavior: 'instant' })"
 MESSAGES = ["Stop that.", "Bro, stop.", "Alright, Don't do that.", "Hey!"]
-TX = "() => { const m = getComputedStyle(document.querySelector('#home .gel')).transform; " \
+TX = "() => { const m = getComputedStyle(document.querySelector('#gamble a.gel')).transform; " \
      "return m === 'none' ? 0 : new DOMMatrix(m).m41; }"
 
 
@@ -39,9 +42,17 @@ class HeroTest(SiteTestCase):
         page.wait_for_function("() => window.__bubbles.length > 0", timeout=5000)
         self.assertIn(page.evaluate("window.__bubbles[0]"), MESSAGES)
 
+    def test_hero_is_minimal(self):
+        page = self.open("/")
+        self.assertTrue(page.is_visible("#word"))
+        self.assertEqual(page.locator("#home .tabrow, #home .tab, #home .tagline, #home .meta, #home .ctas, #home a, #home button").count(), 0)
+        self.assertNotIn("welcome..", page.text_content("#home"))
+
     def test_magnetic_button_moves(self):
         page = self.open("/")
-        box = page.locator("#home .gel").bounding_box()
+        page.evaluate(TO_MAGNET)
+        page.wait_for_timeout(300)
+        box = page.locator(MAGNET).bounding_box()
         page.mouse.move(box["x"] - 40, box["y"] + box["height"] / 2, steps=6)
         page.wait_for_timeout(500)
         tx = page.evaluate(TX)
@@ -50,7 +61,9 @@ class HeroTest(SiteTestCase):
 
     def test_magnetic_off_with_reduced_motion(self):
         page = self.open("/", reduced_motion=True)
-        box = page.locator("#home .gel").bounding_box()
+        page.evaluate(TO_MAGNET)
+        page.wait_for_timeout(300)
+        box = page.locator(MAGNET).bounding_box()
         page.mouse.move(box["x"] - 40, box["y"] + box["height"] / 2, steps=6)
         page.wait_for_timeout(500)
         self.assertEqual(page.evaluate(TX), 0)

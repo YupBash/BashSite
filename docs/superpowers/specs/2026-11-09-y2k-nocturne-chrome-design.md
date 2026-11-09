@@ -97,7 +97,7 @@ Le rendu validé (hero, shader, curseur Mercure) existe en prototype local, non 
 Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + barre de progression, bouton `SFX ON/OFF`, réseaux.
 
 ### 0 · Écran ENTER + intro (1re visite uniquement)
-- Écran noir, coins du HUD, onglet « welcome.. », bouton chromé pulsant **« ENTER ▸ »**, lien discret *enter silently*.
+- Écran noir, coins du HUD, bouton épuré **« :: ▷START »** (points chromés, triangle en contour qui respire et se remplit au survol, START en lettres chromées, d'après le croquis de YupBash au checkpoint de la phase 3), lien discret *enter silently*.
 - **ENTER** : débloque l'audio, active les SFX, puis lance l'intro (≈ 2 s) **avec son** : lignes « système » qui s'écrivent avec un tic chacune (ton humoristique, ex. `vibes: questionable ✓`), note montante quand les coins se tracent, « bloop » liquide quand la goutte de chrome tombe, basse sourde quand la page s'ouvre.
 - **enter silently** : même intro, sans son ; SFX coupés.
 - Sur iPhone, ce même tap demande l'autorisation d'inclinaison.
@@ -105,7 +105,7 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 - Le contenu est déjà dans le HTML sous l'écran (indexable par Google).
 
 ### 01 · HOME
-- Hero validé : onglet « welcome.. », `::` + **BASH** chromé (le reflet suit le pointeur), accroche « I can't get myself out of gambling. », ligne mono « Content creator — TikTok / Instagram / Discord », boutons « Latest videos >>> » (gel) et « Click to gamble » (crochets), perso debout **devant** le mot, sculpture de chrome (gouttes + anneau en orbite) derrière, au niveau de sa tête et de ses épaules.
+- Hero épuré (demande de YupBash au checkpoint de la phase 3 : onglet « welcome.. », accroche, ligne mono et boutons retirés) : `::` + **BASH** chromé (le reflet suit le pointeur), perso debout **devant** le mot, sculpture de chrome (gouttes + anneau en orbite) derrière, au niveau de sa tête et de ses épaules.
 - Au scroll : BASH s'étire et se dissout, le perso glisse et s'estompe, la sculpture « coule » vers la section suivante.
 - Easter egg conservé : 5 clics rapides sur le perso → bulle (« Stop that. », « Bro, stop. », « Alright, Don't do that. », « Hey! »), détection sur la silhouette.
 
