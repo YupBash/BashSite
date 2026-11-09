@@ -30,177 +30,12 @@
 <script src="/assets/js/site.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<script src="/assets/js/videos.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Permanent+Marker&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@1,50..150,100..900&family=Chakra+Petch:ital,wght@0,400;0,600;1,500;1,600&family=Martian+Mono:wdth,wght@75..112.5,300..700&family=Permanent+Marker&display=swap">
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
-<link rel="stylesheet" href="/assets/css/videos.css">
-<style>
-  /* Home scrolls (hero → videos → outro); menu and socials stay pinned to the viewport. */
-  html,body{height:auto;min-height:100%;}
-  body{overflow-x:hidden;overflow-y:auto;}
-  .menu-btn,.top-socials{position:fixed;}
-
-  :root{
-    --bg:#08070a;
-    --ink:#f4f1ec;
-    --purple:#6b21a8;
-    --purple-deep:#3a0e5c;
-    --purple-glow:rgba(107,33,168,0.55);
-    --line:#2a2430;
-    --menu-bg:#22072f;
-    --menu-bg-2:#340c47;
-    --menu-text:#e9f7f9;
-  }
-  *{box-sizing:border-box;}
-  .stage{
-    position:relative;
-    width:100%;height:calc(var(--vh, 1vh) * 100);height:100dvh;min-height:320px;
-    background:
-      radial-gradient(ellipse 70% 60% at 78% 30%, rgba(107,33,168,0.08), rgba(107,33,168,0.03) 35%, transparent 80%),
-      radial-gradient(ellipse 90% 70% at 10% 90%, rgba(58,14,92,0.11), rgba(58,14,92,0.04) 35%, transparent 85%),
-      var(--bg);
-  }
-
-  .wordmark-tag{
-    position:absolute;left:clamp(30px,6vw,90px);top:50%;
-    transform:translateY(-50%);
-    z-index:3;
-    user-select:none;
-    animation:tagFloat 4.5s ease-in-out infinite;
-    transition:opacity .25s ease;
-  }
-  @keyframes tagFloat{
-    0%, 100%{ transform:translateY(-50%); }
-    50%{ transform:translateY(calc(-50% - 18px)); }
-  }
-  .stage.menu-open .wordmark-tag{
-    opacity:0;
-    pointer-events:none;
-  }
-  .wordmark-tag-bar{
-    position:relative;
-  }
-  .wordmark-tag-text{
-    display:block;
-    font-family:"Permanent Marker",cursive;
-    font-size:max(3.6rem,11vw);
-    color:rgba(120,95,155,.32);
-    -webkit-text-stroke:2px rgba(190,150,225,.55);
-    text-stroke:2px rgba(190,150,225,.55);
-    text-shadow:0 0 4px rgba(215,185,240,.65), 0 0 10px rgba(170,100,225,.5), 0 0 20px rgba(139,63,209,.35);
-    filter:blur(1.2px);
-    letter-spacing:.03em;
-    white-space:nowrap;
-  }
-
-  .character{
-    position:absolute;right:clamp(0%,4vw,5%);bottom:0;
-    height:calc(var(--vh, 1vh) * 106);
-    filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 28px rgba(107,33,168,0.3));
-    z-index:11;
-    transition:opacity .25s ease;
-    animation:characterFloat 4.5s ease-in-out infinite;
-    cursor:pointer;
-  }
-  .character img{height:100%;width:auto;display:block;}
-  @keyframes characterFloat{
-    0%, 100%{ transform:translateY(0); }
-    50%{ transform:translateY(-18px); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .character{ animation:none; }
-  }
-  .character.poke img{
-    animation:characterPoke .6s ease;
-  }
-  @keyframes characterPoke{
-    0%, 100%{ transform:none; }
-    25%{ transform:rotate(-3deg) scale(1.04); }
-    50%{ transform:rotate(2deg) scale(1.02); }
-    75%{ transform:rotate(-1deg) scale(1.01); }
-  }
-  .character-bubble{
-    position:absolute;top:0%;right:0%;
-    transform:translateY(-6px);
-    background:#1a0f24;
-    color:var(--ink);
-    border:1px solid rgba(255,255,255,.15);
-    padding:8px 14px;
-    border-radius:14px;
-    font-family:"Chakra Petch",system-ui,sans-serif;
-    font-size:.85rem;
-    white-space:nowrap;
-    opacity:0;
-    transition:opacity .3s ease, transform .3s ease;
-    pointer-events:none;
-    z-index:12;
-  }
-  .character-bubble.show{
-    opacity:1;
-    transform:translateY(0);
-  }
-  .character-bubble::after{
-    content:"";
-    position:absolute;top:100%;right:20px;
-    border:6px solid transparent;
-    border-top-color:#1a0f24;
-  }
-  @media (min-width: 721px){
-    .character-bubble{
-      top:22%;right:calc(100% - 20px);
-      transform:translateX(4px);
-    }
-    .character-bubble.show{
-      transform:translateX(0);
-    }
-    .character-bubble::after{
-      top:20px;right:auto;left:100%;
-      border-top-color:transparent;
-      border-left-color:#1a0f24;
-    }
-  }
-  .stage.menu-open .character{
-    opacity:.4;
-  }
-
-  .floor-glow{
-    position:absolute;left:0;right:0;bottom:0;height:22%;
-    background:linear-gradient(180deg, transparent, rgba(107,33,168,0.05));
-    z-index:1;pointer-events:none;
-  }
-
-  @media (max-width: 720px){
-    .stage{
-      background:var(--bg);
-    }
-    .character{
-      right:0%;bottom:0;
-      height:min(var(--vh, 1vh) * 84,750px);
-      filter:drop-shadow(0 30px 40px rgba(0,0,0,.65));
-      z-index:2;
-    }
-    .wordmark-tag{
-      left:16px;top:auto;
-      bottom:calc(var(--vh, 1vh) * 13 + env(safe-area-inset-bottom,0px));
-      animation:tagFloatMobile 4.5s ease-in-out infinite;
-    }
-    @keyframes tagFloatMobile{
-      0%, 100%{ transform:translateY(0); }
-      50%{ transform:translateY(-10px); }
-    }
-    .wordmark-tag-text{
-      font-size:clamp(4.2rem,26vw,7.5rem);
-      filter:blur(.6px);
-      text-shadow:0 0 4px rgba(215,185,240,.75), 0 0 12px rgba(170,100,225,.6), 0 0 26px rgba(139,63,209,.45), 0 6px 30px rgba(0,0,0,.95);
-    }
-    .floor-glow{
-      display:none;
-    }
-  }
-  @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important;} }
-</style>
+<link rel="stylesheet" href="/assets/css/home.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -217,131 +52,149 @@
 </script>
 </head>
 <body>
-<div class="hero-track">
-<div class="stage">
-  <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-ice" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".4" stop-color="#cfe0ff"/><stop offset=".52" stop-color="#3b5591"/><stop offset=".62" stop-color="#d6e5ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    <symbol id="i-discord" viewBox="0 0 24 24"><path fill="currentColor" d="M20.3 4.5a19.8 19.8 0 0 0-4.9-1.5l-.6 1.2a18.4 18.4 0 0 0-5.5 0L8.7 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a20 20 0 0 0 6 3l1.3-2c-.7-.2-1.3-.5-1.9-.9l.4-.3a14.2 14.2 0 0 0 12.1 0l.4.3c-.6.4-1.2.7-1.9.9l1.3 2a20 20 0 0 0 6-3c.5-5.1-.8-9.5-3.5-13.5ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path fill="currentColor" d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></symbol>
+  </defs>
+</svg>
 
-  <nav class="top-socials" aria-label="Socials">
-    <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" aria-label="Discord">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg>
-    </a>
-    <a href="https://www.tiktok.com/@yupbash?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener" aria-label="TikTok">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" aria-label="Instagram">
-      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
-    </a>
-  </nav>
-
-  <div class="floor-glow"></div>
-
-  <div class="wordmark-tag">
-    <div class="wordmark-tag-bar">
-      <span class="wordmark-tag-text" data-neon>BASH</span>
-    </div>
-  </div>
-
-  <div class="character" aria-hidden="true" data-parallax>
-    <img src="/assets/character.webp" alt="">
-  </div>
-
-  <div class="scroll-hint" aria-hidden="true">Scroll<span></span></div>
-
-  <div class="menu-backdrop" id="menuBackdrop"></div>
-
-  <nav class="side-menu" id="sideMenu" aria-hidden="true">
-    <img class="side-menu-bg" src="/assets/menu-bg.webp" alt="">
-    <div class="side-menu-content">
-      <a class="menu-wordmark" href="/">BASH</a>
-      <ul class="menu-links">
-        <li><a href="/socials/">Socials</a></li>
-        <li><a href="/faq/">FAQ</a></li>
-      </ul>
-      <a class="menu-secret" href="/cases/">Click to Gamble</a>
-    </div>
-  </nav>
+<div class="backdrop" aria-hidden="true">
+  <svg class="swoosh" viewBox="0 0 1600 900" preserveAspectRatio="none" focusable="false">
+    <path d="M-60 700 C 380 520, 880 830, 1660 360"/>
+    <path d="M-60 250 C 520 110, 1020 430, 1660 150"/>
+    <path d="M180 960 C 620 600, 1120 650, 1660 830"/>
+  </svg>
+  <div class="horizon"></div>
 </div>
-</div>
+<canvas id="chrome" aria-hidden="true"></canvas>
 
-<section class="vids" id="videos" aria-labelledby="vidsTitle">
-  <div class="vids-sticky">
-    <div class="vids-head">
-      <p class="vids-kicker">@yupbash &middot; TikTok</p>
-      <h2 class="vids-title" id="vidsTitle">Latest videos</h2>
-    </div>
-    <div class="vids-stage"><div class="vids-ring" id="vidsRing"></div></div>
-    <div class="vids-progress" aria-hidden="true"><span></span></div>
+<header id="hud" class="hud">
+  <span class="hud-corner tl" aria-hidden="true"></span><span class="hud-corner tr" aria-hidden="true"></span>
+  <span class="hud-corner bl" aria-hidden="true"></span><span class="hud-corner br" aria-hidden="true"></span>
+  <div class="hud-row hud-top">
+    <button id="menuBtn" class="hud-pill" type="button" aria-controls="menu" aria-expanded="false" aria-label="Open menu"><span class="bars" aria-hidden="true"><b></b><b></b><b></b></span>Menu</button>
+    <span class="hud-line" aria-hidden="true"></span>
+    <span class="hud-site">::yupbash.vip</span>
+    <span class="hud-live"><i aria-hidden="true"></i>Online</span>
+    <span id="hudClock" class="hud-clock">00:00:00</span>
+    <span class="hud-line" aria-hidden="true"></span>
+    <button id="sfxBtn" class="hud-pill hud-sfx" type="button" aria-pressed="false">SFX OFF</button>
+    <nav class="hud-socials" aria-label="Socials">
+      <a class="hud-soc" data-brand="discord" href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" aria-label="Discord"><svg aria-hidden="true" focusable="false"><use href="#i-discord"/></svg></a>
+      <a class="hud-soc" data-brand="tiktok" href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener" aria-label="TikTok"><svg aria-hidden="true" focusable="false"><use href="#i-tiktok"/></svg></a>
+      <a class="hud-soc" data-brand="instagram" href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" aria-label="Instagram"><svg aria-hidden="true" focusable="false"><use href="#i-instagram"/></svg></a>
+    </nav>
   </div>
-</section>
+  <div class="hud-vert" aria-hidden="true">BASH // content creator // est. 2024</div>
+  <div class="hud-ruler" aria-hidden="true"><span class="hud-mark"><span id="hudMarkY">Y.500</span></span></div>
+  <div class="hud-row hud-bottom">
+    <span id="hudCoords" class="hud-coords">X 0000 · Y 0000</span>
+    <span class="hud-fps">FPS <span id="hudFps">--</span></span>
+    <span class="hud-line" aria-hidden="true"></span>
+    <span class="hud-scroll" aria-hidden="true">Scroll <b>&gt;</b><b>&gt;</b><b>&gt;</b></span>
+    <span class="hud-line" aria-hidden="true"></span>
+    <span id="hudSection" class="hud-section">01 / 05 — HOME</span>
+    <span id="hudProgress" class="hud-progress" aria-hidden="true"><span></span></span>
+  </div>
+</header>
 
-<footer class="outro">
-  <h2 class="outro-title">Don't miss the next one.</h2>
+<main id="main">
+  <section id="home" class="sec sec-home" aria-label="Home">
+    <div class="hero">
+      <div class="tabrow">
+        <div class="tab"><svg viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M24 1 H184 Q199 1 199 16 V24 Q199 39 184 39 H1 Z"/></svg>welcome..</div>
+        <span class="tabline" aria-hidden="true"></span>
+      </div>
+      <h1 id="word" class="word" aria-label="BASH">
+        <svg class="colons" viewBox="0 0 20 27" aria-hidden="true" focusable="false"><circle cx="4" cy="5" r="3.6"/><circle cx="15" cy="5" r="3.6"/><circle cx="4" cy="20" r="3.6"/><circle cx="15" cy="20" r="3.6"/></svg>
+        <span class="stack" aria-hidden="true"><span class="layer chrome-text">BASH</span><span class="wstroke">BASH</span><span class="spec">BASH</span></span>
+      </h1>
+      <p class="tagline">I can't get myself out of gambling.</p>
+      <p class="meta">Content creator — TikTok / Instagram / Discord</p>
+      <div class="ctas">
+        <a class="gel" href="#videos" data-magnet><span>Latest videos</span><i aria-hidden="true">&gt;&gt;&gt;</i></a>
+        <a class="brk" href="#gamble" data-magnet>Click to gamble</a>
+      </div>
+    </div>
+    <div class="character" aria-hidden="true"><img src="/assets/character.webp" alt="" draggable="false"></div>
+  </section>
+
+  <section id="videos" class="sec sec-videos" aria-labelledby="videosTitle">
+    <header class="sec-head center">
+      <p class="kicker">02 // @yupbash · TikTok</p>
+      <h2 id="videosTitle" class="sec-title chrome-text">Latest videos</h2>
+    </header>
+    <div class="vids"><div id="vidsRing" class="vids-ring"></div></div>
+  </section>
+
+  <section id="about" class="sec sec-about" aria-labelledby="aboutTitle">
+    <header class="sec-head center">
+      <p class="kicker">03 // profile</p>
+      <h2 id="aboutTitle" class="sec-title chrome-text">About &amp; setup</h2>
+    </header>
+    <div class="about-grid">
+      <article class="panel profile-card">
+        <img src="/assets/faq-character.webp" alt="" loading="lazy">
+        <div>
+          <p class="profile-id">BASH · 21 · Belgium</p>
+          <p class="profile-quote">Some random dude, idk.</p>
+        </div>
+      </article>
+      <dl class="panel spec-sheet">
+        <div class="spec-row"><dt class="spec-label">Processor</dt><dd class="spec-value">Ryzen 7 5800X</dd></div>
+        <div class="spec-row"><dt class="spec-label">Memory</dt><dd class="spec-value">32 GB RAM</dd></div>
+        <div class="spec-row"><dt class="spec-label">Graphics Card</dt><dd class="spec-value">RX 9070 XT</dd></div>
+        <div class="spec-row"><dt class="spec-label">Mouse</dt><dd class="spec-value">WLMOUSE Beast X</dd></div>
+        <div class="spec-row"><dt class="spec-label">Keyboard</dt><dd class="spec-value">Gravastar Mercury V60 Pro</dd></div>
+      </dl>
+      <div class="faq">
+        <details class="faq-item"><summary>Who are you?</summary><div class="faq-answer">Some random dude, idk. <span class="faq-bomb" id="bombTrigger" role="button" tabindex="0" aria-label="Open mini minesweeper" title="???">💣</span></div></details>
+        <details class="faq-item"><summary>Where can I follow you?</summary><div class="faq-answer">Discord, TikTok and Instagram are up in the top right, and in the Socials section below.</div></details>
+        <details class="faq-item"><summary>How often do you post?</summary><div class="faq-answer">Im too lazy to start :p</div></details>
+        <details class="faq-item"><summary>About me</summary><div class="faq-answer">I'm 21 and I'm from Belgium.</div></details>
+        <details class="faq-item"><summary>How can I contact you?</summary><div class="faq-answer"><a href="mailto:yupbash@gmail.com">yupbash@gmail.com</a></div></details>
+        <details class="faq-item"><summary>What gear do you use?</summary><div class="faq-answer"><ul class="spec-list"><li>Processor Ryzen 7 5800X</li><li>Memory 32 GB RAM</li><li>Graphics Card RX 9070 XT</li><li>Mouse WLMOUSE Beast X</li><li>Keyboard Gravastar Mercury V60 Pro</li></ul></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="socials" class="sec sec-socials" aria-labelledby="socialsTitle">
+    <header class="sec-head center">
+      <p class="kicker">04 // signal</p>
+      <h2 id="socialsTitle" class="sec-title chrome-text">Socials &amp; contact</h2>
+    </header>
+    <nav class="socials-big" aria-label="Follow BASH">
+      <a class="social-big" data-brand="discord" href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener" data-magnet><svg aria-hidden="true" focusable="false"><use href="#i-discord"/></svg><span>Discord</span></a>
+      <a class="social-big" data-brand="tiktok" href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener" data-magnet><svg aria-hidden="true" focusable="false"><use href="#i-tiktok"/></svg><span>TikTok</span></a>
+      <a class="social-big" data-brand="instagram" href="https://www.instagram.com/yupbash" target="_blank" rel="noopener" data-magnet><svg aria-hidden="true" focusable="false"><use href="#i-instagram"/></svg><span>Instagram</span></a>
+    </nav>
+    <div class="contact">
+      <span class="contact-label">Contact</span>
+      <a id="emailText" class="contact-email" href="mailto:yupbash@gmail.com">yupbash@gmail.com</a>
+      <button id="copyEmail" class="brk" type="button">Copy</button>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="gamble" class="sec sec-gamble" aria-labelledby="gambleTitle">
+    <p class="kicker">05 // case simulator</p>
+    <h2 id="gambleTitle" class="gamble-title chrome-text">BASH ADDICTION</h2>
+    <p class="gamble-sub">fake money, real addiction.</p>
+    <a class="gel" href="/cases/" data-magnet><span>Open a case</span><i aria-hidden="true">&gt;&gt;&gt;</i></a>
+  </section>
+</main>
+
+<footer id="outro" class="outro">
+  <h2 class="outro-title chrome-text">Don't miss the next one.</h2>
   <nav class="outro-links" aria-label="Follow BASH">
-    <a href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z"/></svg><span>TikTok</span></a>
-    <a href="https://www.instagram.com/yupbash" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg><span>Instagram</span></a>
-    <a href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028ZM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38Zm7.974 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38Z"/></svg><span>Discord</span></a>
+    <a class="brk" href="https://www.tiktok.com/@yupbash" target="_blank" rel="noopener">TikTok</a>
+    <a class="brk" href="https://www.instagram.com/yupbash" target="_blank" rel="noopener">Instagram</a>
+    <a class="brk" href="https://discordapp.com/users/852685497108267019" target="_blank" rel="noopener">Discord</a>
   </nav>
-  <div class="signature">BASH &middot; 2024&ndash;2026</div>
+  <p class="signature">BASH · 2024–2026</p>
 </footer>
-
-<script>
-(function(){
-  var char = document.querySelector(".character");
-  if (!char) return;
-  var charImg = char.querySelector("img");
-  var messages = ["Stop that.", "Bro, stop.", "Alright, Don't do that.", "Hey!"];
-  var clicks = [];
-  var busy = false;
-
-  var sampleCanvas = null, sampleCtx = null;
-  function buildSampler(){
-    if (!charImg.naturalWidth) return;
-    sampleCanvas = document.createElement("canvas");
-    sampleCanvas.width = charImg.naturalWidth;
-    sampleCanvas.height = charImg.naturalHeight;
-    sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
-    sampleCtx.drawImage(charImg, 0, 0);
-  }
-  if (charImg.complete && charImg.naturalWidth) buildSampler();
-  else charImg.addEventListener("load", buildSampler, { once: true });
-
-  function isOnCharacter(clientX, clientY){
-    if (!sampleCtx) return true;
-    var rect = charImg.getBoundingClientRect();
-    var xf = (clientX - rect.left) / rect.width;
-    var yf = (clientY - rect.top) / rect.height;
-    if (xf < 0 || xf > 1 || yf < 0 || yf > 1) return false;
-    var px = Math.min(sampleCanvas.width - 1, Math.max(0, Math.floor(xf * sampleCanvas.width)));
-    var py = Math.min(sampleCanvas.height - 1, Math.max(0, Math.floor(yf * sampleCanvas.height)));
-    return sampleCtx.getImageData(px, py, 1, 1).data[3] > 10;
-  }
-
-  char.addEventListener("click", function(e){
-    if (!isOnCharacter(e.clientX, e.clientY)) return;
-    var now = Date.now();
-    clicks.push(now);
-    clicks = clicks.filter(function(t){ return now - t < 2500; });
-    if (clicks.length < 5 || busy) return;
-    busy = true;
-    clicks = [];
-    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduced) {
-      char.classList.add("poke");
-      setTimeout(function(){ char.classList.remove("poke"); }, 600);
-    }
-    var bubble = document.createElement("div");
-    bubble.className = "character-bubble";
-    bubble.textContent = messages[Math.floor(Math.random() * messages.length)];
-    char.appendChild(bubble);
-    requestAnimationFrame(function(){ bubble.classList.add("show"); });
-    setTimeout(function(){
-      bubble.classList.remove("show");
-      setTimeout(function(){ bubble.remove(); busy = false; }, 300);
-    }, 1600);
-  });
-})();
-</script>
 </body>
 </html>

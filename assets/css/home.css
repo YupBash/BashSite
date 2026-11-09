@@ -1,0 +1,127 @@
+/* BASH — design v3: the home page scroll journey (hero → videos → about → socials → gamble → outro). */
+
+main{position:relative;z-index:2}
+.sec{
+  position:relative;min-height:100vh;min-height:100dvh;
+  padding:clamp(96px,14vh,150px) clamp(22px,6.2vw,120px);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.sec-head{margin-bottom:clamp(28px,5vh,56px)}
+.sec-head.center{text-align:center}
+
+/* ============ 01 · HOME ============ */
+.sec-home{overflow:hidden;padding-top:0;padding-bottom:0}
+.hero{position:relative;z-index:3;width:min(64vw,1000px)}
+.tabrow{display:flex;align-items:center}
+.tab{
+  position:relative;padding:8px 30px 9px 36px;white-space:nowrap;color:var(--nc-ink);
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:130%;font-weight:500;font-size:clamp(14px,1.45vw,22px);
+}
+.tab svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:-1}
+.tab path{fill:var(--nc-tabfill);stroke:var(--nc-accent);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.tabline{flex:1;height:1.5px;margin-left:-1px;background:linear-gradient(90deg,var(--nc-accent),transparent)}
+.word{
+  position:relative;display:flex;align-items:flex-start;margin:10px 0 0 -.03em;user-select:none;
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;
+  font-size:clamp(80px,13.6vw,250px);line-height:.8;letter-spacing:-.02em;
+}
+.word .colons{flex:none;width:.2em;height:.27em;margin:.07em .09em 0 0;fill:url(#g-ice);transform:skewX(-14deg);overflow:visible;
+  filter:drop-shadow(0 0 9px var(--nc-accent-glow))}
+.word .stack{position:relative;display:block;padding-right:.08em;
+  filter:drop-shadow(0 0 28px rgba(139,92,246,.4)) drop-shadow(0 7px 0 rgba(0,0,0,.55))}
+.word .layer{display:block}
+.word .wstroke,.word .spec{position:absolute;inset:0;color:transparent;pointer-events:none}
+.word .wstroke{-webkit-text-stroke:1.4px rgba(255,255,255,.32)}
+.word .spec{mix-blend-mode:overlay;-webkit-background-clip:text;background-clip:text;
+  background-image:radial-gradient(circle at var(--mx,30%) var(--my,25%),#fff 0%,rgba(255,255,255,0) 26%)}
+.tagline{margin:22px 0 0;font-style:italic;font-weight:600;font-size:clamp(17px,1.65vw,27px)}
+.meta{margin:8px 0 0;font-family:var(--nc-font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--nc-hud)}
+.ctas{margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.character{position:absolute;right:3vw;bottom:0;height:97%;z-index:4}
+.character img{display:block;height:100%;width:auto;user-select:none;-webkit-user-drag:none;
+  filter:drop-shadow(0 30px 40px rgba(0,0,0,.65)) drop-shadow(0 0 34px rgba(124,58,237,.35))}
+
+/* ============ 02 · LATEST VIDEOS ============ */
+.sec-videos{align-items:center}
+.vids{width:100%;max-width:1100px}
+.vids-ring{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+
+/* ============ 03 · ABOUT & SETUP ============ */
+.about-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(18px,3vw,40px);max-width:1100px;width:100%;margin:0 auto}
+.panel{
+  position:relative;padding:22px;border:1px solid var(--nc-line);border-radius:6px;
+  background:linear-gradient(180deg,rgba(24,12,48,.62),rgba(10,6,22,.72));
+}
+.panel::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
+.profile-card{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:18px}
+.profile-card img{width:120px;height:120px;object-fit:cover;object-position:50% 30%;border-radius:4px;border:1px solid var(--nc-line);background:rgba(10,6,22,.6)}
+.profile-id{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:125%;font-weight:800;font-size:clamp(18px,1.8vw,24px)}
+.profile-quote{margin:6px 0 0;font-style:italic;color:var(--nc-hud)}
+.spec-sheet{margin:0}
+.spec-row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(196,174,255,.22)}
+.spec-row:last-child{border-bottom:0}
+.spec-label{flex:none;width:9.5em;font-family:var(--nc-font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--nc-hud)}
+.spec-value{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:120%;font-weight:700;font-size:clamp(15px,1.4vw,19px)}
+.faq{grid-column:1 / -1;max-width:860px;width:100%;margin:clamp(10px,2vh,24px) auto 0}
+.faq-item{border-bottom:1px solid rgba(196,174,255,.22)}
+.faq-item:first-child{border-top:1px solid rgba(196,174,255,.22)}
+.faq-item summary{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:52px;padding:14px 4px;cursor:pointer;list-style:none;
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:120%;font-weight:700;font-size:clamp(16px,1.5vw,20px);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";flex:none;font-family:var(--nc-font-mono);font-style:normal;color:var(--nc-accent);transition:transform .25s var(--nc-ease)}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-answer{padding:0 4px 16px;color:#d6cdee}
+.faq-answer a{color:var(--nc-accent)}
+.faq-bomb{cursor:pointer;border-radius:4px;padding:0 2px}
+.spec-list{margin:0;padding:0;list-style:none}
+
+/* ============ 04 · SOCIALS & CONTACT ============ */
+.sec-socials{align-items:center;text-align:center}
+.socials-big{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2vw,26px);width:100%}
+.social-big{
+  position:relative;display:flex;align-items:center;justify-content:center;gap:14px;width:min(300px,100%);min-height:92px;padding:20px 26px;
+  border:1px solid var(--nc-line);border-radius:10px;background:rgba(10,6,22,.55);color:var(--nc-ink);text-decoration:none;
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:130%;font-weight:800;font-size:clamp(18px,1.8vw,24px);
+  transition:border-color .2s,box-shadow .25s;
+}
+.social-big svg{width:28px;height:28px;flex:none}
+.contact{margin-top:clamp(28px,5vh,48px);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 18px}
+.contact-label{font-family:var(--nc-font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--nc-hud)}
+.contact-email{font-family:var(--nc-font-display);font-style:italic;font-stretch:120%;font-weight:700;font-size:clamp(17px,1.6vw,22px);color:var(--nc-ink);text-decoration:none}
+
+/* ============ 05 · CLICK TO GAMBLE ============ */
+.sec-gamble{align-items:flex-start}
+.gamble-title{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;
+  font-size:clamp(2.6rem,8vw,7.4rem);line-height:.86;letter-spacing:-.02em;
+  filter:drop-shadow(0 0 22px rgba(139,92,246,.35)) drop-shadow(0 6px 0 rgba(0,0,0,.55))}
+.gamble-sub{margin:14px 0 28px;font-style:italic;font-weight:600;font-size:clamp(17px,1.65vw,26px)}
+
+/* ============ OUTRO ============ */
+.outro{
+  position:relative;z-index:2;text-align:center;
+  padding:clamp(90px,16vh,160px) 20px calc(56px + env(safe-area-inset-bottom,0px));
+}
+.outro-title{margin:0 0 clamp(26px,5vh,44px);font-family:var(--nc-font-display);font-style:italic;font-stretch:140%;font-weight:900;
+  font-size:clamp(2rem,6vw,4.4rem);line-height:1}
+.outro-links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:clamp(40px,8vh,80px)}
+.signature{margin:0;font-family:var(--nc-font-tag);font-size:clamp(1rem,1.6vw,1.3rem);color:rgba(241,236,255,.55);letter-spacing:.04em}
+
+/* ============ mobile ============ */
+@media (max-width:720px){
+  .sec{padding:96px 22px 88px}
+  .sec-home{justify-content:flex-end;padding-bottom:12vh}
+  .hero{width:auto;z-index:5}
+  .word{font-size:15.5vw}
+  .tagline{font-size:16px;margin-top:14px}
+  .meta{font-size:9px;letter-spacing:.1em}
+  .ctas{margin-top:18px;gap:10px}
+  .character{right:-16vw;height:60%;z-index:3}
+  .about-grid{grid-template-columns:1fr}
+  .profile-card{grid-template-columns:84px 1fr}
+  .profile-card img{width:84px;height:84px}
+  .spec-label{width:7.5em}
+  .social-big{width:100%;max-width:340px;min-height:72px}
+}

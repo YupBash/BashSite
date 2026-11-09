@@ -21,6 +21,32 @@
   interpolate-size:allow-keywords;
 }
 
+/* Design v3 — "Nocturne Chrome" (black / violet + silver-blue accent).
+   New tokens only: the variables above stay, the case simulator still uses them. */
+:root{
+  --nc-bg-0:#2b1452;
+  --nc-bg-1:#140a29;
+  --nc-bg-2:#07050c;
+  --nc-ink:#f1ecff;
+  --nc-hud:rgba(210,196,255,.74);
+  --nc-line:rgba(196,174,255,.5);
+  --nc-swoosh:rgba(170,140,255,.32);
+  --nc-accent:#cfe2ff;
+  --nc-accent-edge:#7f9cd6;
+  --nc-accent-glow:rgba(140,185,255,.75);
+  --nc-gel-1:#d7c8ff;
+  --nc-gel-2:#8a5cff;
+  --nc-gel-3:#4b1db8;
+  --nc-gel-4:#9a6dff;
+  --nc-gel-shadow:rgba(124,58,237,.55);
+  --nc-tabfill:rgba(24,12,48,.45);
+  --nc-font-display:"Anybody",system-ui,sans-serif;
+  --nc-font-mono:"Martian Mono",ui-monospace,monospace;
+  --nc-font-body:"Chakra Petch",system-ui,sans-serif;
+  --nc-font-tag:"Permanent Marker",cursive;
+  --nc-ease:cubic-bezier(.2,.8,.2,1);
+}
+
 /* Film grain over every page — texture only, never intercepts clicks. */
 body::before{
   content:"";position:fixed;inset:0;z-index:60;pointer-events:none;
