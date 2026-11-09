@@ -134,6 +134,18 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 - « Don't miss the next one. » + les 3 réseaux + signature **« BASH · 2024–2026 »** en Permanent Marker.
 - Chrome : une seule goutte qui se résorbe.
 
+### Fond évolutif (ajout demandé par YupBash au checkpoint de la phase 1)
+Le fond (brume, couleurs, halo secondaire, ligne d'horizon, lignes « swoosh ») change **progressivement avec le scroll**, sans coupure, dans les mêmes zones de transition que le chrome. Une ambiance par section, toutes tirées de la palette Nocturne :
+
+| Section | Ambiance |
+|---|---|
+| HOME | nuit violette, brume derrière le perso (fond actuel) |
+| VIDEOS | indigo « écran » : brume centrée, halo silver bleu sous le carrousel, horizon remonté |
+| ABOUT | studio calme : lumière lilas en haut, lignes atténuées pour la lecture |
+| SOCIALS | violet plus vif + halo bleuté |
+| GAMBLE | magenta profond + reflet doré en bas (table de casino) |
+| Fin | presque noir, une dernière lueur en bas |
+
 ## 6. Interactions
 
 ### 6.1 Curseur « Mercure » (pointeur fin uniquement : souris / trackpad)

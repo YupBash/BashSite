@@ -258,7 +258,22 @@ float sdChip(vec3 p){                 // p en unités locales
 - Produces : `html[data-section]` = id courant ; `BashHome.section()` à jour. Noms HUD : `HOME`, `VIDEOS`, `ABOUT`, `SOCIALS`, `GAMBLE` (le pied de page garde `05 / 05 — GAMBLE`, progression 1).
 - Avec GSAP : une ScrollTrigger par section (section courante = celle qui contient le milieu de l'écran) ; `blend(état_i, état_i+1, t)` avec `scrub` entre 60 % de la section i et 20 % de la section i+1 ; sortie du hero (`--hp` 0 → 1 : mot qui grossit/floute/s'efface, perso qui glisse, comme `videos.css` actuel). Sans GSAP : classe `no-gsap` sur `<html>`, IntersectionObserver → `setSection` + `setState(id)`. Ancre dans l'URL au chargement (`/#socials`) : défilement vers la section après `entered`.
 
+- **Fond évolutif (ajout du 2026-11-09, spec §5 « Fond évolutif »)** : `.backdrop` est piloté par des variables CSS mises à jour avec la même position lissée que le chrome : `--bd-x`, `--bd-y`, `--bd-w`, `--bd-h` (%), `--bd-c0`, `--bd-c1`, `--bd-c2` (triplets « r g b »), halo secondaire `--bd-g2x`, `--bd-g2y`, `--bd-g2w`, `--bd-g2h`, `--bd-g2c`, `--bd-g2a`, horizon `--bd-hz-y` (%), `--bd-hz-a`, lignes `--bd-sw-a`. Ambiances (valeurs de départ, ajustables à l'œil) :
+
+| id | x, y, w, h | c0 · c1 · c2 | halo x, y, w, h · couleur · alpha | horizon y · alpha | lignes |
+|---|---|---|---|---|---|
+| home | 66, 40, 55, 65 | 43 20 82 · 20 10 41 · 7 5 12 | 50, 100, 40, 35 · 107 33 168 · 0 | 71 · .9 | 1 |
+| videos | 50, 30, 70, 60 | 27 26 92 · 12 10 38 · 5 5 14 | 50, 78, 60, 30 · 127 156 214 · .18 | 62 · 1 | .8 |
+| about | 50, 18, 60, 45 | 36 22 66 · 14 9 28 · 6 5 11 | 50, 100, 40, 35 · 107 33 168 · 0 | 88 · .35 | .45 |
+| socials | 50, 55, 75, 60 | 52 22 96 · 18 9 40 · 7 5 12 | 50, 60, 70, 40 · 88 101 242 · .14 | 74 · .8 | .9 |
+| gamble | 64, 52, 60, 70 | 74 16 72 · 26 8 30 · 8 4 10 | 50, 105, 70, 40 · 228 174 57 · .16 | 80 · .6 | .7 |
+| outro | 50, 100, 50, 40 | 30 14 56 · 10 6 20 · 5 4 8 | 50, 100, 40, 35 · 107 33 168 · 0 | 96 · .25 | .3 |
+
+- Produces aussi : `BashHome.position(): { from: string, to: string, t: number }` (position lissée utilisée par le chrome et le fond).
+
 - [ ] **Step 1 : Écrire les tests** (`tests/test_scroll.py`) :
+  - `test_backdrop_follows_sections` : au centre de `#about` puis de `#gamble`, `--bd-c0` de `.backdrop` == `36 22 66` puis `74 16 72`.
+  - `test_backdrop_blends_between_sections` : au milieu d'une zone de transition HOME → VIDEOS, la composante rouge de `--bd-c0` est strictement entre 27 et 43.
   - `test_indicator_follows_scroll` : pour chaque section i, `scrollIntoView` puis 600 ms → `#hudSection` == `0i / 05 — NOM`, `html[data-section]` == id, et `BashHome.chrome.stats().state` == id (défilement arrêté au centre de la section).
   - `test_no_gsap_fallback` (`block=("cdnjs.cloudflare.com",)`) : `html.no-gsap` ; défilement jusqu'à `#socials` → `04 / 05 — SOCIALS` ; `assert_clean(page, allow=("cdnjs",))`.
   - `test_resize_mid_scroll` : sur `#about` en 1440×900, passage en 390×844 → indicateur toujours `03 / 05 — ABOUT`.
