@@ -130,6 +130,39 @@ html.no-gl #chrome{display:none}
 html.has-mercure,html.has-mercure *{cursor:none!important}
 .mercure-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
 
+/* ---------- HUD menu: full-screen overlay under the HUD, opened by a chrome sweep ---------- */
+.menu{
+  position:fixed;inset:0;z-index:35;display:flex;align-items:center;
+  padding:clamp(90px,14vh,140px) clamp(26px,8vw,140px);
+  background:radial-gradient(70% 80% at 30% 50%,rgba(43,20,82,.94),rgba(7,5,12,.97));
+  visibility:hidden;clip-path:inset(0 100% 0 0);
+  transition:clip-path .55s cubic-bezier(.65,0,.35,1),visibility 0s linear .55s;
+}
+.menu::after{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:3px;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,transparent,#fff 30%,var(--nc-accent) 70%,transparent);
+  box-shadow:0 0 24px 6px var(--nc-accent-glow);
+}
+html.menu-open .menu{visibility:visible;clip-path:inset(0 0 0 0);transition:clip-path .55s cubic-bezier(.65,0,.35,1),visibility 0s}
+html.menu-open .menu::after{animation:ncSweep .55s cubic-bezier(.65,0,.35,1)}
+@keyframes ncSweep{0%{left:0;opacity:1}100%{left:100%;opacity:.2}}
+.menu-list{list-style:none;margin:0;padding:0;display:grid;gap:clamp(6px,1.6vh,16px)}
+.menu-link{
+  display:inline-flex;align-items:baseline;gap:18px;padding:4px 0;text-decoration:none;
+  transition:transform .3s var(--nc-ease),filter .3s;
+}
+.menu-num{font-family:var(--nc-font-mono);font-size:12px;letter-spacing:.18em;color:var(--nc-accent);text-shadow:0 0 10px var(--nc-accent-glow)}
+.menu-name{font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;font-size:clamp(2.4rem,7.4vw,6.2rem);line-height:.92;letter-spacing:-.02em}
+.menu-link:hover,.menu-link:focus-visible{transform:translateX(14px);filter:drop-shadow(0 0 18px var(--nc-accent-glow))}
+html.menu-open .menu-list li{animation:ncMenuIn .5s var(--nc-ease) backwards}
+html.menu-open .menu-list li:nth-child(2){animation-delay:.05s}
+html.menu-open .menu-list li:nth-child(3){animation-delay:.1s}
+html.menu-open .menu-list li:nth-child(4){animation-delay:.15s}
+html.menu-open .menu-list li:nth-child(5){animation-delay:.2s}
+@keyframes ncMenuIn{from{opacity:0;transform:translateX(-30px)}}
+.menu-cases{display:inline-block;margin-top:clamp(18px,4vh,40px);font-family:var(--nc-font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--nc-hud);text-decoration:none}
+.menu-cases:hover{color:var(--nc-accent)}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:64px;z-index:45;transform:translate(-50%,12px);opacity:0;pointer-events:none;

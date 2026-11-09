@@ -1,176 +1,147 @@
-/* BASH — shared behaviour for vitrine pages (home, faq, socials, 404).
-   Loaded with `defer`: runs after the DOM is parsed, before DOMContentLoaded. */
-(function(){
-  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* BASH — design v3: shared shell for the vitrine pages (home, 404).
+   Exposes window.BashSite: safe storage, live HUD, HUD menu and the one-time "entered" event.
+   Loaded with `defer`, before the other modules; anything that needs them waits for DOMContentLoaded. */
+(function () {
+  "use strict";
 
-  /* --- real viewport height (mobile browser bars) --- */
-  function setVH(){
+  var html = document.documentElement;
+  var mq = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+  var reduced = mq("(prefers-reduced-motion: reduce)");
+  var fine = mq("(pointer: fine)");
+
+  /* ---------- storage that never throws (private mode, blocked cookies) ---------- */
+  var store = {
+    get: function (key) {
+      try { return window.localStorage.getItem(key); } catch (e) { return null; }
+    },
+    set: function (key, value) {
+      try { window.localStorage.setItem(key, value); } catch (e) { /* storage unavailable: ignore */ }
+    }
+  };
+
+  /* ---------- real viewport height for mobile browser bars ---------- */
+  function setVH() {
     var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-    document.documentElement.style.setProperty("--vh", (h * 0.01) + "px");
+    html.style.setProperty("--vh", (h * 0.01) + "px");
   }
   setVH();
   window.addEventListener("resize", setVH);
-  window.addEventListener("orientationchange", setVH);
-  window.addEventListener("pageshow", setVH);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", setVH);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", setVH);
+
+  /* ---------- HUD ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  function pad(n, w) { n = Math.max(0, Math.round(n)); var s = String(n); while (s.length < w) s = "0" + s; return s; }
+
+  var clock = $("hudClock");
+  function tick() {
+    if (!clock) return;
+    var d = new Date();
+    clock.textContent = pad(d.getHours(), 2) + ":" + pad(d.getMinutes(), 2) + ":" + pad(d.getSeconds(), 2);
   }
+  tick();
+  setInterval(tick, 1000);
 
-  /* --- page fade in / fade out between internal links --- */
-  function reveal(){
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        document.body.classList.add("page-loaded");
-      });
-    });
-  }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", reveal);
-  } else {
-    reveal();
-  }
-  window.addEventListener("pageshow", function(e){ if (e.persisted) reveal(); });
-
-  document.addEventListener("click", function(e){
-    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var a = e.target.closest("a");
-    if (!a || a.hasAttribute("download") || a.target === "_blank") return;
-    var href = a.getAttribute("href");
-    if (!href || href.charAt(0) === "#") return;
-    var url;
-    try { url = new URL(href, location.href); } catch(err) { return; }
-    if (url.origin !== location.origin) return;
-    if (url.href === location.href) return;
-    e.preventDefault();
-    document.body.classList.remove("page-loaded");
-    setTimeout(function(){ location.href = url.href; }, reduced ? 0 : 320);
-  });
-
-  /* --- side menu --- */
-  var stage = document.querySelector(".stage");
-  var menuBtn = document.getElementById("menuBtn");
-  var sideMenu = document.getElementById("sideMenu");
-  var backdrop = document.getElementById("menuBackdrop");
-
-  if (stage && menuBtn && sideMenu && backdrop) {
-    var seen = true;
-    try { seen = localStorage.getItem("bashMenuIntroSeen"); } catch(e){}
-    if (!seen) {
-      var markSeen = function(){ try { localStorage.setItem("bashMenuIntroSeen", "1"); } catch(e){} };
-      if (reduced) {
-        markSeen();
-      } else {
-        menuBtn.classList.add("intro-pulse");
-        var stop = function(){
-          menuBtn.classList.remove("intro-pulse");
-          markSeen();
-        };
-        menuBtn.addEventListener("click", stop, { once: true });
-        setTimeout(stop, 4300);
-      }
-    }
-
-    var setMenu = function(open){
-      stage.classList.toggle("menu-open", open);
-      menuBtn.classList.toggle("is-open", open);
-      menuBtn.setAttribute("aria-expanded", String(open));
-      menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      sideMenu.setAttribute("aria-hidden", String(!open));
-    };
-    menuBtn.addEventListener("click", function(){
-      setMenu(!stage.classList.contains("menu-open"));
-    });
-    backdrop.addEventListener("click", function(){ setMenu(false); });
-    document.addEventListener("keydown", function(e){
-      if (e.key === "Escape") setMenu(false);
-    });
-
-    // Clicks on transparent parts of the menu artwork fall through to what's underneath.
-    var sideMenuBg = sideMenu.querySelector(".side-menu-bg");
-    var artCanvas = null, artCtx = null;
-    var buildArtSampler = function(){
-      artCanvas = document.createElement("canvas");
-      artCanvas.width = sideMenuBg.naturalWidth;
-      artCanvas.height = sideMenuBg.naturalHeight;
-      artCtx = artCanvas.getContext("2d", { willReadFrequently: true });
-      artCtx.drawImage(sideMenuBg, 0, 0);
-    };
-    var isArtOpaqueAt = function(x, y){
-      if (!artCtx) return true;
-      var rect = sideMenuBg.getBoundingClientRect();
-      var xf = (x - rect.left) / rect.width;
-      var yf = (y - rect.top) / rect.height;
-      if (xf < 0 || xf > 1 || yf < 0 || yf > 1) return false;
-      var px = Math.min(artCanvas.width - 1, Math.max(0, Math.floor(xf * artCanvas.width)));
-      var py = Math.min(artCanvas.height - 1, Math.max(0, Math.floor(yf * artCanvas.height)));
-      return artCtx.getImageData(px, py, 1, 1).data[3] > 10;
-    };
-    if (sideMenuBg) {
-      if (sideMenuBg.complete && sideMenuBg.naturalWidth) buildArtSampler();
-      else sideMenuBg.addEventListener("load", buildArtSampler, { once: true });
-      sideMenu.addEventListener("click", function(e){
-        if (isArtOpaqueAt(e.clientX, e.clientY)) return;
-        e.preventDefault();
-        e.stopPropagation();
-        var prevPE = sideMenu.style.pointerEvents;
-        var prevBackdropPE = backdrop.style.pointerEvents;
-        sideMenu.style.pointerEvents = "none";
-        backdrop.style.pointerEvents = "none";
-        var target = document.elementFromPoint(e.clientX, e.clientY);
-        sideMenu.style.pointerEvents = prevPE;
-        backdrop.style.pointerEvents = prevBackdropPE;
-        if (target) target.click();
-      }, true);
-    }
-  }
-
-  /* --- neon wordmark: letters light up one by one (CSS does the animation) --- */
-  document.querySelectorAll("[data-neon]").forEach(function(el){
-    var text = el.textContent;
-    el.textContent = "";
-    var label = document.createElement("span");
-    label.className = "sr-only";
-    label.textContent = text;
-    el.appendChild(label);
-    Array.prototype.forEach.call(text, function(ch, i){
-      var s = document.createElement("span");
-      s.className = "neon-letter";
-      s.setAttribute("aria-hidden", "true");
-      s.style.setProperty("--i", i);
-      s.textContent = ch;
-      el.appendChild(s);
-    });
-  });
-
-  /* --- staggered entrance: children of [data-reveal] get an index for their delay --- */
-  document.querySelectorAll("[data-reveal]").forEach(function(group){
-    Array.prototype.forEach.call(group.children, function(child, i){
-      child.style.setProperty("--reveal-i", i);
-    });
-  });
-
-  /* --- parallax: [data-parallax] drifts slightly toward the pointer (mouse only) --- */
-  var layers = document.querySelectorAll("[data-parallax]");
-  if (layers.length && !reduced && window.matchMedia("(pointer: fine)").matches) {
-    var tx = 0, ty = 0, cx = 0, cy = 0, ticking = false;
-    var step = function(){
-      cx += (tx - cx) * 0.08;
-      cy += (ty - cy) * 0.08;
-      layers.forEach(function(el){
-        el.style.setProperty("--px", cx.toFixed(3));
-        el.style.setProperty("--py", cy.toFixed(3));
-      });
-      if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) requestAnimationFrame(step);
-      else ticking = false;
-    };
-    window.addEventListener("pointermove", function(e){
-      tx = (e.clientX / window.innerWidth) * 2 - 1;
-      ty = (e.clientY / window.innerHeight) * 2 - 1;
-      if (!ticking) { ticking = true; requestAnimationFrame(step); }
+  var coords = $("hudCoords"), mark = document.querySelector(".hud-mark"), markY = $("hudMarkY");
+  if (fine && (coords || mark)) {
+    window.addEventListener("pointermove", function (e) {
+      if (coords) coords.textContent = "X " + pad(e.clientX, 4) + " · Y " + pad(e.clientY, 4);
+      var ny = Math.min(1, Math.max(0, e.clientY / (window.innerHeight || 1)));
+      if (mark) mark.style.top = (ny * 100).toFixed(2) + "%";
+      if (markY) markY.textContent = "Y." + pad(ny * 1000, 3);
     }, { passive: true });
   }
 
-  console.log("%cBASH", "font-family:'Permanent Marker',cursive;font-size:48px;color:#c98bff;text-shadow:0 0 12px rgba(107,33,168,.8);");
-  console.log("%cYou opened the console. Curious one, huh.", "font-size:13px;color:#9b8aad;");
-  console.log("%cyupbash.vip", "font-size:12px;color:#6b21a8;");
+  var hud = {
+    setSection: function (index, name, progress) {
+      var label = $("hudSection"), bar = document.querySelector("#hudProgress > span");
+      if (label) label.textContent = pad(index, 2) + " / 05 — " + name;
+      if (bar) bar.style.transform = "scaleX(" + Math.min(1, Math.max(0, progress || 0)) + ")";
+    }
+  };
+
+  /* ---------- HUD menu ---------- */
+  var menuBtn = $("menuBtn"), menuEl = $("menu");
+  function focusables() {
+    if (!menuEl) return [];
+    return [menuBtn].concat(Array.prototype.slice.call(menuEl.querySelectorAll("a[href]")));
+  }
+  function setMenu(open, opts) {
+    if (!menuBtn || !menuEl) return;
+    html.classList.toggle("menu-open", open);
+    menuBtn.setAttribute("aria-expanded", String(open));
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    menuEl.inert = !open;
+    menuEl.setAttribute("aria-hidden", String(!open));
+    if (open) {
+      var first = menuEl.querySelector("a[href]");
+      if (first) first.focus({ preventScroll: true });
+    } else if (!(opts && opts.keepFocus)) {
+      menuBtn.focus({ preventScroll: true });
+    }
+  }
+  var menu = {
+    open: function () { setMenu(true); },
+    close: function () { setMenu(false); },
+    isOpen: function () { return html.classList.contains("menu-open"); }
+  };
+  if (menuBtn && menuEl) {
+    setMenu(false, { keepFocus: true });
+    menuBtn.addEventListener("click", function () { setMenu(!menu.isOpen()); });
+    document.addEventListener("keydown", function (e) {
+      if (!menu.isOpen()) return;
+      if (e.key === "Escape") { e.preventDefault(); setMenu(false); return; }
+      if (e.key === "Tab") {
+        var list = focusables(), i = list.indexOf(document.activeElement);
+        if (!list.length) return;
+        e.preventDefault();
+        var next = e.shiftKey ? (i <= 0 ? list.length - 1 : i - 1) : (i === -1 || i === list.length - 1 ? 0 : i + 1);
+        list[next].focus();
+      }
+    });
+    menuEl.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var target = document.querySelector(a.getAttribute("href"));
+      if (!target) return;
+      e.preventDefault();
+      setMenu(false, { keepFocus: true });
+      target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      try { history.replaceState(null, "", a.getAttribute("href")); } catch (err) { /* file:// or sandboxed */ }
+    });
+  }
+
+  /* ---------- "entered": fired once, after the ENTER gate (or at load when there is none) ---------- */
+  var entered = null, waiting = [];
+  function fireEntered(sound) {
+    if (entered) return;
+    entered = { sound: !!sound };
+    html.classList.add("entered");
+    waiting.splice(0).forEach(function (fn) {
+      try { fn(entered); } catch (err) { setTimeout(function () { throw err; }); }
+    });
+  }
+  function on(event, fn) {
+    if (event !== "entered" || typeof fn !== "function") return;
+    if (entered) { var d = entered; setTimeout(function () { fn(d); }, 0); }
+    else waiting.push(fn);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.BashMercure) window.BashMercure.init();
+    if (!$("gate")) fireEntered(store.get("bash_v3_sfx") === "on");
+  });
+
+  console.log("%cBASH", "font-family:Anybody,system-ui,sans-serif;font-style:italic;font-weight:900;font-size:46px;color:#cfe2ff;text-shadow:0 0 14px rgba(140,185,255,.8)");
+  console.log("%cYou opened the console. Curious one, huh.", "font-size:13px;color:#d2c4ff");
+  console.log("%cyupbash.vip", "font-size:12px;color:#8a5cff");
+
+  window.BashSite = {
+    reduced: reduced,
+    fine: fine,
+    store: store,
+    hud: hud,
+    menu: menu,
+    on: on,
+    _enter: fireEntered
+  };
 })();
