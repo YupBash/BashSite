@@ -37,9 +37,9 @@ def nearest_brand(rgb):
 class FeedbackTest(SiteTestCase):
     def test_hover_shows_lock_brackets_with_label(self):
         page = self.open("/")
-        page.evaluate("document.querySelector('#gamble a.play-btn').scrollIntoView({ block: 'center', behavior: 'instant' })")
+        page.evaluate("document.querySelector('#gamble a.play-link').scrollIntoView({ block: 'center', behavior: 'instant' })")
         page.wait_for_timeout(300)
-        gel = page.locator("#gamble a.play-btn").bounding_box()
+        gel = page.locator("#gamble a.play-link").bounding_box()
         page.mouse.move(gel["x"] + gel["width"] / 2, gel["y"] + gel["height"] / 2, steps=6)
         page.wait_for_timeout(900)
         lock = page.evaluate("""() => { const l = document.querySelector('.mercure-lock'); if (!l) return null;

@@ -32,11 +32,11 @@ Une ambiance **Y2K futuriste** : du noir, du violet profond, une touche de **sil
 
 <table>
 <tr>
-<td width="50%"><img src="docs/readme/start.jpg" alt="Écran PLAY"></td>
+<td width="50%"><img src="docs/readme/start.jpg" alt="Écran START"></td>
 <td width="50%"><img src="docs/readme/home.jpg" alt="Accueil"></td>
 </tr>
 <tr>
-<td><b>PLAY</b> — à la première visite, une intro de 2 s avec un son <i>entièrement synthétisé</i> (ou en silence).</td>
+<td><b>:: ▷START</b> — à la première visite, une intro de 2 s avec un son <i>entièrement synthétisé</i> (ou en silence).</td>
 <td><b>01 · Home</b> — <code>::BASH</code> en lettres chromées, le perso, et une sculpture de chrome liquide qui suit la souris.</td>
 </tr>
 <tr>
@@ -53,7 +53,7 @@ Une ambiance **Y2K futuriste** : du noir, du violet profond, une touche de **sil
 </tr>
 <tr>
 <td><b>04 · Socials & contact</b> — trois bulles de chrome, une par réseau, reflet aux couleurs de la marque au survol, e-mail copiable.</td>
-<td><b>05 · Click to gamble</b> — le chrome se transforme en jeton de casino, et un bouton play mène au simulateur.</td>
+<td><b>05 · Click to gamble</b> — le chrome se transforme en jeton de casino, et « PLAY » mène au simulateur.</td>
 </tr>
 </table>
 
@@ -109,16 +109,16 @@ Tout est sauvegardé **dans ton navigateur uniquement** : aucune vraie monnaie, 
 
 ```
 /
-├── index.html              Accueil : toutes les sections (écran PLAY, Home, Videos, About, Socials, Gamble, fin)
+├── index.html              Accueil : toutes les sections (écran START, Home, Videos, About, Socials, Gamble, fin)
 ├── 404.html                Page d'erreur (« 404 » en chrome)
 ├── socials/, faq/          Anciennes pages → redirigent vers /#socials et /#about
 ├── cases/                  BASH ADDICTION, le simulateur de caisses (index.html + données JSON)
 ├── assets/
 │   ├── css/tokens.css      Couleurs, polices, easing (variables --nc-*)
-│   ├── css/base.css        Socle commun : HUD, menu, boutons, écran PLAY, curseur, fond
+│   ├── css/base.css        Socle commun : HUD, menu, boutons, écran START, curseur, fond
 │   ├── css/home.css        Les sections de l'accueil
 │   ├── css/cases.css       Le thème Nocturne Chrome du simulateur
-│   ├── js/site.js          BashSite : stockage sûr, HUD en direct, menu, écran PLAY + intro
+│   ├── js/site.js          BashSite : stockage sûr, HUD en direct, menu, écran START + intro
 │   ├── js/chrome.js        BashChrome : la sculpture WebGL et ses états par section
 │   ├── js/mercure.js       BashMercure : le curseur goutte de chrome + crochets de verrouillage
 │   ├── js/home.js          BashHome : parcours au scroll, carrousel vidéo, fiche, contact, inclinaison
@@ -152,7 +152,7 @@ La sculpture change de forme à chaque section, avec un fondu continu au fil du 
 ```bash
 python -m http.server 8000      # puis http://localhost:8000
 ```
-Pour revoir l'écran PLAY, utilise une fenêtre de navigation privée : il ne s'affiche qu'à la première visite.
+Pour revoir l'écran START, utilise une fenêtre de navigation privée : il ne s'affiche qu'à la première visite.
 
 **Ajouter une vidéo TikTok** (elle remplace une carte « NO SIGNAL ») :
 ```bash
@@ -174,7 +174,7 @@ python -m unittest discover -s tests -v
 
 | Clé | Rôle |
 |---|---|
-| `bash_v3_entered` | `"1"` après l'écran PLAY (il ne revient plus) |
+| `bash_v3_entered` | `"1"` après l'écran START (il ne revient plus) |
 | `bash_v3_sfx` | `"on"` / `"off"` : sons activés |
 | `bash_v3_tilt` | `"granted"` / `"denied"` : autorisation du gyroscope (iPhone) |
 | `cs2sim_*` | sauvegarde du simulateur (solde, inventaire, stats, succès…) |

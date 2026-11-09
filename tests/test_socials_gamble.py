@@ -71,13 +71,12 @@ class GambleOutroTest(SiteTestCase):
         page = self.open("/")
         self.assertEqual(page.text_content("#gambleTitle").strip(), "BASH ADDICTION")
         self.assertEqual(page.locator("#gamble .gamble-sub").count(), 0)
-        # Just a play button (YupBash): no gel pill, the name stays for screen readers.
-        self.assertEqual(page.locator("#gamble .gel").count(), 0)
-        link = page.locator("#gamble a.play-btn")
+        # Just the word PLAY (YupBash): no pill, no round button, no icon.
+        self.assertEqual(page.locator("#gamble .gel, #gamble .play-btn, #gamble a svg").count(), 0)
+        link = page.locator("#gamble a.play-link")
         self.assertEqual(link.get_attribute("href"), "/cases/")
-        self.assertEqual(page.get_by_role("link", name="Open a case").count(), 1)
-        self.assertEqual(link.locator("svg.play-tri").count(), 1)
-        self.assertEqual(link.text_content().strip(), "")
+        self.assertEqual(link.text_content().strip(), "PLAY")
+        self.assertEqual(page.get_by_role("link", name="PLAY", exact=True).count(), 1)
         self.assertTrue(link.is_visible())
 
     def test_menu_has_no_case_simulator_link(self):

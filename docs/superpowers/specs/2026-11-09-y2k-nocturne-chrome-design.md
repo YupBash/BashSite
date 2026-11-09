@@ -97,7 +97,7 @@ Le rendu validé (hero, shader, curseur Mercure) existe en prototype local, non 
 Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + barre de progression, bouton `SFX ON/OFF`, réseaux.
 
 ### 0 · Écran ENTER + intro (1re visite uniquement)
-- Écran noir, coins du HUD, bouton **« PLAY »** : juste le mot, en lettres chromées qui luisent doucement (demande de YupBash après la mise en ligne, qui remplace « :: ▷START »), lien discret *enter silently*.
+- Écran noir, coins du HUD, bouton épuré **« :: ▷START »** (points chromés, triangle en contour qui respire et se remplit au survol, START en lettres chromées, d'après le croquis de YupBash ; brièvement remplacé par « PLAY » puis rétabli à sa demande), lien discret *enter silently*.
 - **ENTER** : débloque l'audio, active les SFX, puis lance l'intro (≈ 2 s) **avec son** : lignes « système » qui s'écrivent avec un tic chacune (ton humoristique, ex. `vibes: questionable ✓`), note montante quand les coins se tracent, « bloop » liquide quand la goutte de chrome tombe, basse sourde quand la page s'ouvre.
 - **enter silently** : même intro, sans son ; SFX coupés.
 - Sur iPhone, ce même tap demande l'autorisation d'inclinaison.
@@ -131,7 +131,7 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 
 ### 05 · CLICK TO GAMBLE
 - Chrome : les gouttes fusionnent en un **jeton de casino** (disque à bord cranté) qui tourne lentement.
-- Texte : « BASH ADDICTION » (la phrase « fake money, real addiction. » a été retirée à la demande de YupBash) + un simple **bouton play** (cercle fin silver bleu, triangle en contour qui se remplit au survol, anneau qui pulse ; nom accessible « Open a case ») → `/cases/` — demandé par YupBash après la mise en ligne, qui a aussi fait retirer le lien « Case simulator » du menu.
+- Texte : « BASH ADDICTION » (la phrase « fake money, real addiction. » a été retirée à la demande de YupBash) + juste le mot **« PLAY »** en lettres chromées qui luisent doucement → `/cases/` (ni pilule, ni bouton rond, à la demande de YupBash) — demandé par YupBash après la mise en ligne, qui a aussi fait retirer le lien « Case simulator » du menu.
 
 ### Fin
 - « Don't miss the next one. » + les 3 réseaux + signature **« BASH · 2024–2026 »** en Permanent Marker.
