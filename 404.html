@@ -10,136 +10,40 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
 <link rel="apple-touch-icon" href="/assets/favicon-180.png">
-<meta name="theme-color" content="#3a0e5c">
+<meta name="theme-color" content="#1a0d3d">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BASH">
 <script src="/assets/favicon-anim.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/mercure.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Permanent+Marker&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@1,50..150,100..900&family=Chakra+Petch:ital,wght@0,400;0,600;1,500;1,600&family=Martian+Mono:wdth,wght@75..112.5,300..700&family=Permanent+Marker&display=swap">
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/base.css">
 <style>
-  :root{
-    --bg:#08070a;
-    --ink:#f4f1ec;
-    --purple:#6b21a8;
-    --purple-glow:rgba(107,33,168,0.55);
-  }
-  *{box-sizing:border-box;}
-  .stage{
-    position:relative;
-    width:100%;height:calc(var(--vh, 1vh) * 100);height:100dvh;min-height:320px;
-    background:
-      radial-gradient(ellipse 60% 50% at 50% 32%, rgba(107,33,168,0.14), transparent 62%),
-      var(--bg);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;
-    padding:24px;
-  }
-  .wordmark-link{
-    position:absolute;top:calc(clamp(18px,4vw,34px) + env(safe-area-inset-top,0px));left:calc(clamp(18px,4vw,34px) + env(safe-area-inset-left,0px));
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(1.6rem,3vw,2.2rem);
-    color:var(--ink);
-    text-decoration:none;
-    opacity:.8;
-    transition:opacity .18s ease, transform .18s ease;
-  }
-  .wordmark-link:hover{ opacity:1; transform:translateY(-2px); }
-
-  .code{
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(5rem,16vw,10rem);
-    line-height:.9;
-    color:#ffffff;
-    text-shadow:0 6px 0 rgba(0,0,0,.4);
-    filter:drop-shadow(0 0 30px rgba(139,63,209,.45));
-    margin:0;
-    transform:rotate(-2deg);
-    animation:codeGlitch 3.8s steps(1,end) 1s infinite;
-  }
-  @keyframes codeGlitch{
-    0%,86%,100%{ translate:0 0; text-shadow:0 6px 0 rgba(0,0,0,.4); }
-    88%{ translate:-4px 1px; text-shadow:-5px 0 rgba(254,44,85,.75), 5px 0 rgba(37,244,238,.75); }
-    90%{ translate:3px -2px; text-shadow:4px 0 rgba(254,44,85,.75), -4px 0 rgba(37,244,238,.75); }
-    92%{ translate:0 0; text-shadow:0 6px 0 rgba(0,0,0,.4); }
-    94%{ translate:2px 0; text-shadow:-3px 0 rgba(254,44,85,.6), 3px 0 rgba(37,244,238,.6); }
-  }
-  @media (prefers-reduced-motion: reduce){ .code{ animation:none; } }
-  .msg{
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(1.1rem,2.4vw,1.6rem);
-    color:#d8cdeb;
-    margin:10px 0 30px;
-    max-width:32ch;
-  }
-
-  .character{
-    height:min(var(--vh, 1vh) * 42,340px);
-    margin-bottom:20px;
-    filter:drop-shadow(0 20px 30px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(107,33,168,.28));
-    animation:characterFloat 4.5s ease-in-out infinite;
-    pointer-events:none;
-    user-select:none;
-  }
-  @keyframes characterFloat{
-    0%, 100%{ transform:translateY(0); }
-    50%{ transform:translateY(-14px); }
-  }
-
-  .home-btn{
-    display:inline-block;
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(1.1rem,2vw,1.4rem);
-    color:var(--ink);
-    text-decoration:none;
-    padding:14px 30px;
-    border:2px solid rgba(255,255,255,.25);
-    border-radius:999px;
-    background:rgba(139,63,209,.12);
-    transition:transform .18s ease, border-color .18s ease, background .18s ease;
-  }
-  .home-btn:hover, .home-btn:focus-visible{
-    transform:translateY(-2px) scale(1.03);
-    border-color:var(--purple);
-    background:rgba(139,63,209,.22);
-  }
-
-  .signature{
-    position:absolute;bottom:calc(clamp(14px,2.4vh,24px) + env(safe-area-inset-bottom,0px));left:50%;
-    transform:translateX(-50%);
-    font-family:"Permanent Marker",cursive;
-    font-size:clamp(.8rem,1.6vw,1rem);
-    color:rgba(244,241,236,.45);
-    letter-spacing:.04em;
-    white-space:nowrap;
-    pointer-events:none;
-    user-select:none;
-  }
-
-  @media (max-width: 520px){
-    .character{ height:min(var(--vh, 1vh) * 32,240px); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .character{ animation:none; }
-    *{ transition-duration:.001ms !important; }
-  }
+  .lost{position:relative;z-index:2;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:72px 22px calc(64px + env(safe-area-inset-bottom,0px));text-align:center}
+  .lost .kicker{margin:0}
+  .lost-code{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;line-height:.82;letter-spacing:-.02em;
+    font-size:clamp(110px,24vw,300px);filter:drop-shadow(0 0 28px rgba(139,92,246,.4)) drop-shadow(0 7px 0 rgba(0,0,0,.55))}
+  .lost-character{height:min(30vh,260px);width:auto;margin:-26px 0 0;user-select:none;-webkit-user-drag:none;
+    filter:drop-shadow(0 24px 34px rgba(0,0,0,.65)) drop-shadow(0 0 30px rgba(124,58,237,.35));animation:ncBob 4s ease-in-out infinite}
+  @keyframes ncBob{50%{transform:translateY(-8px)}}
+  .lost-msg{margin:4px 0 10px;max-width:30em;font-style:italic;font-weight:600;font-size:clamp(16px,1.6vw,21px)}
+  .lost .signature{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);margin:0;white-space:nowrap;
+    font-family:var(--nc-font-tag);font-size:clamp(.9rem,1.4vw,1.1rem);color:rgba(241,236,255,.5)}
+  @media (prefers-reduced-motion:reduce){.lost-character{animation:none}}
 </style>
 </head>
 <body>
-<div class="stage">
-  <a class="wordmark-link" href="/">BASH</a>
-
-  <img class="character" src="/assets/character.webp" alt="">
-  <h1 class="code">404</h1>
-  <p class="msg">Yeah, this page doesn't exist. Probably my fault, not yours.</p>
-  <a class="home-btn" href="/">Back home</a>
-
-  <div class="signature">BASH &middot; 2024&ndash;2026</div>
-</div>
+<div class="backdrop" aria-hidden="true"><div class="horizon"></div></div>
+<main class="lost">
+  <p class="kicker">error // signal lost</p>
+  <h1 class="lost-code chrome-text">404</h1>
+  <img class="lost-character" src="/assets/character.webp" alt="">
+  <p class="lost-msg">Yeah, this page doesn't exist. Probably my fault, not yours.</p>
+  <a class="gel" href="/"><span>Back home</span><i aria-hidden="true">&gt;&gt;&gt;</i></a>
+  <p class="signature">BASH · 2024–2026</p>
+</main>
 </body>
 </html>
