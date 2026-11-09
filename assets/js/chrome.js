@@ -8,6 +8,7 @@
 
   var reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   var HALF_H = 1.25;          // half height of the z = 0 plane seen by the camera (z = 4, focal 1.6)
+  var CAM_Z = 4;              // camera distance to the z = 0 plane (world units)
   var MOUSE_PLANE = 1.19;     // half height of the plane the pointer arm reaches into
   var BUBBLE_GAP = .40;       // min surface gap between Socials bubbles (object units): smooth-min k .5 blends below .25, ripple adds .056
 
@@ -16,8 +17,8 @@
   var STATES = {
     home: { fx: .32, fy: .18, s: .64, m: { fx: 0, fy: .40, s: .50 }, wob: 1, ring: [1.12, .075, .95, 1], arm: 1, chip: 0,
       blobs: [[0, 0, 0, .66], [0, 0, 0, .46], [0, 0, 0, .40], [0, 0, .1, .26], [0, -.75, .2, .30]] },
-    videos: { fx: 0, fy: .30, s: .45, m: { fx: 0, fy: .45, s: .38 }, wob: .5, ring: [1.9, .05, .28, 1], arm: .5, chip: 0,
-      blobs: [[0, 0, 0, .50], [0, 0, 0, .35], [0, 0, 0, .30], [0, 0, 0, .20], [0, 0, 0, .20]] },
+    videos: { fx: 0, fy: -.32, s: .44, m: { fx: 0, fy: -.24, s: .28 }, wob: 0, ring: [1.9, .05, .28, 1], arm: 0, chip: 0,
+      blobs: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] },
     about: { fx: 0, fy: 0, s: .50, wob: .35, ring: [1.12, .075, .95, 0], arm: 0, chip: 0,
       m: { fx: 0, fy: .75, s: .40, blobs: [[-1.4, 0, 0, .30], [1.4, .1, 0, .26], [0, .3, 0, .20], [0, 0, 0, 0], [0, 0, 0, 0]] },
       blobs: [[-2.7, .9, 0, .30], [-2.5, -.8, 0, .22], [2.7, .6, 0, .28], [2.6, -1, 0, .20], [0, 0, 0, 0]] },
@@ -44,7 +45,7 @@
   var FS = [
     "precision highp float;",
     "uniform vec2 uRes;uniform float uTime;uniform vec2 uMouse;uniform vec3 uCenter;uniform float uRot;uniform float uPx;",
-    "uniform vec4 uB[5];uniform vec4 uRing;uniform float uArm;uniform float uChip;uniform float uBound;",
+    "uniform vec4 uB[5];uniform vec4 uRing;uniform float uArm;uniform float uChip;uniform float uBound;uniform float uSpin;",
     "const vec3 SKY_TOP=vec3(.10,.05,.24);const vec3 SKY_HOR=vec3(.86,.93,1.);const vec3 GROUND=vec3(.015,.01,.03);",
     "const vec3 RIM1=vec3(.58,.30,1.);const vec3 RIM2=vec3(.55,.75,1.);const vec3 TINT=vec3(.94,.91,1.);",
     "float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}",
@@ -59,7 +60,7 @@
     "float map(vec3 p){",
     "  float s=uCenter.z;vec3 q=(p-vec3(uCenter.xy,0.))/s;float d=1e3;",
     "  for(int i=0;i<5;i++){vec4 b=uB[i];if(b.w>.01)d=smin(d,length(q-b.xyz)-b.w,.5);}",
-    "  if(uRing.w>.01){float t=uTime*.32;vec3 tp=q;tp.yz=rot(uRing.z+.18*sin(t*.8))*tp.yz;tp.xz=rot(t*.45)*tp.xz;",
+    "  if(uRing.w>.01){float t=uTime*.32;vec3 tp=q;tp.yz=rot(uRing.z+.18*sin(t*.8))*tp.yz;tp.xz=rot(t*.45+uSpin)*tp.xz;",
     "    tp+=.07*sin(3.*tp.zxy+uTime*.9);",
     "    float tor=length(vec2(length(tp.xz)-uRing.x,tp.y))-uRing.y*uRing.w;d=smin(d,tor,.28*uRing.w+.001);}",
     "  if(uArm>.01){vec2 m=(uMouse-uCenter.xy)/s;float ml=length(m);vec2 md=m/max(ml,1e-3)*min(ml,1.6)*uArm;",
@@ -95,7 +96,7 @@
     "  gl_FragColor=vec4(col*alpha,alpha);}"
   ].join("\n");
 
-  var UNIFORMS = ["uRes", "uTime", "uMouse", "uCenter", "uRot", "uPx", "uB", "uRing", "uArm", "uChip", "uBound"];
+  var UNIFORMS = ["uRes", "uTime", "uMouse", "uCenter", "uRot", "uPx", "uB", "uRing", "uArm", "uChip", "uBound", "uSpin"];
 
   function build(gl, steps) {
     function shader(type, src) {
@@ -131,6 +132,19 @@
 
   var instances = typeof WeakMap === "function" ? new WeakMap() : null;
 
+  /* Where a state puts the sculpture for a screen aspect (portrait screens use the state's "m" variant). */
+  function place(st, aspect) {
+    var m = (aspect < 1.1 && st.m) || {};
+    return { fx: m.fx != null ? m.fx : st.fx, fy: m.fy != null ? m.fy : st.fy, s: m.s != null ? m.s : st.s, blobs: m.blobs || st.blobs };
+  }
+
+  /* A state's ring in CSS pixels on a w x h screen, for DOM layers that ride on it (the videos carousel):
+     centre, radius, tilt (radians, before the wobble) and the camera distance to use as the CSS perspective. */
+  function ringFrame(name, w, h) {
+    var st = STATES[name] || STATES.home, pl = place(st, w / h), ppw = h / (2 * HALF_H);
+    return { x: w / 2 * (1 + pl.fx), y: h / 2 * (1 - pl.fy), r: st.ring[0] * pl.s * ppw, tilt: st.ring[2], camera: CAM_Z * ppw };
+  }
+
   function init(canvas, opts) {
     if (!canvas) return null;
     if (instances && instances.has(canvas)) return instances.get(canvas);
@@ -156,6 +170,7 @@
     var t0 = performance.now(), last = t0, frames = 0, fps = 0, acc = 0, cnt = 0, slowRun = 0;
     var running = false, paused = false, raf = 0, lost = false;
     var blobBuf = new Float32Array(20);
+    var spin = 0, wobble = 0;   // ring spin offset (videos carousel) and the ring's current tilt wobble
 
     function resize() {
       cssW = canvas.clientWidth || window.innerWidth || 1;
@@ -170,10 +185,9 @@
     }
 
     function resolve(name, aspect) {
-      var st = STATES[name], m = (aspect < 1.1 && st.m) || {};
-      var fx = m.fx != null ? m.fx : st.fx, fy = m.fy != null ? m.fy : st.fy, s = m.s != null ? m.s : st.s;
-      var cx = fx * HALF_H * aspect, cy = fy * HALF_H;
-      var blobs = (m.blobs || st.blobs).map(function (b) { return b.slice(); });
+      var st = STATES[name], pl = place(st, aspect), s = pl.s;
+      var cx = pl.fx * HALF_H * aspect, cy = pl.fy * HALF_H;
+      var blobs = pl.blobs.map(function (b) { return b.slice(); });
       if (st.targets && targets.length) {
         var n = Math.min(3, targets.length), i, j;
         for (i = 0; i < n; i++) {
@@ -225,6 +239,7 @@
       var P = params(aspect);
       var s = P.s * intro;
       var time = reduced ? 6 : (now - t0) / 1000, tt = time * .32;
+      wobble = .18 * Math.sin(tt * .8);   // same tilt wobble as the shader's ring
       var bound = 0;
       for (var i = 0; i < 5; i++) {
         var b = P.blobs[i], mo = motion(i, tt);
@@ -249,6 +264,7 @@
       gl.uniform4f(U.uRing, P.ring[0], P.ring[1], P.ring[2], P.ring[3]);
       gl.uniform1f(U.uArm, P.arm);
       gl.uniform1f(U.uChip, P.chip);
+      gl.uniform1f(U.uSpin, spin);
       gl.uniform1f(U.uBound, s > 1e-4 ? bound : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       frames++;
@@ -306,6 +322,12 @@
         if (!STATES[a] || !STATES[b]) return;
         from = a; to = b; mixT = Math.min(1, Math.max(0, t)); dirty = true;
       },
+      setSpin: function (a) {
+        spin = +a || 0; dirty = true;
+      },
+      ringWobble: function () {
+        return wobble;
+      },
       setTargets: function (points) {
         targets = (points || []).slice(0, 3); dirty = true;
       },
@@ -339,5 +361,5 @@
     return ctl;
   }
 
-  window.BashChrome = { init: init, states: Object.keys(STATES) };
+  window.BashChrome = { init: init, states: Object.keys(STATES), ringFrame: ringFrame };
 })();

@@ -31,6 +31,135 @@
   }
   home.socialTargets = socialTargets;
 
+  /* ---------- 02 · Latest videos: cards from videos.json on a 3D carousel that rides the chrome ring ---------- */
+  var videos = (function () {
+    var section = document.getElementById("videos"), ring = document.getElementById("vidsRing");
+    var stage = section && section.querySelector(".vids");
+    var api = { frame: function () { return null; }, front: function () { return -1; } };
+    if (!section || !ring || !stage) return api;
+    var PROFILE = "https://www.tiktok.com/@yupbash", MIN = 6, MAX = 8;
+    var three = !!(window.gsap && window.ScrollTrigger) && !site.reduced;
+    if (three) { document.documentElement.classList.add("vids-3d"); section.setAttribute("data-pin", ""); }
+    else stage.classList.add("is-grid");
+
+    /* Real entry = not a placeholder, a TikTok link and a thumbnail (at most 8). Placeholders become NO SIGNAL
+       screens, anything else is skipped, and the ring always gets at least 6 cards. */
+    function entries(list) {
+      var out = [], real = 0;
+      (Array.isArray(list) ? list : []).forEach(function (v) {
+        if (!v || typeof v !== "object" || out.length >= MAX) return;
+        if (v.placeholder === true) { out.push(null); return; }
+        if (real < MAX && typeof v.url === "string" && v.url.indexOf("https://www.tiktok.com/") === 0 &&
+            typeof v.thumb === "string" && v.thumb.trim()) { out.push(v); real++; }
+      });
+      while (out.length < MIN) out.push(null);
+      return out;
+    }
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;   // titles come from a data file: text only, never HTML
+      return e;
+    }
+    function deco(cls, text) {
+      var e = el("span", cls, text);
+      e.setAttribute("aria-hidden", "true");
+      return e;
+    }
+    function card(v, i) {
+      var a = el("a", v ? "vid-card" : "vid-card is-nosignal");
+      a.href = v ? v.url : PROFILE;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.style.setProperty("--i", i);
+      if (v) {
+        var img = el("img");
+        img.src = v.thumb; img.alt = ""; img.loading = "lazy";
+        a.appendChild(img);
+      } else a.appendChild(deco("vid-snow"));
+      a.appendChild(deco("vid-ch", "CH." + (i < 9 ? "0" : "") + (i + 1)));
+      if (v) a.appendChild(deco("vid-play"));
+      var info = el("span", "vid-info");
+      info.appendChild(el("span", "vid-title", v ? String(v.title || "New video") : "NO SIGNAL — first drop soon"));
+      info.appendChild(el("span", "vid-cta", v ? "Watch on TikTok →" : "Follow on TikTok"));
+      a.appendChild(info);
+      return a;
+    }
+
+    var cards = [], n = 0, step = 60, rot = 0, front = -1, frame = null, tilt = 0, inView = null;
+    function layout() {
+      var cv = document.getElementById("chrome");
+      var w = (cv && cv.clientWidth) || window.innerWidth || 1, h = (cv && cv.clientHeight) || window.innerHeight || 1;
+      frame = window.BashChrome && window.BashChrome.ringFrame ? window.BashChrome.ringFrame("videos", w, h)
+        : { x: w / 2, y: h * .7, r: Math.min(w * .42, h * .3), tilt: .28, camera: h * 1.6 };
+      var st = stage.style;
+      st.setProperty("--persp", frame.camera.toFixed(1) + "px");
+      st.setProperty("--ring-x", frame.x.toFixed(1) + "px");
+      st.setProperty("--ring-y", frame.y.toFixed(1) + "px");
+      st.setProperty("--radius", frame.r.toFixed(1) + "px");
+      st.setProperty("--card-w", Math.round(Math.min(frame.r * (h > w ? .75 : .62), 220)) + "px");   // wider cards on portrait screens
+      st.setProperty("--step", step + "deg");
+    }
+    function apply() {
+      ring.style.setProperty("--rot", rot.toFixed(3) + "deg");
+      var idx = n ? ((Math.round(-rot / step) % n) + n) % n : -1;
+      if (idx !== front) {
+        front = idx;
+        cards.forEach(function (c, i) { c.classList.toggle("is-front", i === idx); });
+      }
+      if (home.chrome && home.chrome.setSpin) home.chrome.setSpin(-rot * Math.PI / 180);   // the chrome track turns with the cards
+    }
+    function tick() {   // follow the chrome ring's slow tilt wobble while the section is on screen
+      if (!inView || !inView.isActive || !frame) return;
+      var a = frame.tilt + (home.chrome && home.chrome.ringWobble ? home.chrome.ringWobble() : 0);
+      if (Math.abs(a - tilt) > 1e-4) { tilt = a; ring.style.setProperty("--tilt", a.toFixed(4) + "rad"); }
+    }
+    function goTo(i) {   // scroll to where card i faces the front
+      var top = section.getBoundingClientRect().top + window.scrollY, span = section.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: top + span * i / Math.max(1, n - 1), behavior: "smooth" });
+    }
+    function init3D() {
+      var gsap = window.gsap, ST = window.ScrollTrigger;
+      gsap.registerPlugin(ST);
+      step = 360 / n;
+      layout();
+      tilt = frame.tilt;
+      ring.style.setProperty("--tilt", tilt.toFixed(4) + "rad");
+      var state = { rot: 0 };
+      gsap.to(state, {
+        rot: -(n - 1) * step, ease: "none",
+        scrollTrigger: { trigger: section, start: "top top", end: "bottom bottom", scrub: .8 },
+        onUpdate: function () { rot = state.rot; apply(); }
+      });
+      inView = ST.create({ trigger: section, start: "top bottom", end: "bottom top" });
+      gsap.ticker.add(tick);
+      window.addEventListener("resize", layout);
+      ring.addEventListener("focusin", function (e) {
+        var c = e.target.closest ? e.target.closest(".vid-card") : null, i = cards.indexOf(c), kb = true;
+        try { kb = !!c && c.matches(":focus-visible"); } catch (err) { kb = true; }
+        if (i >= 0 && kb) setTimeout(function () { goTo(i); }, 0);   // after the browser's own scroll-into-view
+      });
+      apply();
+    }
+    function build(list) {
+      var items = entries(list), frag = document.createDocumentFragment();
+      n = items.length;
+      cards = items.map(card);
+      cards.forEach(function (c) { frag.appendChild(c); });
+      ring.textContent = "";
+      ring.appendChild(frag);
+      if (three) init3D();
+    }
+    fetch("/assets/videos/videos.json", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("videos.json " + r.status); return r.json(); })
+      .then(build, function () { build([]); });   // no data: the section stays, with NO SIGNAL screens
+
+    api.frame = function () { return frame ? { x: frame.x, y: frame.y, r: frame.r, tilt: tilt, camera: frame.camera } : null; };
+    api.front = function () { return front; };
+    return api;
+  })();
+  home.videos = videos;
+
   /* ---------- scroll journey: section indicator, chrome states and the evolving backdrop ---------- */
   var journey = (function () {
     var html = document.documentElement;
@@ -55,22 +184,26 @@
       mood(50, 100, 50, 40, [30, 14, 56], [10, 6, 20], [5, 4, 8], 50, 100, 40, 35, [107, 33, 168], 0, 96, .25, .3)
     ];
 
-    var tops = [], heights = [], vh = window.innerHeight || 1;
+    var tops = [], heights = [], pinned = [], vh = window.innerHeight || 1;
     function measure() {
       vh = window.innerHeight || 1;
       nodes.forEach(function (n, i) {
         var r = n.getBoundingClientRect();
         tops[i] = r.top + window.scrollY;
         heights[i] = Math.max(1, r.height);
+        pinned[i] = n.hasAttribute("data-pin");
       });
     }
     function ease(t) { return t * t * (3 - 2 * t); }
     /* Where the middle of the screen is: inside one section, or in the hand-over zone between two
-       (from 60 % of section i to 20 % of section i + 1). */
+       (from 60 % of section i to 20 % of section i + 1). A pinned section (sticky stage: the videos carousel)
+       keeps its state for its whole pinned range: hand-overs end when its stage pins and start when it unpins. */
+    function enterAt(k) { return tops[k] + (pinned[k] ? .5 * vh : .2 * heights[k]); }
+    function leaveAt(k) { return tops[k] + (pinned[k] ? heights[k] - .5 * vh : .6 * heights[k]); }
     function locate(y) {
       var c = y + vh / 2;
       for (var j = 0; j < nodes.length - 1; j++) {
-        var s = tops[j] + .6 * heights[j], e = tops[j + 1] + .2 * heights[j + 1];
+        var s = leaveAt(j), e = enterAt(j + 1);
         if (c >= s && c <= e) return { from: j, to: j + 1, t: (c - s) / Math.max(1, e - s), c: c };
       }
       var idx = 0;

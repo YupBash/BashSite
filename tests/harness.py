@@ -65,6 +65,13 @@ class _Server(http.server.ThreadingHTTPServer):
     daemon_threads = True
 
 
+def _fulfill_json(body):
+    # Playwright passes (route, request) to two-argument handlers, so the body is bound by a closure.
+    def handler(route):
+        route.fulfill(status=200, content_type="application/json", body=body)
+    return handler
+
+
 class SiteTestCase(unittest.TestCase):
     """Base class: one server + browser per test class, one context per page."""
 
@@ -94,7 +101,7 @@ class SiteTestCase(unittest.TestCase):
         return cls._browser_nogl
 
     def open(self, path="/", *, mobile=False, reduced_motion=False, entered=True, webgl=True,
-             block=(), storage=True, init_script=None):
+             block=(), storage=True, init_script=None, routes=None):
         browser = self.browser if webgl else self._nogl()
         options = dict(MOBILE if mobile else DESKTOP)
         if reduced_motion:
@@ -110,6 +117,8 @@ class SiteTestCase(unittest.TestCase):
             context.add_init_script(init_script)
         for pattern in block:
             context.route(lambda url, p=pattern: p in url, lambda route: route.abort())
+        for pattern, body in (routes or {}).items():   # serve a JSON body instead of the real file
+            context.route(lambda url, p=pattern: p in url, _fulfill_json(body))
         page = context.new_page()
         errors = []
         page.on("console", lambda m: errors.append("%s @ %s" % (m.text, m.location.get("url", "")))

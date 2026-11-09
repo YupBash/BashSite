@@ -111,6 +111,7 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 
 ### 02 · LATEST VIDEOS
 - L'anneau de chrome grandit, s'incline et devient la **piste d'un carrousel 3D** : les cartes vidéo (format 9:16) tournent sur une ellipse alignée sur l'anneau (même inclinaison, même rotation), pilotée par le scroll.
+- Les gouttes fondent : l'anneau reste seul, bas dans l'écran pour dégager le titre (demande de YupBash au checkpoint de la phase 1). Les cartes sont **debout sur l'anneau** : même centre, rayon, inclinaison (oscillation comprise) et caméra que le chrome, et la surface de l'anneau tourne avec les cartes. La section reste épinglée pendant la rotation. Au clavier, la carte qui reçoit le focus vient à l'avant.
 - Carte : miniature, cadre HUD, titre, « Watch on TikTok → ».
 - Entrées `"placeholder": true` de `videos.json` (situation actuelle) : écrans HUD **« NO SIGNAL — first drop soon »** (lignes de balayage, neige légère) + bouton « Follow on TikTok ». Les miniatures provisoires ne sont pas affichées.
 - Sans GSAP ou en « réduire les animations » : grille simple.
