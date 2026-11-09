@@ -1,0 +1,16 @@
+/* BASH — design v3: styles of the Mercure cursor (assets/js/mercure.js), shared by the home page, the 404 and /cases/. */
+/* Mercure liquid-chrome cursor (assets/js/mercure.js): system cursor hidden only while it runs. */
+html.has-mercure,html.has-mercure *{cursor:none!important}
+.mercure-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+/* Lock-on brackets around the hovered / focused element (YupBash's pick from the first mockup). */
+.mercure-lock{position:fixed;left:0;top:0;width:0;height:0;z-index:89;pointer-events:none;opacity:0;
+  transition:left .22s var(--nc-ease),top .22s var(--nc-ease),width .22s var(--nc-ease),height .22s var(--nc-ease)}
+.mercure-lock.snap{transition:none}
+.mercure-lock i{position:absolute;width:10px;height:10px;border:0 solid var(--nc-accent);filter:drop-shadow(0 0 4px var(--nc-accent-glow))}
+.mercure-lock .a{left:0;top:0;border-top-width:2px;border-left-width:2px}
+.mercure-lock .b{right:0;top:0;border-top-width:2px;border-right-width:2px}
+.mercure-lock .c{left:0;bottom:0;border-bottom-width:2px;border-left-width:2px}
+.mercure-lock .d{right:0;bottom:0;border-bottom-width:2px;border-right-width:2px}
+.mercure-lock-label{position:absolute;left:0;top:-18px;white-space:nowrap;font:600 9px/1 var(--nc-font-mono);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--nc-accent);text-shadow:0 0 6px var(--nc-accent-glow)}
+.mercure-lock.below .mercure-lock-label{top:auto;bottom:-18px}

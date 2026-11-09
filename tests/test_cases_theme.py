@@ -18,6 +18,16 @@ class CasesThemeTest(SiteTestCase):
         self.assertTrue(page.evaluate("document.documentElement.classList.contains('has-mercure')"))
         self.assert_clean(page)
 
+    def test_mercure_cursor_is_styled(self):
+        page = self.open("/cases/")
+        page.wait_for_timeout(300)
+        page.mouse.move(700, 500)
+        st = page.evaluate("""() => ({ cursor: getComputedStyle(document.body).cursor,
+            canvas: getComputedStyle(document.querySelector('.mercure-canvas')).position,
+            lock: getComputedStyle(document.querySelector('.mercure-lock')).position,
+            opacity: getComputedStyle(document.querySelector('.mercure-lock')).opacity })""")
+        self.assertEqual(st, {"cursor": "none", "canvas": "fixed", "lock": "fixed", "opacity": "0"})
+
     def test_every_view_still_opens(self):
         page = self.open("/cases/")
         page.wait_for_function("() => document.querySelectorAll('#caseGrid .case-card').length > 0", timeout=15000)
