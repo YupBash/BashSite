@@ -376,6 +376,61 @@
     }, { passive: true });
   }
 
+  /* ---------- phone tilt: the chrome follows the gyroscope, the character drifts a little (touch screens only) ---------- */
+  (function () {
+    var last = null, listening = false, character = document.querySelector(".sec-home .character");
+    var DOE = window.DeviceOrientationEvent, ask = DOE && typeof DOE.requestPermission === "function";
+    function clamp(v) { return Math.min(1, Math.max(0, v)); }
+    function onTilt(e) {
+      if (e.beta == null || e.gamma == null) return;
+      var nx = clamp(0.5 + e.gamma / 90), ny = clamp(0.5 + (e.beta - 45) / 90);
+      last = { nx: nx, ny: ny };
+      if (home.chrome) home.chrome.setPointer(nx, ny);
+      if (character && !site.reduced) {
+        character.style.setProperty("--tilt-x", ((nx - 0.5) * 24).toFixed(1) + "px");
+        character.style.setProperty("--tilt-y", ((ny - 0.5) * 12).toFixed(1) + "px");
+      }
+    }
+    function listen() {
+      if (listening || site.fine || !DOE) return;
+      listening = true;
+      window.addEventListener("deviceorientation", onTilt, { passive: true });
+    }
+    function unlisten() {
+      listening = false;
+      last = null;
+      window.removeEventListener("deviceorientation", onTilt);
+    }
+    /* Must run inside a user gesture (the ENTER tap) for iOS to show its prompt. */
+    home.requestTilt = function () {
+      if (site.fine || !DOE) return Promise.resolve("unsupported");
+      if (!ask) { listen(); return Promise.resolve("granted"); }
+      var p;
+      try { p = Promise.resolve(DOE.requestPermission()); } catch (err) { p = Promise.reject(err); }
+      return p.then(function (state) {
+        state = state === "granted" ? "granted" : "denied";
+        site.store.set("bash_v3_tilt", state);
+        if (state === "granted") listen(); else unlisten();
+        return state;
+      }, function () {
+        site.store.set("bash_v3_tilt", "denied");
+        unlisten();
+        return "denied";
+      });
+    };
+    home.tilt = function () { return last; };
+    if (site.fine || !DOE) return;
+    // Listen right away unless refused: browsers that need no permission send events, iOS sends none until granted.
+    if (site.store.get("bash_v3_tilt") !== "denied") listen();
+    if (ask && site.store.get("bash_v3_tilt") === "granted") {
+      // Later visits on iPhone: the permission must be asked again inside a gesture; do it on the first tap.
+      window.addEventListener("touchend", function once() {
+        window.removeEventListener("touchend", once);
+        home.requestTilt();
+      }, { passive: true });
+    }
+  })();
+
   /* ---------- character easter egg: 5 quick clicks on the drawing itself ---------- */
   (function () {
     var box = document.querySelector(".character");
