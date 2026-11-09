@@ -198,6 +198,9 @@ html.menu-open .menu-list li:nth-child(5){animation-delay:.2s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media (max-width:720px){
+  /* Content scrolls under the transparent HUD bar: fade it out behind the bar. */
+  .hud::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(96px + env(safe-area-inset-top,0px));pointer-events:none;
+    background:linear-gradient(180deg,rgba(7,5,12,.92) 0%,rgba(7,5,12,.72) 45%,rgba(7,5,12,0) 100%)}
   .hud{inset:12px}
   .hud-row{left:22px;right:22px;gap:8px}
   .hud-site,.hud-live,.hud-clock,.hud-coords,.hud-fps,.hud-vert,.hud-ruler,.hud-bottom .hud-line{display:none}
