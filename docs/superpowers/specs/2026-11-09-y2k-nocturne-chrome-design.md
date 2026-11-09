@@ -120,8 +120,8 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 - **Fiche perso** : « BASH · 21 · Belgium · *Some random dude, idk.* », avec le perso assis (`faq-character.webp`). Une ligne de scan passe sur la fiche quand elle entre à l'écran.
 - **Fiche technique du setup** (valeurs qui s'affichent en défilant) : Processor Ryzen 7 5800X · Memory 32 GB RAM · Graphics Card RX 9070 XT · Mouse WLMOUSE Beast X · Keyboard Gravastar Mercury V60 Pro.
 - **FAQ en accordéon** avec les 6 questions actuelles et leurs réponses telles quelles (humour conservé) : Who are you? · Where can I follow you? · How often do you post? · About me · How can I contact you? · What gear do you use?
-- **Démineur caché** derrière l'emoji 💣 de « Who are you? » : conservé (même fonctionnement : sélecteur de taille, drapeaux, reset), restylé.
-- Chrome : la sculpture se divise en 3–4 petites gouttes qui se rangent dans les marges pour laisser le texte lisible.
+- **Démineur caché** derrière l'emoji 💣 de « Who are you? » : conservé (même fonctionnement : sélecteur de taille, drapeaux, reset), restylé en fenêtre HUD. Le focus clavier entre dans la fenêtre et revient au 💣 à la fermeture ; en mode drapeau (écran tactile), toucher un drapeau le retire.
+- Chrome : la sculpture se divise en 3–4 petites gouttes qui se rangent dans les marges pour laisser le texte lisible. Sur téléphone, 2 gouttes encadrent le titre aux bords de l'écran, jamais derrière la barre HUD.
 
 ### 04 · SOCIALS & CONTACT
 - Chrome : la sculpture éclate en **3 bulles** qui flottent chacune **au-dessus de son bouton**, dans l'ordre Discord, TikTok, Instagram : du chrome nu, sans logo (des logos de marque ont été essayés au checkpoint de la phase 1, puis retirés à la demande de YupBash). Sur téléphone, les 3 bulles sont côte à côte au-dessus des boutons empilés et restent toujours **séparées** (leur rayon diminue si l'écran est trop étroit, elles ne fusionnent jamais en capsule).

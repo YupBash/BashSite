@@ -160,6 +160,34 @@
   })();
   home.videos = videos;
 
+  /* ---------- 03 · About: the spec values decode when the sheet shows up, the portrait gets a scan line ---------- */
+  (function () {
+    var sheet = document.querySelector(".spec-sheet"), card = document.querySelector(".profile-card");
+    if (!sheet || site.reduced || !("IntersectionObserver" in window)) return;
+    var GLYPHS = "#%&@$*+=<>/\\|01░▒▓";
+    function decode(el, delay) {
+      var text = el.textContent, start = 0, dur = 700;
+      el.classList.add("is-decoding");
+      function frame(now) {
+        if (!start) start = now + delay;
+        var t = Math.max(0, (now - start) / dur), keep = Math.floor(Math.min(1, t) * text.length), out = text.slice(0, keep);
+        for (var i = keep; i < text.length; i++) out += text.charAt(i) === " " ? " " : GLYPHS.charAt((Math.random() * GLYPHS.length) | 0);
+        el.setAttribute("data-scramble", out);
+        if (t < 1) { requestAnimationFrame(frame); return; }
+        el.classList.remove("is-decoding");
+        el.removeAttribute("data-scramble");
+      }
+      requestAnimationFrame(frame);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries.some(function (e) { return e.isIntersecting; })) return;
+      io.disconnect();
+      Array.prototype.forEach.call(sheet.querySelectorAll(".spec-value"), function (el, i) { decode(el, i * 110); });
+      if (card) card.classList.add("is-scanning");
+    }, { threshold: .3 });
+    io.observe(sheet);
+  })();
+
   /* ---------- scroll journey: section indicator, chrome states and the evolving backdrop ---------- */
   var journey = (function () {
     var html = document.documentElement;

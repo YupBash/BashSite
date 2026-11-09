@@ -129,6 +129,20 @@ html.vids-3d .vid-card.is-front{filter:none}
   background:repeating-linear-gradient(180deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
 .profile-card{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:18px}
 .profile-card img{width:120px;height:120px;object-fit:cover;object-position:50% 30%;border-radius:4px;border:1px solid var(--nc-line);background:rgba(10,6,22,.6)}
+/* Scan line sweeping the portrait (starts when the section shows up; home.js adds .is-scanning). */
+.profile-shot{position:relative;display:block;overflow:hidden;border-radius:4px}
+.profile-shot img{display:block}
+.profile-shot::after{content:"";position:absolute;left:0;right:0;top:0;height:28%;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,transparent,rgba(207,226,255,.22) 75%,rgba(207,226,255,.8) 98%,transparent);
+  transform:translateY(-100%)}
+.profile-card.is-scanning .profile-shot::after{animation:ncScan 4.8s var(--nc-ease) .3s infinite}
+@keyframes ncScan{0%{opacity:0;transform:translateY(-100%)}6%{opacity:1}40%{opacity:1;transform:translateY(360%)}46%,100%{opacity:0;transform:translateY(360%)}}
+/* Spec values decode on entry: the real text stays in the DOM (screen readers, copy), the scramble is drawn on top. */
+.spec-value{position:relative}
+.spec-value.is-decoding{color:transparent}
+.spec-value.is-decoding::after{content:attr(data-scramble);position:absolute;left:0;top:0;white-space:pre;color:var(--nc-accent)}
+.spec-list li{padding:3px 0}
+.spec-list-label{display:inline-block;min-width:9.5em;font-family:var(--nc-font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--nc-hud)}
 .profile-id{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:125%;font-weight:800;font-size:clamp(18px,1.8vw,24px)}
 .profile-quote{margin:6px 0 0;font-style:italic;color:var(--nc-hud)}
 .spec-sheet{margin:0}
@@ -183,6 +197,44 @@ html.vids-3d .vid-card.is-front{filter:none}
   font-size:clamp(2rem,6vw,4.4rem);line-height:1}
 .outro-links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:clamp(40px,8vh,80px)}
 .signature{margin:0;font-family:var(--nc-font-tag);font-size:clamp(1rem,1.6vw,1.3rem);color:rgba(241,236,255,.55);letter-spacing:.04em}
+
+/* ============ MINI MINESWEEPER (💣 in the FAQ) — HUD window ============ */
+.ms-overlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;
+  background:rgba(5,3,12,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
+.ms-overlay.open{opacity:1;visibility:visible;transition:opacity .25s}
+.ms-box{position:relative;width:min(440px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:18px;border:1px solid var(--nc-line);border-radius:8px;
+  background:linear-gradient(180deg,rgba(24,12,48,.96),rgba(10,6,22,.98));
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 40px -18px var(--nc-accent-glow);
+  transform:translateY(14px) scale(.97);transition:transform .3s var(--nc-ease)}
+.ms-overlay.open .ms-box{transform:none}
+.ms-box::before{content:"";position:absolute;inset:6px;pointer-events:none;--c:var(--nc-accent);opacity:.7;
+  background:
+    linear-gradient(var(--c),var(--c)) 0 0/12px 1.5px,linear-gradient(var(--c),var(--c)) 0 0/1.5px 12px,
+    linear-gradient(var(--c),var(--c)) 100% 0/12px 1.5px,linear-gradient(var(--c),var(--c)) 100% 0/1.5px 12px,
+    linear-gradient(var(--c),var(--c)) 0 100%/12px 1.5px,linear-gradient(var(--c),var(--c)) 0 100%/1.5px 12px,
+    linear-gradient(var(--c),var(--c)) 100% 100%/12px 1.5px,linear-gradient(var(--c),var(--c)) 100% 100%/1.5px 12px;
+  background-repeat:no-repeat}
+.ms-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ms-title{font:700 11px/1 var(--nc-font-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--nc-accent);text-shadow:0 0 8px var(--nc-accent-glow)}
+.ms-close{width:34px;height:34px;border:1px solid var(--nc-line);border-radius:4px;background:rgba(10,6,22,.6);color:var(--nc-ink);font-size:20px;line-height:1;cursor:pointer}
+.ms-toolbar{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.ms-toolbar-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ms-size-select,.ms-flag-toggle,.ms-reset{font:600 10.5px/1 var(--nc-font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--nc-ink);
+  background:rgba(10,6,22,.6);border:1px solid var(--nc-line);border-radius:4px;padding:9px 10px;cursor:pointer}
+.ms-size-select option{background:#120a26;color:var(--nc-ink)}
+.ms-flag-toggle.active{border-color:var(--nc-accent);color:var(--nc-accent);box-shadow:0 0 14px -4px var(--nc-accent-glow)}
+.ms-status{font:600 12px/1 var(--nc-font-mono);letter-spacing:.1em}
+.ms-grid{display:grid;gap:3px}
+.ms-cell{aspect-ratio:1;min-width:0;padding:0;border:1px solid rgba(207,226,255,.16);border-radius:3px;cursor:pointer;
+  background:linear-gradient(180deg,#2b2253,#16102c);color:var(--nc-ink);font:700 13px/1 var(--nc-font-mono);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);transition:border-color .15s,background .15s}
+.ms-cell:hover{border-color:rgba(207,226,255,.5)}
+.ms-cell.revealed{background:rgba(6,4,14,.72);box-shadow:none;cursor:default;border-color:rgba(207,226,255,.07)}
+.ms-cell.mine{background:rgba(140,24,60,.55)}
+.ms-cell.n1{color:#9fc2ff}.ms-cell.n2{color:#8ff0c8}.ms-cell.n3{color:#ff8fa8}.ms-cell.n4{color:#c9a7ff}
+.ms-cell.n5{color:#ffc27a}.ms-cell.n6{color:#7ff3f0}.ms-cell.n7{color:#ffffff}.ms-cell.n8{color:#b3a9c9}
+@media (prefers-reduced-motion:reduce){.profile-card.is-scanning .profile-shot::after{animation:none}.ms-box{transition:none}}
 
 /* ============ mobile ============ */
 @media (max-width:720px){
