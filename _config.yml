@@ -1,0 +1,5 @@
+# GitHub Pages (Jekyll): keep development folders off the published site.
+exclude:
+  - docs
+  - tests
+  - tools
