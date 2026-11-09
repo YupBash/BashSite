@@ -126,6 +126,10 @@ html.no-gl #chrome{display:none}
 /* Keyboard focus fallback (the Mercure cursor draws its own ring when active). */
 :focus-visible{outline:2px solid var(--nc-accent);outline-offset:4px}
 
+/* Mercure liquid-chrome cursor (assets/js/mercure.js): system cursor hidden only while it runs. */
+html.has-mercure,html.has-mercure *{cursor:none!important}
+.mercure-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:64px;z-index:45;transform:translate(-50%,12px);opacity:0;pointer-events:none;
