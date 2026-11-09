@@ -1,0 +1,163 @@
+/* BASH ADDICTION — the case simulator (/cases/) dressed in the site's Nocturne Chrome identity.
+   Loaded after the page's own <style>: it only restyles, the simulator's markup and JS are untouched.
+   CS2 rarity colours (--c-*) are kept as they are: they carry meaning. */
+
+:root{
+  --bg:#07050c;
+  --panel:#120a24;
+  --panel-2:#1b1036;
+  --line:rgba(196,174,255,.18);
+  --ink:#f1ecff;
+  --ink-dim:#a99cc9;
+  --gold:#cfe2ff;          /* the old accent → silver blue */
+  --gold-ink:#0b0716;
+  --cs-glass:linear-gradient(180deg,rgba(27,16,54,.78),rgba(10,6,22,.86));
+  --cs-gel:linear-gradient(180deg,#b9a2ff 0%,#8a5cff 38%,#5b2fd6 52%,#7c4dff 78%,#b7a0ff 100%);
+  --cs-chrome:linear-gradient(180deg,#ffffff 0%,#e7e0ff 38%,#5d4a9a 50%,#c9bcff 62%,#ffffff 100%);
+  --cs-ticks:
+    linear-gradient(var(--nc-accent),var(--nc-accent)) 0 0/10px 1.5px,linear-gradient(var(--nc-accent),var(--nc-accent)) 0 0/1.5px 10px,
+    linear-gradient(var(--nc-accent),var(--nc-accent)) 100% 0/10px 1.5px,linear-gradient(var(--nc-accent),var(--nc-accent)) 100% 0/1.5px 10px,
+    linear-gradient(var(--nc-accent),var(--nc-accent)) 0 100%/10px 1.5px,linear-gradient(var(--nc-accent),var(--nc-accent)) 0 100%/1.5px 10px,
+    linear-gradient(var(--nc-accent),var(--nc-accent)) 100% 100%/10px 1.5px,linear-gradient(var(--nc-accent),var(--nc-accent)) 100% 100%/1.5px 10px;
+}
+
+/* ---------- page: violet haze, horizon line, faint scanlines ---------- */
+html,body{background:var(--bg)}
+body{
+  background:
+    radial-gradient(70% 55% at 78% 0%,rgba(91,47,214,.26),transparent 62%),
+    radial-gradient(60% 45% at 8% 100%,rgba(107,33,168,.22),transparent 66%),
+    var(--bg);
+  background-attachment:fixed;
+}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+.wrap,.topbar{position:relative;z-index:1}
+
+/* ---------- top bar → HUD ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(7,5,12,.94),rgba(7,5,12,.78));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--nc-accent) 50%,transparent);opacity:.55}
+.brand,.brand:hover{
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:140%;font-weight:900;font-size:1.25rem;letter-spacing:-.01em;
+  text-shadow:none;background:var(--cs-chrome);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 10px rgba(139,92,246,.45));
+}
+.brand .tag{
+  -webkit-text-fill-color:var(--gold-ink);color:var(--gold-ink);background:var(--nc-accent);
+  font:700 9px/1 var(--nc-font-mono);font-style:normal;letter-spacing:.16em;padding:4px 6px;border-radius:2px;
+}
+.nav-tabs button,.home-link,.kind-filter button,.sort-select,.open-amount-toggle button,.buy-amount-toggle button,
+.battle-amount-toggle button,.mines-bet-presets button,.battle-field select,.mines-field input{
+  font-family:var(--nc-font-mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  background:rgba(10,6,22,.55);border:1px solid var(--line);border-radius:4px;color:var(--ink-dim);
+}
+.mines-field input{text-transform:none;letter-spacing:.06em;font-size:13px;color:var(--ink)}
+.nav-tabs button{padding:9px 14px}
+.nav-tabs button:hover,.home-link:hover,.kind-filter button:hover,.open-amount-toggle button:hover{color:var(--ink);border-color:rgba(207,226,255,.45)}
+.nav-tabs button.active,.kind-filter button.active,.open-amount-toggle button.active,.buy-amount-toggle button.active,.battle-amount-toggle button.active{
+  color:var(--nc-accent);border-color:var(--nc-accent);background:rgba(207,226,255,.07);box-shadow:0 0 14px -6px var(--nc-accent-glow);
+}
+.home-link{color:var(--ink)}
+.ach-toggle,.sfx-toggle{background:rgba(10,6,22,.55);border:1px solid var(--line);border-radius:4px}
+.ach-toggle:hover,.sfx-toggle:hover{border-color:rgba(207,226,255,.45)}
+.wallet-btn{
+  font-family:var(--nc-font-mono);font-weight:600;letter-spacing:.06em;color:var(--ink);
+  background:rgba(10,6,22,.6);border:1px solid var(--nc-accent);border-radius:4px;box-shadow:0 0 16px -8px var(--nc-accent-glow);
+}
+.wallet-btn .ic{background:var(--nc-accent);color:var(--gold-ink)}
+
+/* ---------- titles: chrome display type + mono kickers ---------- */
+.wrap h1,.big-cases-head h2,.ck-top h2,.inspect-name{
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;letter-spacing:-.02em;line-height:.95;
+  background:var(--cs-chrome);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 18px rgba(139,92,246,.35)) drop-shadow(0 4px 0 rgba(0,0,0,.5));
+}
+.wrap h1{font-size:clamp(2rem,5.4vw,3.6rem);margin:0 0 10px}
+.big-cases-head h2{font-size:clamp(1.4rem,3vw,2rem)}
+.ck-top h2{font-size:clamp(1.3rem,3vw,1.9rem)}
+.sub{font-style:italic;color:var(--ink-dim)}
+.unlock-label,.contains-label,.inspect-rarity,.ck-shop-head span,.battle-field label,.mines-field label,.ck-stat,.mines-status-item,.daily-info .daily-sub{
+  font-family:var(--nc-font-mono);letter-spacing:.16em;text-transform:uppercase;
+}
+.unlock-label,.contains-label{font-size:10.5px;color:var(--nc-hud)}
+.unlock-case-name,.result-name,.legend-title{font-family:var(--nc-font-display);font-style:italic;font-stretch:120%;font-weight:800}
+.back-btn{font-family:var(--nc-font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim)}
+.back-btn:hover{color:var(--nc-accent)}
+
+/* ---------- panels and cards: dark glass, HUD corner ticks on hover ---------- */
+.case-card,.inv-item,.mini-item,.batch-item,.tradeup-item,.daily-banner,.battle-setup,.mines-setup,.mines-status,
+.battle-result,.mines-result,.result-card,.batch-result,.big-cases-section,.ck-stat,.ck-building,.ach-row{
+  background:var(--cs-glass);border:1px solid var(--line);border-radius:8px;
+}
+.case-card,.inv-item,.tradeup-item{position:relative}
+.case-card::after,.inv-item::after,.tradeup-item::after{content:"";position:absolute;inset:6px;pointer-events:none;opacity:0;
+  background:var(--cs-ticks);background-repeat:no-repeat;transition:opacity .2s}
+.case-card:hover,.case-card:focus-visible,.inv-item:hover,.tradeup-item:hover{
+  border-color:rgba(207,226,255,.5);box-shadow:0 16px 38px -18px rgba(127,156,214,.65),0 0 0 1px rgba(207,226,255,.12) inset;
+}
+.case-card:hover::after,.case-card:focus-visible::after,.inv-item:hover::after,.tradeup-item:hover::after{opacity:.85}
+.case-card .name{font-family:var(--nc-font-display);font-style:italic;font-stretch:110%;font-weight:700}
+.kind-tag,.price-tag{font-family:var(--nc-font-mono);letter-spacing:.06em}
+@media (max-width:640px){
+  .kind-tag{font-size:8px;letter-spacing:.02em;padding:2px 4px}
+  .price-tag{font-size:9px;letter-spacing:0;padding:2px 4px}
+}
+.big-cases-section{padding:20px;border-color:rgba(207,226,255,.3);
+  background:radial-gradient(80% 120% at 50% 0%,rgba(91,47,214,.25),transparent 70%),var(--cs-glass)}
+.daily-banner{border-color:rgba(207,226,255,.35)}
+.daily-info .daily-title{font-family:var(--nc-font-display);font-style:italic;font-stretch:125%;font-weight:800;color:var(--ink);text-shadow:0 0 12px var(--nc-accent-glow)}
+.tradeup-item.selected{border-color:var(--nc-accent);box-shadow:0 0 0 1px var(--nc-accent) inset,0 0 18px -6px var(--nc-accent-glow)}
+
+/* ---------- main actions: the site's gel button ---------- */
+.open-btn,.result-actions button.primary,.battle-start-btn,.mines-start-btn,.tradeup-btn,.daily-claim-btn,.legend-actions button.primary{
+  position:relative;border:1px solid rgba(255,255,255,.45);border-radius:999px;color:#fff;cursor:pointer;
+  background:var(--cs-gel);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 10px 34px -10px rgba(124,77,255,.8),0 0 0 1px rgba(91,47,214,.6);
+  font-family:var(--nc-font-display);font-style:italic;font-stretch:125%;font-weight:800;letter-spacing:.02em;text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(40,10,90,.5);transition:transform .15s,box-shadow .25s,filter .2s;
+}
+.open-btn:hover,.result-actions button.primary:hover,.battle-start-btn:hover,.mines-start-btn:hover,.tradeup-btn:hover,.daily-claim-btn:hover{
+  filter:brightness(1.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 14px 40px -10px rgba(124,77,255,.95),0 0 0 1px rgba(207,226,255,.6);
+}
+.open-btn:disabled,.battle-start-btn:disabled,.mines-start-btn:disabled,.tradeup-btn:disabled,.daily-claim-btn:disabled{filter:grayscale(.7) brightness(.7);cursor:not-allowed}
+/* Secondary actions: mono buttons with bracket corners. */
+.result-actions button:not(.primary),.sell-all-btn,.mines-cashout-btn,.modal-close,.reset-btn,.share-btn,.inv-sell,.legend-actions button:not(.primary){
+  font-family:var(--nc-font-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+  background:rgba(10,6,22,.55) var(--cs-ticks);background-repeat:no-repeat;border:1px solid transparent;border-radius:3px;
+}
+.result-actions button:not(.primary):hover,.sell-all-btn:hover,.mines-cashout-btn:not(:disabled):hover,.modal-close:hover,.reset-btn:hover,.share-btn:hover,.inv-sell:hover{
+  color:var(--nc-accent);background-color:rgba(207,226,255,.06)}
+.mines-cashout-btn:not(:disabled){color:#8ee0b0}
+
+/* ---------- reels ---------- */
+.reel-wrap{border:1px solid var(--line);border-radius:8px;background:rgba(6,4,14,.75)}
+.reel-marker::before,.reel-marker::after{border-top-color:var(--nc-accent);border-bottom-color:var(--nc-accent)}
+.reel-marker{background:var(--nc-accent);box-shadow:0 0 14px var(--nc-accent-glow)}
+.reel-card{background:var(--cs-glass);border-color:var(--line)}
+
+/* ---------- modals (wallet clicker, achievements, inspect) ---------- */
+.modal-overlay{background:rgba(5,3,12,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.clicker-shell,.ach-shell,.inspect-shell{
+  position:relative;border:1px solid var(--line);border-radius:10px;
+  background:linear-gradient(180deg,rgba(24,12,48,.97),rgba(10,6,22,.98));
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 40px -18px var(--nc-accent-glow);
+}
+.ck-stat{padding:9px 14px;gap:4px}
+.ck-stat strong{font-family:var(--nc-font-display);font-style:italic;font-stretch:115%;font-weight:800;letter-spacing:0;text-transform:none}
+.ck-building:hover{border-color:rgba(207,226,255,.45)}
+.mines-cell{background:linear-gradient(180deg,#2b2253,#16102c);border:1px solid rgba(207,226,255,.16);border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.mines-cell:hover:not(.revealed):not(.disabled){border-color:rgba(207,226,255,.55)}
+
+/* ---------- toasts ---------- */
+.toast,.ck-toast{font-family:var(--nc-font-mono);letter-spacing:.08em;background:rgba(10,6,22,.94);border:1px solid var(--nc-accent);border-radius:4px;
+  box-shadow:0 0 22px -8px var(--nc-accent-glow)}
+
+/* ---------- inputs focus ---------- */
+.sort-select:focus-visible,.battle-field select:focus-visible,.mines-field input:focus{outline:none;border-color:var(--nc-accent)}
+
+@media (prefers-reduced-motion:reduce){
+  .open-btn,.result-actions button.primary,.battle-start-btn,.mines-start-btn,.tradeup-btn,.daily-claim-btn{transition:none}
+}
