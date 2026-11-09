@@ -188,6 +188,37 @@
     io.observe(sheet);
   })();
 
+  /* ---------- 04 · Contact: copy the e-mail (HUD toast); if the clipboard is refused, select it for a manual copy ---------- */
+  (function () {
+    var btn = document.getElementById("copyEmail"), email = document.getElementById("emailText"), toast = document.getElementById("toast");
+    if (!btn || !email) return;
+    var timer = 0;
+    function show(text) {
+      if (!toast) return;
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(function () { toast.classList.remove("show"); }, 2000);
+    }
+    function selectEmail() {
+      try {
+        var range = document.createRange(), sel = window.getSelection();
+        range.selectNodeContents(email);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } catch (err) { /* nothing selectable: the toast still shows the address */ }
+    }
+    btn.addEventListener("click", function () {
+      var text = email.textContent.trim();
+      function fallback() { selectEmail(); show(text); }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { show("COPIED ✓"); }, fallback);
+        } else fallback();
+      } catch (err) { fallback(); }
+    });
+  })();
+
   /* ---------- scroll journey: section indicator, chrome states and the evolving backdrop ---------- */
   var journey = (function () {
     var html = document.documentElement;
@@ -212,9 +243,10 @@
       mood(50, 100, 50, 40, [30, 14, 56], [10, 6, 20], [5, 4, 8], 50, 100, 40, 35, [107, 33, 168], 0, 96, .25, .3)
     ];
 
-    var tops = [], heights = [], pinned = [], vh = window.innerHeight || 1;
+    var tops = [], heights = [], pinned = [], vh = window.innerHeight || 1, docH = vh;
     function measure() {
       vh = window.innerHeight || 1;
+      docH = document.documentElement.scrollHeight || vh;
       nodes.forEach(function (n, i) {
         var r = n.getBoundingClientRect();
         tops[i] = r.top + window.scrollY;
@@ -228,14 +260,16 @@
        keeps its state for its whole pinned range: hand-overs end when its stage pins and start when it unpins. */
     function enterAt(k) { return tops[k] + (pinned[k] ? .5 * vh : .2 * heights[k]); }
     function leaveAt(k) { return tops[k] + (pinned[k] ? heights[k] - .5 * vh : .6 * heights[k]); }
+    /* Enter points are clamped to the lowest the middle of the screen can go, so a short last section (the outro)
+       still reaches its own state at the very bottom of the page. */
     function locate(y) {
-      var c = y + vh / 2;
-      for (var j = 0; j < nodes.length - 1; j++) {
-        var s = leaveAt(j), e = enterAt(j + 1);
-        if (c >= s && c <= e) return { from: j, to: j + 1, t: (c - s) / Math.max(1, e - s), c: c };
+      var c = y + vh / 2, maxC = Math.max(vh / 2, docH - vh / 2), last = nodes.length - 1;
+      for (var j = 0; j < last; j++) {
+        var e = Math.min(enterAt(j + 1), maxC), s = Math.min(leaveAt(j), e - 1);
+        if (c >= s && c < e) return { from: j, to: j + 1, t: (c - s) / Math.max(1, e - s), c: c };
       }
       var idx = 0;
-      for (var k = 0; k < nodes.length; k++) if (c >= tops[k]) idx = k;
+      for (var k = 1; k <= last; k++) if (c >= Math.min(enterAt(k), maxC)) idx = k;
       return { from: idx, to: idx, t: 0, c: c };
     }
 
