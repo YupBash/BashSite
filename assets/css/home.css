@@ -187,7 +187,7 @@ html.vids-3d .vid-card.is-front{filter:none}
 .gamble-title{margin:0;font-family:var(--nc-font-display);font-style:italic;font-stretch:150%;font-weight:900;
   font-size:clamp(2.6rem,8vw,7.4rem);line-height:.86;letter-spacing:-.02em;
   filter:drop-shadow(0 0 22px rgba(139,92,246,.35)) drop-shadow(0 6px 0 rgba(0,0,0,.55))}
-.gamble-sub{margin:14px 0 28px;font-style:italic;font-weight:600;font-size:clamp(17px,1.65vw,26px)}
+.sec-gamble .play-btn{margin-top:clamp(26px,4vh,40px)}
 /* Play button to the case simulator: a thin silver-blue ring, an outlined triangle that fills on hover, a slow pulse. */
 .play-btn{position:relative;display:inline-grid;place-items:center;width:clamp(78px,7vw,104px);aspect-ratio:1;border-radius:50%;
   border:1.5px solid var(--nc-accent);background:radial-gradient(circle at 35% 30%,rgba(207,226,255,.18),rgba(10,6,22,.6) 62%);

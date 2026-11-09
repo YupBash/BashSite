@@ -25,9 +25,9 @@ class GateTest(SiteTestCase):
 
     def test_start_button_is_minimal(self):
         page = self.open("/", entered=False)
-        self.assertEqual(" ".join(page.text_content("#enterBtn").split()), "START")
-        self.assertEqual(page.locator("#enterBtn svg.gate-play").count(), 1)
-        self.assertEqual(page.locator("#enterBtn svg.gate-colons").count(), 1)
+        # Just the word PLAY (YupBash, after release): no dots, no triangle.
+        self.assertEqual(" ".join(page.text_content("#enterBtn").split()), "PLAY")
+        self.assertEqual(page.locator("#enterBtn svg").count(), 0)
         self.assertFalse(page.evaluate("document.getElementById('enterBtn').classList.contains('gel')"))
         self.assertEqual(page.locator("#gate .gate-tab").count(), 0)
         self.assertNotIn("welcome..", page.text_content("#gate"))

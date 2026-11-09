@@ -63,7 +63,7 @@ class SiteQualityTest(SiteTestCase):
 
     def test_text_contrast(self):
         page = self.open("/")
-        for sel in ("body", "#hudSection", ".faq-answer", ".vid-cta", ".contact-label", ".gamble-sub"):
+        for sel in ("body", "#hudSection", ".faq-answer", ".vid-cta", ".contact-label", "#gamble .kicker"):
             page.wait_for_selector(sel, state="attached", timeout=10000)
             rgb = page.evaluate("s => getComputedStyle(document.querySelector(s)).color.match(/\d+(\.\d+)?/g).slice(0, 3).map(Number)", sel)
             self.assertGreaterEqual(contrast(rgb, (43, 20, 82)), 4.5, "%s %s" % (sel, rgb))

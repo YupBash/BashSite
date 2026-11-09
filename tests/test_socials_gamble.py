@@ -70,7 +70,7 @@ class GambleOutroTest(SiteTestCase):
     def test_gamble_teaser(self):
         page = self.open("/")
         self.assertEqual(page.text_content("#gambleTitle").strip(), "BASH ADDICTION")
-        self.assertEqual(page.text_content("#gamble .gamble-sub").strip(), "fake money, real addiction.")
+        self.assertEqual(page.locator("#gamble .gamble-sub").count(), 0)
         # Just a play button (YupBash): no gel pill, the name stays for screen readers.
         self.assertEqual(page.locator("#gamble .gel").count(), 0)
         link = page.locator("#gamble a.play-btn")

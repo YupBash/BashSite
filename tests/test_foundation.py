@@ -32,7 +32,7 @@ class FoundationTest(SiteTestCase):
         self.assertEqual(text("#outro .signature"), "BASH · 2024–2026")
         gamble = text("#gamble")
         self.assertIn("BASH ADDICTION", gamble)
-        self.assertIn("fake money, real addiction.", gamble)
+        self.assertNotIn("fake money, real addiction.", gamble)   # removed at YupBash's request
         self.assertEqual(page.get_attribute('#gamble a[href="/cases/"]', "aria-label"), "Open a case")
 
     def test_csp_meta_unchanged(self):
