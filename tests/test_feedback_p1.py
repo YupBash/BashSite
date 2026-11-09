@@ -1,4 +1,4 @@
-"""Phase-1 checkpoint feedback: lock-on brackets on hover, readable menu titles, logo bubbles in Socials."""
+"""Phase-1 checkpoint feedback: lock-on brackets on hover, readable menu titles, plain chrome bubbles above the Socials buttons."""
 import re
 import unittest
 
@@ -18,7 +18,7 @@ def contrast(a, b):
     return (la + 0.05) / (lb + 0.05)
 
 
-# Brand hues the logo emblems must show, in the order Discord, TikTok, Instagram
+# Brand hues (Discord, TikTok, Instagram) used to detect an emblem drawn on the Socials bubbles
 # (#5865f2 ≈ 235°, #25f4ee ≈ 178°, #e1306c ≈ 337°). Violet chrome reflections sit near 262° and are rejected.
 BRAND_HUES = {"discord": 235, "tiktok": 178, "instagram": 337}
 
@@ -88,7 +88,8 @@ class FeedbackTest(SiteTestCase):
         darkest = min(stops, key=luminance)
         self.assertGreaterEqual(contrast(darkest, (43, 20, 82)), 4.5, "darkest menu-title colour %s" % (darkest,))
 
-    def test_socials_bubbles_show_brand_logos_in_order(self):
+    def test_socials_bubbles_are_plain_chrome_above_their_buttons(self):
+        # The brand emblems were tried, then removed at YupBash's request: the bubbles are plain chrome.
         page = self.open("/", reduced_motion=True)
         page.wait_for_function("() => window.BashHome && BashHome.chrome && BashHome.chrome.stats().frames > 0", timeout=15000)
         page.evaluate("document.getElementById('socials').scrollIntoView({ block: 'center', behavior: 'instant' })")
@@ -98,19 +99,14 @@ class FeedbackTest(SiteTestCase):
         buttons = page.evaluate("""() => [...document.querySelectorAll('.social-big')].map(b => {
             const r = b.getBoundingClientRect(); return { cx: r.left + r.width / 2, top: r.top, brand: b.dataset.brand }; })""")
         self.assertEqual([b["brand"] for b in buttons], ["discord", "tiktok", "instagram"])
-        found = []
         for t in targets:
             pts = [[(t["x"] + dx) / 1440, (t["y"] + dy) / 900] for dx in range(-40, 41, 8) for dy in range(-40, 41, 8)]
             pixels = page.evaluate("pts => BashHome.chrome.debugSample(pts)", pts)
-            votes = {}
-            for px in pixels:
-                if px[3] < 200:
-                    continue
-                brand = nearest_brand(px[:3])
-                if brand:
-                    votes[brand] = votes.get(brand, 0) + 1
-            found.append(max(votes, key=votes.get) if votes else None)
-        self.assertEqual(found, ["discord", "tiktok", "instagram"])
+            chrome = [px for px in pixels if px[3] >= 200]
+            self.assertGreater(len(chrome), 20, "no chrome bubble at %s" % t)
+            # The chrome palette stays between blue and violet: TikTok cyan or Instagram pink can only come from an emblem.
+            emblem = [px for px in chrome if nearest_brand(px[:3]) in ("tiktok", "instagram")]
+            self.assertLessEqual(len(emblem), 1, "brand emblem drawn on the bubble at %s: %s" % (t, emblem[:4]))
         # Each bubble floats above its own button, between the title and the button row.
         title_bottom = page.evaluate("document.getElementById('socialsTitle').getBoundingClientRect().bottom")
         for t, b in zip(targets, buttons):

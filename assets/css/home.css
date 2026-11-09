@@ -96,7 +96,7 @@ main{position:relative;z-index:2}
 
 /* ============ 04 · SOCIALS & CONTACT ============ */
 .sec-socials{align-items:center;text-align:center}
-/* Row where the three chrome bubbles (with the brand emblems) float above their buttons. */
+/* Row where the three chrome bubbles float, one above each button (Discord, TikTok, Instagram). */
 .socials-orbs{width:100%;height:clamp(130px,20vh,190px);margin:-12px 0 4px}
 .socials-big{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2vw,26px);width:100%}
 .social-big{

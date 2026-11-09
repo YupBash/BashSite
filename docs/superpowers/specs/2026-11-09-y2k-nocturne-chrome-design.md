@@ -123,7 +123,7 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 - Chrome : la sculpture se divise en 3–4 petites gouttes qui se rangent dans les marges pour laisser le texte lisible.
 
 ### 04 · SOCIALS & CONTACT
-- Chrome : la sculpture éclate en **3 bulles** qui flottent chacune **au-dessus de son bouton**, dans l'ordre Discord, TikTok, Instagram ; chaque bulle porte le **logo** de son réseau aux couleurs de la marque (`#5865f2`, `#25f4ee`, `#e1306c`) — demandé par YupBash au checkpoint de la phase 1. Sur téléphone, les 3 bulles sont côte à côte au-dessus des boutons empilés et restent toujours **séparées** (leur rayon diminue si l'écran est trop étroit, elles ne fusionnent jamais en capsule).
+- Chrome : la sculpture éclate en **3 bulles** qui flottent chacune **au-dessus de son bouton**, dans l'ordre Discord, TikTok, Instagram : du chrome nu, sans logo (des logos de marque ont été essayés au checkpoint de la phase 1, puis retirés à la demande de YupBash). Sur téléphone, les 3 bulles sont côte à côte au-dessus des boutons empilés et restent toujours **séparées** (leur rayon diminue si l'écran est trop étroit, elles ne fusionnent jamais en capsule).
 - 3 gros boutons Discord, TikTok, Instagram sous les bulles.
 - Contact : `yupbash@gmail.com` + bouton « copier » (toast HUD « COPIED ✓ »).
 - Liens : Discord `https://discordapp.com/users/852685497108267019`, TikTok `https://www.tiktok.com/@yupbash`, Instagram `https://www.instagram.com/yupbash`.

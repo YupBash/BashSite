@@ -21,7 +21,7 @@
     about: { fx: 0, fy: 0, s: .50, wob: .35, ring: [1.12, .075, .95, 0], arm: 0, chip: 0,
       m: { fx: 0, fy: .75, s: .40, blobs: [[-1.4, 0, 0, .30], [1.4, .1, 0, .26], [0, .3, 0, .20], [0, 0, 0, 0], [0, 0, 0, 0]] },
       blobs: [[-2.7, .9, 0, .30], [-2.5, -.8, 0, .22], [2.7, .6, 0, .28], [2.6, -1, 0, .20], [0, 0, 0, 0]] },
-    socials: { fx: 0, fy: 0, s: .50, m: { fx: 0, fy: 0, s: .24 }, wob: 0, ring: [1.12, .075, .95, 0], arm: 0, chip: 0, logo: 1, targets: true,
+    socials: { fx: 0, fy: 0, s: .50, m: { fx: 0, fy: 0, s: .24 }, wob: 0, ring: [1.12, .075, .95, 0], arm: 0, chip: 0, targets: true,
       blobs: [[-1.6, 0, 0, .42], [0, 0, 0, .42], [1.6, 0, 0, .42], [0, 0, 0, 0], [0, 0, 0, 0]] },
     gamble: { fx: .5, fy: .10, s: .56, m: { fx: 0, fy: .45, s: .50 }, wob: .2, ring: [1.12, .075, .95, 0], arm: .3, chip: 1,
       blobs: [[0, 0, 0, .55], [0, 0, 0, .40], [0, 0, 0, .35], [0, 0, 0, .20], [0, 0, 0, .20]] },
@@ -44,7 +44,7 @@
   var FS = [
     "precision highp float;",
     "uniform vec2 uRes;uniform float uTime;uniform vec2 uMouse;uniform vec3 uCenter;uniform float uRot;uniform float uPx;",
-    "uniform vec4 uB[5];uniform vec4 uRing;uniform float uArm;uniform float uChip;uniform float uBound;uniform sampler2D uLogo;uniform float uLogoOn;",
+    "uniform vec4 uB[5];uniform vec4 uRing;uniform float uArm;uniform float uChip;uniform float uBound;",
     "const vec3 SKY_TOP=vec3(.10,.05,.24);const vec3 SKY_HOR=vec3(.86,.93,1.);const vec3 GROUND=vec3(.015,.01,.03);",
     "const vec3 RIM1=vec3(.58,.30,1.);const vec3 RIM2=vec3(.55,.75,1.);const vec3 TINT=vec3(.94,.91,1.);",
     "float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}",
@@ -92,54 +92,10 @@
     "  col+=pow(1.-ndv,3.)*mix(RIM2,RIM1,.5+.5*n.x)*.55;",
     "  col*=.55+.45*clamp(map(p+n*.18)/.18,0.,1.);",
     "  col=col/(1.+col*.22);",
-    "  if(uLogoOn>.01){",
-    "    vec3 lq=(p-vec3(uCenter.xy,0.))/uCenter.z;float best=1e9;float bi=0.;vec4 bb=uB[0];",
-    "    for(int i=0;i<3;i++){vec4 b=uB[i];float dd=length(lq.xy-b.xy)/max(b.w,1e-3);if(b.w>.01&&dd<best){best=dd;bi=float(i);bb=b;}}",
-    "    vec2 luv=(lq.xy-bb.xy)/(bb.w*.62);",
-    "    if(abs(luv.x)<1.&&abs(luv.y)<1.){",
-    "      float la=texture2D(uLogo,vec2((bi+.5+luv.x*.5)/3.,.5-luv.y*.5)).a*uLogoOn*smoothstep(.2,.45,n.z);",
-    "      vec3 brand=bi<.5?vec3(.345,.396,.949):(bi<1.5?vec3(.145,.957,.933):vec3(.882,.188,.424));",
-    "      col=mix(col,brand*1.15+.12,la*.92);",
-    "    }",
-    "  }",
     "  gl_FragColor=vec4(col*alpha,alpha);}"
   ].join("\n");
 
-  var UNIFORMS = ["uRes", "uTime", "uMouse", "uCenter", "uRot", "uPx", "uB", "uRing", "uArm", "uChip", "uBound", "uLogo", "uLogoOn"];
-
-  /* Brand emblems for the Socials bubbles, in order: Discord, TikTok, Instagram (24-unit icons). */
-  var DISCORD = "M20.3 4.5a19.8 19.8 0 0 0-4.9-1.5l-.6 1.2a18.4 18.4 0 0 0-5.5 0L8.7 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a20 20 0 0 0 6 3l1.3-2c-.7-.2-1.3-.5-1.9-.9l.4-.3a14.2 14.2 0 0 0 12.1 0l.4.3c-.6.4-1.2.7-1.9.9l1.3 2a20 20 0 0 0 6-3c.5-5.1-.8-9.5-3.5-13.5ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z";
-  var TIKTOK = "M14 3v10.6a2.9 2.9 0 1 1-2.4-2.85V8.2A5.4 5.4 0 1 0 16.4 13.5V9.8a6.8 6.8 0 0 0 4.1 1.4V8.6a4.1 4.1 0 0 1-2.5-.9A4.3 4.3 0 0 1 16.4 4.2V3H14Z";
-  function logoAtlas() {
-    if (typeof Path2D !== "function") return null;
-    var c = document.createElement("canvas");
-    c.width = 768; c.height = 256;
-    var g = c.getContext("2d");
-    if (!g) return null;
-    var k = 200 / 24;
-    g.fillStyle = "#fff"; g.strokeStyle = "#fff";
-    g.setTransform(k, 0, 0, k, 28, 28); g.fill(new Path2D(DISCORD));
-    g.setTransform(k, 0, 0, k, 256 + 28, 28); g.fill(new Path2D(TIKTOK));
-    g.setTransform(k, 0, 0, k, 512 + 28, 28);
-    g.lineWidth = 2.4;
-    g.beginPath(); g.moveTo(8, 3); g.arcTo(21, 3, 21, 21, 5); g.arcTo(21, 21, 3, 21, 5); g.arcTo(3, 21, 3, 3, 5); g.arcTo(3, 3, 21, 3, 5); g.closePath(); g.stroke();
-    g.beginPath(); g.arc(12, 12, 4, 0, Math.PI * 2); g.stroke();
-    g.beginPath(); g.arc(17.2, 6.8, 1.4, 0, Math.PI * 2); g.fill();
-    return c;
-  }
-  function logoTexture(gl) {
-    var atlas = logoAtlas();
-    if (!atlas) return false;
-    var tex = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas);
-    return true;
-  }
+  var UNIFORMS = ["uRes", "uTime", "uMouse", "uCenter", "uRot", "uPx", "uB", "uRing", "uArm", "uChip", "uBound"];
 
   function build(gl, steps) {
     function shader(type, src) {
@@ -192,8 +148,6 @@
       return null;
     }
 
-    var hasLogos = false;
-    try { hasLogos = logoTexture(gl); gl.uniform1i(U.uLogo, 0); } catch (err) { hasLogos = false; }
     var mobile = !!opts.mobile;
     var scale = mobile ? .5 : .72, maxScale = mobile ? .6 : .95, minScale = .34;
     var W = 0, H = 0, cssW = 1, cssH = 1, dirty = true;
@@ -237,7 +191,7 @@
           if (near < 1e9) blobs[i][3] = Math.max(.12, Math.min(blobs[i][3], (near - BUBBLE_GAP) / 2));
         }
       }
-      return { cx: cx, cy: cy, s: s, wob: st.wob, ring: st.ring, arm: st.arm, chip: st.chip, logo: st.logo || 0, blobs: blobs };
+      return { cx: cx, cy: cy, s: s, wob: st.wob, ring: st.ring, arm: st.arm, chip: st.chip, blobs: blobs };
     }
 
     function params(aspect) {
@@ -295,7 +249,6 @@
       gl.uniform4f(U.uRing, P.ring[0], P.ring[1], P.ring[2], P.ring[3]);
       gl.uniform1f(U.uArm, P.arm);
       gl.uniform1f(U.uChip, P.chip);
-      gl.uniform1f(U.uLogoOn, hasLogos ? P.logo : 0);
       gl.uniform1f(U.uBound, s > 1e-4 ? bound : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       frames++;
