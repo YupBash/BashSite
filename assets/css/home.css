@@ -96,6 +96,8 @@ main{position:relative;z-index:2}
 
 /* ============ 04 · SOCIALS & CONTACT ============ */
 .sec-socials{align-items:center;text-align:center}
+/* Row where the three chrome bubbles (with the brand emblems) float above their buttons. */
+.socials-orbs{width:100%;height:clamp(130px,20vh,190px);margin:-12px 0 4px}
 .socials-big{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2vw,26px);width:100%}
 .social-big{
   position:relative;display:flex;align-items:center;justify-content:center;gap:14px;width:min(300px,100%);min-height:92px;padding:20px 26px;
@@ -140,4 +142,5 @@ main{position:relative;z-index:2}
   .profile-card img{width:84px;height:84px}
   .spec-label{width:7.5em}
   .social-big{width:100%;max-width:340px;min-height:72px}
+  .socials-orbs{height:110px;margin:0}
 }

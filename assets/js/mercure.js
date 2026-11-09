@@ -1,7 +1,7 @@
 /* BASH — design v3: "Mercure", the liquid-chrome cursor.
    A full-screen WebGL overlay (2D distance field with fake bevel lighting) draws a chrome droplet on the
-   pointer, a comet tail when it moves fast, a liquid ring around the hovered or keyboard-focused element,
-   and a ripple on click. Fine pointers + WebGL only; otherwise the system cursor stays.
+   pointer, a comet tail when it moves fast and a ripple on click; lock-on brackets (DOM) frame the hovered or
+   keyboard-focused element. Fine pointers + WebGL only; otherwise the system cursor stays.
      var m = BashMercure.init();   // null when not applicable; idempotent */
 (function () {
   "use strict";
@@ -13,11 +13,10 @@
   var FS = [
     "precision highp float;",
     "uniform vec2 uRes;uniform float uDpr;uniform vec2 uHead;uniform vec2 uT1;uniform vec2 uT2;uniform vec2 uT3;uniform vec2 uT4;",
-    "uniform float uR;uniform float uHeadOn;uniform vec4 uRect;uniform float uWrap;uniform vec2 uReach;uniform float uPress;uniform vec2 uRip;uniform float uRipT;",
+    "uniform float uR;uniform float uHeadOn;uniform float uPress;uniform vec2 uRip;uniform float uRipT;",
     "const vec3 SKY_TOP=vec3(.10,.05,.24);const vec3 SKY_HOR=vec3(.86,.93,1.);const vec3 GROUND=vec3(.015,.01,.03);",
     "const vec3 RIM1=vec3(.58,.30,1.);const vec3 RIM2=vec3(.55,.75,1.);",
     "float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}",
-    "float sdRB(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}",
     "float seg(vec2 p,vec2 a,vec2 b,float ra,float rb){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/max(dot(ba,ba),1e-3),0.,1.);return length(pa-ba*h)-mix(ra,rb,h);}",
     "float field(vec2 p){",
     "  float d=1e5;",
@@ -28,13 +27,6 @@
     "    d=smin(d,seg(p,uT2,uT3,r*.54,r*.38),r*.45);",
     "    d=smin(d,seg(p,uT3,uT4,r*.38,r*.2),r*.4);}",
     "  if(uRipT<1.){float rr=mix(uR*.9,uR*4.8,uRipT);float th=mix(2.4,.15,uRipT)*uDpr;d=min(d,abs(length(p-uRip)-rr)-th);}",
-    "  if(uWrap>.002){",
-    "    vec2 hs=uRect.zw+6.*uDpr;float rr=min(hs.y,26.*uDpr);",
-    "    float ring=abs(sdRB(p-uRect.xy,hs,rr))-1.7*uDpr*(.35+.65*uWrap);",
-    "    float reach=length(p-uReach)-uWrap*uWrap*(length(hs)*2.3+24.*uDpr);",
-    "    ring=max(ring,reach);",
-    "    d=uHeadOn>.5?smin(d,ring,9.*uDpr):min(d,ring);",
-    "  }",
     "  return d;}",
     "vec3 env(vec3 r){",
     "  float y=r.y*.85+r.z*.25-.2;",
@@ -57,7 +49,7 @@
     "  col=mix(col,vec3(.04,.02,.09),smoothstep(-2.2*aa,0.,d)*.75);",
     "  gl_FragColor=vec4(col*alpha,alpha);}"
   ].join("\n");
-  var UNIFORMS = ["uRes", "uDpr", "uHead", "uT1", "uT2", "uT3", "uT4", "uR", "uHeadOn", "uRect", "uWrap", "uReach", "uPress", "uRip", "uRipT"];
+  var UNIFORMS = ["uRes", "uDpr", "uHead", "uT1", "uT2", "uT3", "uT4", "uR", "uHeadOn", "uPress", "uRip", "uRipT"];
 
   function k(base, dt) { return 1 - Math.pow(1 - base, dt / 16.667); }
 
@@ -102,10 +94,28 @@
     document.body.appendChild(cv);
     document.documentElement.classList.add("has-mercure");
 
+    var lock = document.createElement("div");
+    lock.className = "mercure-lock";
+    lock.setAttribute("aria-hidden", "true");
+    lock.innerHTML = '<i class="a"></i><i class="b"></i><i class="c"></i><i class="d"></i><span class="mercure-lock-label"></span>';
+    document.body.appendChild(lock);
+    var lockLabel = lock.querySelector(".mercure-lock-label"), lockEl = null, lockBox = "";
+    function labelFor(el) {
+      var t = el.getAttribute("data-label") || el.getAttribute("aria-label") || el.textContent || "";
+      t = t.replace(/[>↗]+/g, " ").replace(/\s+/g, " ").trim();
+      return "◢ " + (t.length > 24 ? t.slice(0, 23) + "…" : t);
+    }
+    function placeLock(x, y, w, h) {
+      var key = Math.round(x) + "," + Math.round(y) + "," + Math.round(w) + "," + Math.round(h);
+      if (key === lockBox) return;
+      lockBox = key;
+      lock.style.left = x + "px"; lock.style.top = y + "px"; lock.style.width = w + "px"; lock.style.height = h + "px";
+    }
+
     var cd = Math.min(window.devicePixelRatio || 1, 2), CW = 0, CH = 0;
     var P = { x: -100, y: -100 }, seen = false, hiddenByTouch = false;
     var tails = [0, 1, 2, 3].map(function () { return { x: P.x, y: P.y }; });
-    var hoverEl = null, focusEl = null, wrap = 0, rect = { x: 0, y: 0, w: 0, h: 0 }, reachFrom = "head";
+    var hoverEl = null, focusEl = null, wrap = 0, rect = { x: 0, y: 0, w: 0, h: 0 };
     var press = 0, pressed = 0, rip = { x: 0, y: 0, start: -1e9 };
     function ripT() { return Math.min(1, (performance.now() - rip.start) / 450); }
     var last = performance.now(), raf = 0, running = false;
@@ -154,7 +164,7 @@
 
     function frame(now) {
       if (!running) return;
-      var dt = Math.max(0, Math.min(64, now - last)); last = now;
+      var raw = Math.max(0, now - last), dt = Math.min(64, raw); last = now;   // raw: real time, dt: clamped for the tail
       var w = Math.round(window.innerWidth * cd), h = Math.round(window.innerHeight * cd);
       if (w !== CW || h !== CH) { CW = cv.width = w; CH = cv.height = h; gl.viewport(0, 0, CW, CH); }
 
@@ -169,28 +179,38 @@
 
       var active = currentTarget();
       if (active) {
-        reachFrom = active === focusEl && active !== hoverEl ? "center" : "head";
         var r = active.getBoundingClientRect();
         rect = { x: r.left, y: r.top, w: r.width, h: r.height };
+        if (active !== lockEl) {
+          // Lock on: start from the pointer (or the element centre for keyboard focus), then expand to the element.
+          var fromPointer = active === hoverEl && headVisible();
+          lock.classList.add("snap"); lockBox = "";
+          placeLock(fromPointer ? P.x : rect.x + rect.w / 2, fromPointer ? P.y : rect.y + rect.h / 2, 0, 0);
+          void lock.offsetWidth;
+          lock.classList.remove("snap");
+          lockLabel.textContent = labelFor(active);
+          lockEl = active;
+        }
+        placeLock(rect.x - 7, rect.y - 7, rect.w + 14, rect.h + 14);
+        lock.classList.toggle("below", rect.y - 7 < 22);   // no room above (HUD row): label goes under the frame
+      } else {
+        lockEl = null;
       }
       var goal = active ? 1 : 0;
-      wrap = reduced ? goal : wrap + (goal - wrap) * k(.13, dt);
-      press += (pressed - press) * k(.35, dt);
+      wrap = reduced ? goal : wrap + (goal - wrap) * k(.13, raw);
+      lock.style.opacity = wrap.toFixed(3);
+      press += (pressed - press) * k(.35, raw);
       var rt = ripT();
 
       function X(x) { return x * cd; }
       function Y(y) { return CH - y * cd; }
       var on = headVisible();
-      var cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
       gl.uniform2f(U.uRes, CW, CH); gl.uniform1f(U.uDpr, cd);
       gl.uniform2f(U.uHead, X(P.x), Y(P.y));
       gl.uniform2f(U.uT1, X(tails[0].x), Y(tails[0].y)); gl.uniform2f(U.uT2, X(tails[1].x), Y(tails[1].y));
       gl.uniform2f(U.uT3, X(tails[2].x), Y(tails[2].y)); gl.uniform2f(U.uT4, X(tails[3].x), Y(tails[3].y));
       gl.uniform1f(U.uR, (9.5 - 3.5 * wrap) * cd);
       gl.uniform1f(U.uHeadOn, on ? 1 : 0);
-      gl.uniform4f(U.uRect, X(cx), Y(cy), rect.w / 2 * cd, rect.h / 2 * cd);
-      gl.uniform1f(U.uWrap, wrap);
-      gl.uniform2f(U.uReach, reachFrom === "center" ? X(cx) : X(P.x), reachFrom === "center" ? Y(cy) : Y(P.y));
       gl.uniform1f(U.uPress, press);
       gl.uniform2f(U.uRip, X(rip.x), Y(rip.y)); gl.uniform1f(U.uRipT, rt);
 
@@ -201,7 +221,6 @@
         grow(P.x - 40, P.y - 40, P.x + 40, P.y + 40);
         tails.forEach(function (t) { grow(t.x - 40, t.y - 40, t.x + 40, t.y + 40); });
       }
-      if (wrap > .01) grow(rect.x - 30, rect.y - 30, rect.x + rect.w + 30, rect.y + rect.h + 30);
       if (rt < 1) grow(rip.x - 60, rip.y - 60, rip.x + 60, rip.y + 60);
       if (x1 > x0) {
         gl.scissor(Math.max(0, Math.floor(x0 * cd)), Math.max(0, Math.floor(CH - y1 * cd)), Math.ceil((x1 - x0) * cd), Math.ceil((y1 - y0) * cd));
@@ -233,6 +252,7 @@
         document.removeEventListener("visibilitychange", onVisibility);
         document.documentElement.classList.remove("has-mercure");
         if (cv.parentNode) cv.parentNode.removeChild(cv);
+        if (lock.parentNode) lock.parentNode.removeChild(lock);
         instance = null;
       }
     };

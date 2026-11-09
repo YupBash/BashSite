@@ -85,6 +85,7 @@ Valeurs RVB linéaires 0–1 : ciel haut `[.10,.05,.24]`, horizon `[.86,.93,1.0]
 - Fond : lignes courbes fines (« swoosh ») en pointillés animés, ligne d'horizon, grain.
 - Bouton **gel** (principal) : pilule brillante façon années 2000, reflet haut, anneau silver bleu.
 - Bouton **crochets** (secondaire) : texte mono encadré de 4 coins.
+- Menu plein écran : titres des pages en **chrome clair** (blanc → lavande, contraste ≥ 4,5:1 sur le violet du menu) — demandé par YupBash au checkpoint de la phase 1, les titres d'origine manquaient de lisibilité.
 
 ### 4.5 Prototype de référence
 
@@ -122,7 +123,8 @@ Le HUD reste fixe pendant tout le scroll : menu, indicateur `0X / 05 — NOM` + 
 - Chrome : la sculpture se divise en 3–4 petites gouttes qui se rangent dans les marges pour laisser le texte lisible.
 
 ### 04 · SOCIALS & CONTACT
-- Chrome : la sculpture éclate en **3 gouttes** qui se placent derrière **3 gros boutons chromés** Discord, TikTok, Instagram ; au survol, reflet aux couleurs de la marque (`#5865f2`, `#25f4ee`/`#fe2c55`, `#e1306c`).
+- Chrome : la sculpture éclate en **3 bulles** qui flottent chacune **au-dessus de son bouton**, dans l'ordre Discord, TikTok, Instagram ; chaque bulle porte le **logo** de son réseau aux couleurs de la marque (`#5865f2`, `#25f4ee`, `#e1306c`) — demandé par YupBash au checkpoint de la phase 1. Sur téléphone, les 3 bulles sont côte à côte au-dessus des boutons empilés et restent toujours **séparées** (leur rayon diminue si l'écran est trop étroit, elles ne fusionnent jamais en capsule).
+- 3 gros boutons Discord, TikTok, Instagram sous les bulles.
 - Contact : `yupbash@gmail.com` + bouton « copier » (toast HUD « COPIED ✓ »).
 - Liens : Discord `https://discordapp.com/users/852685497108267019`, TikTok `https://www.tiktok.com/@yupbash`, Instagram `https://www.instagram.com/yupbash`.
 
@@ -151,9 +153,9 @@ Le fond (brume, couleurs, halo secondaire, ligne d'horizon, lignes « swoosh »)
 ### 6.1 Curseur « Mercure » (pointeur fin uniquement : souris / trackpad)
 - Goutte de chrome liquide (rayon ≈ 9,5 px) centrée exactement sur le pointeur (aucun retard sur la tête, pour la précision).
 - **Traînée en comète** : 4 points qui suivent avec amortissement (0,42 / 0,36 / 0,30 / 0,26 par image à 60 FPS), reliés par des segments effilés fusionnés (forme continue).
-- **Survol d'un élément cliquable** (liens, boutons) : la goutte rétrécit et le chrome **coule autour de l'élément** pour former un anneau liquide fin (rectangle arrondi, marge 6 px), qui part de la position du pointeur ; il se résorbe au départ.
+- **Survol d'un élément cliquable** (liens, boutons) : **crochets de verrouillage** (4 coins silver bleu, marge 7 px) qui partent de la position du pointeur et se referment autour de l'élément, avec une **étiquette** mono `◢ NOM` au-dessus (en dessous si l'élément touche le haut de l'écran) ; ils s'effacent au départ. Remplace l'anneau liquide de la première version, à la demande de YupBash (checkpoint de la phase 1 : il préférait l'encadré de la première maquette).
 - **Clic** : la goutte s'écrase légèrement + **onde de chrome** circulaire (≈ 450 ms).
-- **Focus clavier** : l'anneau de chrome entoure aussi l'élément focalisé (sert d'indicateur de focus).
+- **Focus clavier** : les crochets entourent aussi l'élément focalisé (servent d'indicateur de focus).
 - Liseré sombre autour de la goutte pour rester visible sur fond clair (lettres chromées).
 - Rendu : un calque WebGL plein écran au-dessus de la page (`pointer-events: none`), dessiné uniquement dans un rectangle autour du curseur / de l'élément survolé (scissor) pour rester léger.
 - Le curseur système est masqué uniquement quand le curseur Mercure fonctionne (pointeur fin + WebGL OK).
@@ -191,7 +193,7 @@ Le fond (brume, couleurs, halo secondaire, ligne d'horizon, lignes « swoosh »)
 | Stockage local indisponible | L'écran ENTER s'affiche à chaque visite, SFX coupés par défaut, aucune erreur |
 
 ### 7.4 Accessibilité
-- Navigation complète au clavier (Tab, Entrée, Échap) avec focus visible (anneau de chrome + contour de secours).
+- Navigation complète au clavier (Tab, Entrée, Échap) avec focus visible (crochets de verrouillage + contour de secours).
 - Contraste du texte ≥ 4,5:1.
 - Texte découpé en lettres : version lisible par les lecteurs d'écran (`.sr-only`) ; canvas décoratifs en `aria-hidden` ; icônes avec `aria-label`.
 - Sons coupés tant que le visiteur ne les a pas choisis.
@@ -246,7 +248,7 @@ Outil : Playwright (Python, déjà installé) avec Chromium, sur un serveur loca
 - Captures ordi (1440×900) et téléphone (390×844, émulation tactile) de chaque section.
 - 0 erreur console, 0 violation CSP (écoute de `securitypolicyviolation`).
 - Tous les liens internes répondent 200 ; `/socials/` → `/#socials`, `/faq/` → `/#about`.
-- Curseur testé à la vraie souris : déplacement rapide (traînée), survol (anneau), clic (onde), départ (résorption).
+- Curseur testé à la vraie souris : déplacement rapide (traînée), survol (crochets + étiquette), clic (onde), départ (résorption).
 
 **Contrôle final (phase 4)**
 - Plans B : lancement sans WebGL (image de secours visible), sans GSAP (sections statiques), en « réduire les animations ».

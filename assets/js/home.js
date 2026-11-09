@@ -17,6 +17,20 @@
     journey.sync(true);
   }
 
+  /* ---------- Socials: one chrome bubble above each button, in order Discord, TikTok, Instagram ---------- */
+  function socialTargets() {
+    var btns = Array.prototype.slice.call(document.querySelectorAll(".social-big"), 0, 3);
+    var orbs = document.querySelector(".socials-orbs");
+    if (btns.length < 3 || !orbs) return [];
+    var o = orbs.getBoundingClientRect(), y = o.top + o.height / 2;
+    var rects = btns.map(function (b) { return b.getBoundingClientRect(); });
+    var row = Math.abs(rects[0].top - rects[2].top) < 8;
+    return rects.map(function (r, i) {
+      return { x: row ? r.left + r.width / 2 : o.left + o.width * [.18, .5, .82][i], y: y };
+    });
+  }
+  home.socialTargets = socialTargets;
+
   /* ---------- scroll journey: section indicator, chrome states and the evolving backdrop ---------- */
   var journey = (function () {
     var html = document.documentElement;
@@ -91,6 +105,7 @@
       var p = locate(smoothY);
       lastPos = { from: IDS[p.from], to: IDS[p.to], t: ease(p.t) };
       if (home.chrome) {
+        home.chrome.setTargets(socialTargets());
         if (p.from === p.to || p.t <= 0) home.chrome.setState(IDS[p.from]);
         else home.chrome.blend(IDS[p.from], IDS[p.to], ease(p.t));
       }
