@@ -20,7 +20,7 @@ TikTok · Instagram · Discord — et un site qui ressemble à ce qui se passe d
 
 ## Qui est BASH ?
 
-Moi, c'est **BASH** (aka *yupbash*) : 21 ans, Belge, *some random dude, idk.*
+Moi, c'est **BASH** (aka *yupbash*) : 21 ans, Belge*
 Je fais du contenu sur TikTok et Instagram, je traîne sur Discord, et j'ai un léger problème avec l'ouverture de caisses CS2.
 Ce site, c'est ma carte de visite : mes réseaux, mes dernières vidéos, mon setup, et un simulateur de caisses pour se ruiner avec de **l'argent 100 % faux**.
 
