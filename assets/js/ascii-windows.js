@@ -53,7 +53,7 @@
       { n: 5, len: 0.80, wid: 0.40, off: 0.55, closed: 1.40, open: 0.55, curl: -0.6, col: [245, 95, 175] },
       { n: 4, len: 0.55, wid: 0.34, off: 0.20, closed: 1.50, open: 1.00, curl: -0.3, col: [220, 50, 140] }
     ];
-    var NU = 44, NV = 28, CUP = 0.16;
+    var NU = 64, NV = 40, CUP = 0.16;
     var cu = new Float32Array((NU + 1) * 9); // per-u basis: centre xyz, in-plane normal xyz, width, (pad)
 
     return function(grid, t, aspect){
@@ -62,14 +62,14 @@
       bloom = 0.15 + 0.85 * bloom;
       var ry = t * 0.55, rx = -0.62 + 0.12 * Math.sin(t * 0.37);
       var cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
-      var K = rows * 0.5, KX = K / aspect, ox = cols / 2, oy = rows * 0.54;
+      var K = rows * 0.5, KX = K / aspect, ox = cols / 2, oy = rows * (0.48 - 0.1 * bloom);
       var LX = -0.45, LY = 0.75, LZ = -0.5, ll = Math.hypot(LX, LY, LZ); LX /= ll; LY /= ll; LZ /= ll;
 
       function plot(px, py, pz, nx, ny, nz, cr, cg, cb, back){
         // rotate around Y then X, push away from the camera
         var x1 = px * cy + pz * sy, z1 = -px * sy + pz * cy;
         var y2 = py * cx - z1 * sx, z2 = py * sx + z1 * cx + 3.1;
-        var f = 3.5 / z2;
+        var f = 2.45 * (1.35 - 0.35 * bloom) / z2; // a bud is compact: zoom in on it
         var col = Math.round(ox + x1 * f * KX), row = Math.round(oy - (y2 - 0.25) * f * K);
         if (col < 0 || row < 0 || col >= cols || row >= rows) return;
         var i = row * cols + col;
@@ -262,9 +262,9 @@
 
   /* ------------------------------------------------------- window chrome */
   var SCENES = {
-    bloom: { title: "bloom.exe", icon: "✿", make: bloomScene, fs: 10 },
+    bloom: { title: "bloom.exe", icon: "✿", make: bloomScene, fs: 8 },
     eye:   { title: "eye.exe",   icon: "◉", make: eyeScene,   fs: 9 },
-    stars: { title: "stars.exe", icon: "✦", make: starsScene, fs: 10 }
+    stars: { title: "stars.exe", icon: "✦", make: starsScene, fs: 9 }
   };
   var ORDER = ["bloom", "stars", "eye"];
   var zTop = 1;

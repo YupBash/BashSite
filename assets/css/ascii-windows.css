@@ -85,13 +85,13 @@
 .awin.is-rolled .awin-body, .awin.is-rolled .awin-status{ display:none; }
 
 /* starting spots around the wordmark, clear of the HUD bars and the character */
-.awin--bloom{ --w:clamp(230px,19vw,310px); --h:clamp(170px,14vw,230px); left:6.5vw; top:12%; }
-.awin--stars{ --w:clamp(210px,16vw,270px); --h:clamp(140px,11vw,180px); left:33vw; top:9%; }
-.awin--eye  { --w:clamp(240px,21vw,330px); --h:clamp(140px,11vw,180px); left:27vw; top:66%; }
+.awin--bloom{ --w:clamp(280px,min(30vw,54vh),520px); --h:clamp(190px,min(20vw,36vh),350px); left:5vw; top:11%; }
+.awin--stars{ --w:clamp(230px,min(19vw,34vh),330px); --h:clamp(140px,min(12.5vw,22vh),220px); left:40vw; top:9%; }
+.awin--eye  { --w:clamp(260px,min(24vw,42vh),400px); --h:clamp(140px,min(12.5vw,22vh),215px); left:31vw; bottom:72px; }
 
 @media (max-width:720px){
   /* phones: one small window under the HUD, the others stay hidden */
-  .awin--bloom{ --w:min(62vw,240px); --h:min(42vw,170px); left:22px; top:calc(70px + env(safe-area-inset-top,0px)); }
+  .awin--bloom{ --w:min(78vw,300px); --h:min(54vw,210px); left:22px; top:calc(70px + env(safe-area-inset-top,0px)); }
   .awin--stars, .awin--eye{ display:none; }
 }
 @media (prefers-reduced-motion:reduce){
