@@ -1,0 +1,100 @@
+/* BASH — design v3: fake Y2K windows playing live ASCII art in the HOME section
+   (assets/js/ascii-windows.js). The layer covers the section but lets clicks through;
+   only the windows catch the pointer. */
+.ascii-layer{
+  position:absolute;inset:0;z-index:6;pointer-events:none;
+  opacity:calc(1 - var(--hp, 0) * 1.6);
+}
+
+.awin{
+  --w:300px; --h:220px;
+  position:absolute;width:var(--w);pointer-events:auto;
+  background:#08050f;
+  border:1px solid var(--nc-line);
+  border-radius:5px 5px 3px 3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.6),
+    0 18px 50px rgba(0,0,0,.65),
+    0 0 26px rgba(124,58,237,.22);
+  font-family:var(--nc-font-mono);
+  opacity:0;visibility:hidden;
+  transform-origin:24px 12px;
+  transition:box-shadow .2s ease;
+}
+/* pop in one after the other once the START gate is passed */
+.ascii-layer.is-on .awin{
+  visibility:visible;
+  animation:awinOpen .42s steps(6, end) forwards;
+  animation-delay:calc(.5s + var(--open-i, 0) * .38s);
+}
+@keyframes awinOpen{
+  0%{ opacity:0; scale:.35; }
+  20%{ opacity:1; }
+  100%{ opacity:1; scale:1; }
+}
+.awin.is-active{
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.6),
+    0 24px 60px rgba(0,0,0,.75),
+    0 0 34px var(--nc-gel-shadow);
+}
+.ascii-layer.is-on .awin.is-closing{ animation:awinClose .22s steps(4, end) forwards; }
+@keyframes awinClose{ from{ opacity:1; scale:1; } to{ opacity:0; scale:.6; } }
+
+/* title bar: a liquid-chrome band, like the menu titles */
+.awin-bar{
+  display:flex;align-items:center;gap:6px;height:22px;padding:0 3px 0 7px;
+  background:linear-gradient(180deg,#ffffff 0%,#f4f0ff 38%,#cdbdff 52%,#e6deff 70%,#ffffff 100%);
+  color:#1a0d33;font-size:9.5px;font-weight:700;letter-spacing:.08em;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  border-bottom:1px solid #7a5fc0;
+}
+.awin:not(.is-active) .awin-bar{ background:linear-gradient(180deg,#d9d2ea,#a99dc6 55%,#c7bddf); color:#3d3157; }
+.awin.is-dragging .awin-bar{ cursor:grabbing; }
+.awin-icon{ font-size:12px;line-height:1;color:var(--nc-gel-3); }
+.awin:not(.is-active) .awin-icon{ color:#5d5079; }
+.awin-title{ flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.awin-btns{ display:flex;gap:3px; }
+.awin-btn{
+  width:17px;height:16px;padding:0;display:grid;place-items:center;
+  font:700 11px/1 ui-monospace,Menlo,Consolas,monospace;color:#1a0d33;
+  background:#ebe5fb;border:1px solid #fff;border-right-color:#4b3a78;border-bottom-color:#4b3a78;
+  box-shadow:inset -1px -1px 0 #a596cc;cursor:pointer;
+}
+.awin-btn span{ translate:0 -1px; }
+.awin-min span{ translate:0 -4px; }
+.awin-btn:hover{ background:#fff; }
+.awin-btn:active{ border-color:#4b3a78 #fff #fff #4b3a78;box-shadow:inset 1px 1px 0 #a596cc; }
+.awin-close:hover{ background:var(--nc-gel-2);color:#fff; }
+.awin-btn:focus-visible{ outline:2px solid var(--nc-accent);outline-offset:1px; }
+
+.awin-body{ position:relative;height:var(--h);background:#06040a;overflow:hidden; }
+.awin-body canvas{ display:block;width:100%;height:100%; }
+/* faint CRT scanlines */
+.awin-body::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
+  mix-blend-mode:screen;
+}
+.awin-status{
+  display:flex;justify-content:space-between;gap:8px;height:16px;padding:0 6px;
+  border-top:1px solid rgba(196,174,255,.18);
+  font-size:8px;line-height:16px;letter-spacing:.08em;color:var(--nc-hud);
+  white-space:nowrap;overflow:hidden;
+}
+.awin.is-rolled .awin-body, .awin.is-rolled .awin-status{ display:none; }
+
+/* starting spots around the wordmark, clear of the HUD bars and the character */
+.awin--bloom{ --w:clamp(230px,19vw,310px); --h:clamp(170px,14vw,230px); left:6.5vw; top:12%; }
+.awin--stars{ --w:clamp(210px,16vw,270px); --h:clamp(140px,11vw,180px); left:33vw; top:9%; }
+.awin--eye  { --w:clamp(240px,21vw,330px); --h:clamp(140px,11vw,180px); left:27vw; top:66%; }
+
+@media (max-width:720px){
+  /* phones: one small window under the HUD, the others stay hidden */
+  .awin--bloom{ --w:min(62vw,240px); --h:min(42vw,170px); left:22px; top:calc(70px + env(safe-area-inset-top,0px)); }
+  .awin--stars, .awin--eye{ display:none; }
+}
+@media (prefers-reduced-motion:reduce){
+  .ascii-layer.is-on .awin{ animation:none;opacity:1; }
+  .ascii-layer.is-on .awin.is-closing{ animation:none;opacity:0; }
+}

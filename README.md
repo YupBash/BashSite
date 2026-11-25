@@ -117,6 +117,7 @@ Tout est sauvegardé **dans ton navigateur uniquement** : aucune vraie monnaie, 
 │   ├── css/tokens.css      Couleurs, polices, easing (variables --nc-*)
 │   ├── css/base.css        Socle commun : HUD, menu, boutons, écran START, curseur, fond
 │   ├── css/home.css        Les sections de l'accueil
+│   ├── css/ascii-windows.css  Les fausses fenêtres Y2K de la section Home
 │   ├── css/cases.css       Le thème Nocturne Chrome du simulateur
 │   ├── js/site.js          BashSite : stockage sûr, HUD en direct, menu, écran START + intro
 │   ├── js/chrome.js        BashChrome : la sculpture WebGL et ses états par section
@@ -124,6 +125,7 @@ Tout est sauvegardé **dans ton navigateur uniquement** : aucune vraie monnaie, 
 │   ├── js/home.js          BashHome : parcours au scroll, carrousel vidéo, fiche, contact, inclinaison
 │   ├── js/audio.js         BashAudio : les sons synthétisés
 │   ├── js/minesweeper.js   BashMines : le démineur caché
+│   ├── js/ascii-windows.js Fenêtres déplaçables/fermables qui jouent de l'ASCII art animé (bloom, stars, eye)
 │   ├── videos/videos.json  Les vidéos de la section « Latest videos »
 │   └── chrome-fallback.webp, og-image.jpg, character.webp, faq-character.webp, icônes…
 ├── tools/                  add-video.py, render-assets.py, og.html (non publiés)
