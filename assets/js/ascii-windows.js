@@ -266,7 +266,7 @@
     eye:   { title: "eye.exe",   icon: "◉", make: eyeScene,   fs: 9 },
     stars: { title: "stars.exe", icon: "✦", make: starsScene, fs: 9 }
   };
-  var ORDER = ["bloom", "stars", "eye"];
+  var ORDER = ["bloom", "eye", "stars"]; // later = in front: stars overlaps eye
   var zTop = 1;
   var wins = [];
 

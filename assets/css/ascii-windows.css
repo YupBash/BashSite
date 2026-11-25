@@ -84,10 +84,13 @@
 }
 .awin.is-rolled .awin-body, .awin.is-rolled .awin-status{ display:none; }
 
-/* starting spots around the wordmark, clear of the HUD bars and the character */
+/* starting spots: bloom big on the left; stars and eye stacked on the right, stars in front */
 .awin--bloom{ --w:clamp(280px,min(30vw,54vh),520px); --h:clamp(190px,min(20vw,36vh),350px); left:5vw; top:11%; }
-.awin--stars{ --w:clamp(230px,min(19vw,34vh),330px); --h:clamp(140px,min(12.5vw,22vh),220px); left:40vw; top:9%; }
-.awin--eye  { --w:clamp(260px,min(24vw,42vh),400px); --h:clamp(140px,min(12.5vw,22vh),215px); left:31vw; bottom:72px; }
+.awin--stars{ --w:clamp(230px,min(19vw,34vh),330px); --h:clamp(140px,min(12.5vw,22vh),220px); left:71vw; top:56%; }
+.awin--eye  { --w:clamp(260px,min(22vw,40vh),380px); --h:clamp(140px,min(12vw,21vh),205px); right:1.2vw; bottom:9%; }
+
+/* short screens: lift stars so the eye underneath still shows */
+@media (min-width:721px) and (max-height:680px){ .awin--stars{ top:42%; } }
 
 @media (max-width:720px){
   /* phones: one small window under the HUD, the others stay hidden */
